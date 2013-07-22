@@ -1,0 +1,12 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="pref_radius_list"
+        android:title="@string/pref_title_radius"
+        android:defaultValue="1"
+        android:entries="@array/pref_radius_titles"
+        android:entryValues="@array/pref_radius_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+</PreferenceScreen>

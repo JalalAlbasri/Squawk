@@ -1,0 +1,29 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.5.+'
+    }
+}
+apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:13.0.+'
+    compile 'com.google.android.gms:play-services:3.1.36'
+    compile files('libs/twitter4j-core-3.0.3.jar', 'libs/twitter4j-stream-3.0.3.jar', 'libs/jcoord-1.0.jar')
+}
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion "17.0.0"
+
+    defaultConfig {
+        minSdkVersion 13
+        targetSdkVersion 17
+    }
+}
