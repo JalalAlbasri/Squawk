@@ -143,6 +143,7 @@ public class TwitterStatusUpdateService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "Service Destroyed.");
+        twitterStream.cleanUp();
         super.onDestroy();
     }
 }

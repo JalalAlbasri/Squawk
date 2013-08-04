@@ -37,7 +37,8 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     }
 
     public void moveMaptoLocation(LatLng latLng) {
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        if (mGoogleMap != null)
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     @Override

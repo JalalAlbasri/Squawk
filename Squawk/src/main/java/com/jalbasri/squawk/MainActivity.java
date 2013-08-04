@@ -65,16 +65,6 @@ public class MainActivity extends Activity implements
     public void onResume() {
         super.onResume();
 
-        mStatusMapFragment = getStatusMapFragment();
-
-        if (!mBound) {
-            //Start Twitter Update Service
-            Intent intent = new Intent(this, TwitterStatusUpdateService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        }
-    }
-
-    private StatusMapFragment getStatusMapFragment() {
         View fragmentContainer = findViewById(R.id.fragment_container);
         boolean tabletLayout = fragmentContainer == null;
 
@@ -82,11 +72,17 @@ public class MainActivity extends Activity implements
             SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
             int actionBarIndex = pref.getInt("ACTION_BAR_INDEX", 0);
             getActionBar().setSelectedNavigationItem(actionBarIndex);
-            return (StatusMapFragment) getFragmentManager()
+            mStatusMapFragment = (StatusMapFragment) getFragmentManager()
                     .findFragmentByTag(StatusMapFragment.class.getName());
         } else {
-            return ((StatusMapFragment) getFragmentManager()
+            mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
                     .findFragmentById(R.id.map_fragment));
+        }
+
+        if (!mBound) {
+            //Start Twitter Update Service
+            Intent intent = new Intent(this, TwitterStatusUpdateService.class);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
@@ -142,40 +138,7 @@ public class MainActivity extends Activity implements
         super.onPause();
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
 
-        View fragmentContainer = findViewById(R.id.fragment_container);
-        boolean tabletLayout = fragmentContainer == null;
-
-        if (!tabletLayout) {
-            int actionBarIndex = getActionBar().getSelectedTab().getPosition();
-            SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
-            editor.putInt(ACTION_BAR_INDEX, actionBarIndex);
-            editor.apply();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            if (listTabListener.fragment != null) {
-                transaction.detach(listTabListener.fragment);
-            }
-            if (mapTabListener.fragment != null) {
-                transaction.detach(mapTabListener.fragment);
-            }
-            transaction.commit();
-        }
-        super.onSaveInstanceState(outState);
-
-    }
-
-    @Override
-    public void onDestroy() {
-        //Unbind from Twitter Update Service
-        Log.d(TAG, "onDestroy()");
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
-        super.onDestroy();
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -250,7 +213,21 @@ public class MainActivity extends Activity implements
     @Override
     public void onNewLocation(Location location) {
 //        Log.d(TAG, "onNewLocation() loc: " + location.toString());
-        mStatusMapFragment = getStatusMapFragment();
+
+        if (mStatusMapFragment == null) {
+            View fragmentContainer = findViewById(R.id.fragment_container);
+            boolean tabletLayout = fragmentContainer == null;
+
+            if (!tabletLayout) {
+
+                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+                        .findFragmentByTag(StatusMapFragment.class.getName());
+            } else {
+                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+                        .findFragmentById(R.id.map_fragment));
+            }
+        }
+
         if (location != null) {
             Log.d(TAG, "onNewLocation(), map fragment null? " + (mStatusMapFragment == null) );
             if (mStatusMapFragment != null)
@@ -261,7 +238,7 @@ public class MainActivity extends Activity implements
         }
     }
 
-    /*
+    /**
     Callback used to move the map camera to the last known location once
     the map is loaded.
      */
@@ -269,7 +246,19 @@ public class MainActivity extends Activity implements
     public void onMapFragmentCreated() {
 
         Location location = mLocationProvider.getLocation();
-        mStatusMapFragment = getStatusMapFragment();
+        if (mStatusMapFragment == null) {
+            View fragmentContainer = findViewById(R.id.fragment_container);
+            boolean tabletLayout = fragmentContainer == null;
+
+            if (!tabletLayout) {
+
+                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+                        .findFragmentByTag(StatusMapFragment.class.getName());
+            } else {
+                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+                        .findFragmentById(R.id.map_fragment));
+            }
+        }
         Log.d(TAG, "onMapFragmentCreated() " + "location null? " + (location == null) + " map fragment null? " + (mStatusMapFragment == null));
         if (location != null && mStatusMapFragment != null) {
             mStatusMapFragment.moveMaptoLocation(
@@ -290,6 +279,7 @@ public class MainActivity extends Activity implements
         }
 
         public void onTabSelected(Tab tab, FragmentTransaction transaction) {
+
             if (fragment == null) {
                 String fragmentName = fragmentClass.getName();
                 fragment = Fragment.instantiate(activity, fragmentName);
@@ -297,18 +287,21 @@ public class MainActivity extends Activity implements
             } else {
                 transaction.attach(fragment);
             }
+
         }
 
         public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
             if (fragment != null) {
                 transaction.detach(fragment);
             }
+
         }
 
         public void onTabReselected(Tab tab, FragmentTransaction transaction) {
             if (fragment != null) {
                 transaction.attach(fragment);
             }
+
         }
     }
 
@@ -329,5 +322,45 @@ public class MainActivity extends Activity implements
             mBound = false;
         }
     };
+
+    private void unbindFromTwitterService() {
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState()");
+        View fragmentContainer = findViewById(R.id.fragment_container);
+        boolean tabletLayout = fragmentContainer == null;
+
+        if (!tabletLayout) {
+            int actionBarIndex = getActionBar().getSelectedTab().getPosition();
+            SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
+            editor.putInt(ACTION_BAR_INDEX, actionBarIndex);
+            editor.apply();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            if (listTabListener.fragment != null) {
+                transaction.detach(listTabListener.fragment);
+            }
+            if (mapTabListener.fragment != null) {
+                transaction.detach(mapTabListener.fragment);
+            }
+            transaction.commit();
+        }
+        unbindFromTwitterService();
+        super.onSaveInstanceState(outState);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        //Unbind from Twitter Update Service
+        Log.d(TAG, "onDestroy()");
+        unbindFromTwitterService();
+        super.onDestroy();
+    }
 
 }
