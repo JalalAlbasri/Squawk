@@ -1,5 +1,10 @@
 package com.jalbasri.squawk;
 
+import com.google.appengine.api.memcache.ErrorHandlers;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.QueueStatistics;
 import com.jalbasri.squawk.EMF;
 
 import com.google.api.server.spi.config.Api;
@@ -8,8 +13,12 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.datanucleus.query.JPACursorHelper;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 
 import java.util.List;
+import java.util.logging.Level;
+
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -20,6 +29,8 @@ import javax.persistence.Query;
 
 import twitter4j.Status;
 
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
+
 @Api(
         name = "deviceinfoendpoint",
         namespace = @ApiNamespace(
@@ -29,27 +40,9 @@ import twitter4j.Status;
 public class DeviceInfoEndpoint {
 
     /**
-     * Takes device online by setting the device's online flag to true.
-     * Checks if there are any tasks in the twitter-service task queue if not creates one,
-     * Refreshes the online devices query in memcache
-     * @param id the device id
-     *
+     * A key used to save and retrieve the list of online devices from memcache
      */
-    @ApiMethod(name = "takeDeviceOnline")
-    public void takeDeviceOnline(@Named("id") String id) {
-        //TODO
-    }
-
-    /**
-     * Takes device offline by settings the device's online flag to false.
-     * Refreshes the online devices query in memcache
-     * @param id the device id
-     *
-     */
-    @ApiMethod(name = "takeDeviceOffline")
-    public void takeDeviceOffline(@Named("id") String id) {
-        //TODO
-    }
+    public static final String KEY_ONLINE_DEVICES = "online_devices";
 
     /**
      * Retrieve the collection of new tweets in datastore to be sent to this device
@@ -57,16 +50,42 @@ public class DeviceInfoEndpoint {
      *
      */
     @ApiMethod(name = "getNewTweets")
-    public CollectionResponse<Status> getNewTweets(@Named("id") String id) {
-        //TODO
-        return null;
+    public List<Tweet> getNewTweets(@Named("id") String id) {
+        EntityManager mgr = getEntityManager();
+        List<Tweet> tweets = null;
+        try {
+            Query query = mgr
+                    .createQuery("select from Tweet as Tweet" +
+                            "where Tweet.deviceId = " + id);
+            tweets = (List<Tweet>) query.getResultList();
+        } finally {
+            mgr.close();
+        }
+        return tweets;
     }
 
     /**
      * Queries the database for all online devices and stores the results in memcache
      */
     private void updateOnlineDevicesMemcache() {
-        //TODO
+        List<DeviceInfo> onlineDevices = null;
+        EntityManager mgr = null;
+        try {
+            mgr = getEntityManager();
+            javax.persistence.Query query = mgr
+                    .createQuery("select from DeviceInfo as DeviceInfo" +
+                            "where DeviceInfo.online = TRUE");
+            onlineDevices = (List<DeviceInfo>) query.getResultList();
+            //Add the online devices list to the memcache
+            MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+            syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
+            if (onlineDevices != null) {
+                syncCache.put(KEY_ONLINE_DEVICES, onlineDevices);
+            }
+
+        } finally {
+            mgr.close();
+        }
     }
 
     /**
@@ -173,6 +192,17 @@ public class DeviceInfoEndpoint {
                 throw new EntityNotFoundException("Object does not exist");
             }
             mgr.persist(deviceinfo);
+
+            //If the device updated taken online and there is no twitter task running
+            //Start a twitter task.
+            if (deviceinfo.isOnline()) {
+                Queue twitterQueue = QueueFactory.getQueue("twitter-queue");
+                QueueStatistics queueStatistics = twitterQueue.fetchStatistics();
+                if (queueStatistics.getNumTasks() == 0) {
+                    twitterQueue.add(withUrl("/handleTwitterTask"));
+                }
+            }
+            updateOnlineDevicesMemcache();
         } finally {
             mgr.close();
         }

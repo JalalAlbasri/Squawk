@@ -1,0 +1,6 @@
+<queue-entries>
+    <queue>
+        <name>twitter-queue</name>
+        <max-concurrent-requests>1</max-concurrent-requests>
+    </queue>
+</queue-entries>

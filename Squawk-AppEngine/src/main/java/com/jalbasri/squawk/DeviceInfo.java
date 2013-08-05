@@ -29,6 +29,8 @@ import javax.persistence.Id;
 // DeviceInfoEndpoint has NO AUTHENTICATION - it is an OPEN ENDPOINT!
 public class DeviceInfo {
 
+
+
     /**
      * Flag to indicate if this device is online and will collect Tweets
      *
@@ -65,26 +67,15 @@ public class DeviceInfo {
      *
      */
     public boolean isInMapRegion(double lat, double lng) {
-        //TODO
-        return true;
+        return ((lng >= mapRegion[0][0] && lng <= mapRegion[1][0]) &&
+                (lat >= mapRegion[0][1] && lat <= mapRegion[1][1]));
     }
 
     /**
-     * Queries datastore and return collection of child entities of this device
-     * Removes tweets from the datastore
-     * @return A collection of all the new status to be sent to this device.
+     * @return the online status of the deivce
      */
-    public CollectionResponse<Status> getNewTweets() {
-        //TODO
-        return null;
-    }
-
-    /**
-     * Adds a Tweet to the datastore as a child entity of this device
-     * @param status the tweet to add
-     */
-    public void addNewStatus(Status status) {
-        //TODO
+    public boolean isOnline() {
+        return this.online;
     }
 
     /*

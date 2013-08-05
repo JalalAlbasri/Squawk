@@ -1,14 +1,20 @@
 package com.jalbasri.squawk;
 
-import android.util.Log;
+import com.jalbasri.squawk.EMF;
 
+import com.google.appengine.api.memcache.ErrorHandlers;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.apphosting.api.DeadlineExceededException;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+import javax.persistence.EntityManager;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,6 +29,8 @@ import twitter4j.StatusListener;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
+
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 /**
  * Servelet that handles connection to Twitter Service
@@ -45,10 +53,19 @@ public class TwitterServlet extends HttpServlet {
      * The List of Online Devices
      *
      */
-    private List<DeviceInfo> onlineDevices;
+    private List<DeviceInfo> onlineDevices = null;
 
+    /**
+     * Twitter4j configuration options and stream object.
+     */
     private ConfigurationBuilder configurationBuilder;
     private TwitterStream twitterStream;
+
+    /**
+     * Entity Manager
+     * Used to retrieve online devices.
+     */
+    EntityManager mgr = null;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -70,16 +87,52 @@ public class TwitterServlet extends HttpServlet {
         super.init(config);
         enqueueNextTwitterTask();
         refreshOnlinceDeviceList();
+        initTwitterService();
         if (!onlineDevices.isEmpty()) {
             openTwitterStream();
         }
+    }
+
+    /**
+     * Queues the next Twitter Service Task in the twitter-queue
+     */
+    private void enqueueNextTwitterTask() {
+        Queue twitterQueue = QueueFactory.getQueue("twitter-queue");
+        twitterQueue.add(withUrl("/handleTwitterTask"));
+    }
+
+    /**
+     * Refreshes the list of online devices.
+     * Failing refresh from memcache queries the datastore.
+     */
+    private void refreshOnlinceDeviceList() {
+
+        //Try to retrieve the online devices list from the memcache.
+        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+        syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
+        onlineDevices = (List<DeviceInfo>)syncCache.get(DeviceInfoEndpoint.KEY_ONLINE_DEVICES);
+        if (onlineDevices == null) {
+            //If memcache retrieval failed, retrieve list of the online devices from the datastore
+            mgr = getEntityManager();
+            try {
+
+                javax.persistence.Query query = mgr
+                        .createQuery("select from DeviceInfo as DeviceInfo" +
+                                "where DeviceInfo.online = TRUE");
+                onlineDevices = (List<DeviceInfo>) query.getResultList();
+                syncCache.put(DeviceInfoEndpoint.KEY_ONLINE_DEVICES, onlineDevices);
+            } finally {
+                mgr.close();
+            }
+        }
+
     }
 
     private void handleTwitterTask(HttpServletRequest req, HttpServletResponse resp) {
         try {
             while(true) {
                 refreshOnlinceDeviceList();
-                if(onlineDevices.isEmpty()) {
+                if(onlineDevices == null || onlineDevices.isEmpty()) {
                     break;
                 }
             }
@@ -99,22 +152,6 @@ public class TwitterServlet extends HttpServlet {
         FilterQuery filterQuery = new FilterQuery();
         filterQuery.locations(entireWorld);
         twitterStream.filter(filterQuery);
-    }
-
-    /**
-     * Refreshes the list of online devices.
-     * Failing refresh from memcache queries the datastore.
-     */
-    private void refreshOnlinceDeviceList() {
-        //TODO
-    }
-
-
-    /**
-     * Queues the next Twitter Service Task in the twitter-queue
-     */
-    private void enqueueNextTwitterTask() {
-        //TODO
     }
 
     private void initTwitterService() {
@@ -171,11 +208,21 @@ public class TwitterServlet extends HttpServlet {
     private void addNewTwitterStatus(Status status) {
         double latitude = status.getGeoLocation().getLatitude();
         double longitude = status.getGeoLocation().getLongitude();
-        for (DeviceInfo device: onlineDevices) {
-            if (device.isInMapRegion(latitude, longitude)) {
-                device.addNewStatus(status);
+        mgr = getEntityManager();
+        try {
+            for (DeviceInfo device: onlineDevices) {
+                if (device.isInMapRegion(latitude, longitude)) {
+                    Tweet tweet = new Tweet (status, device.getDeviceRegistrationID());
+                    mgr.persist(tweet);
+                }
             }
+        } finally {
+            mgr.close();
         }
+    }
+
+    private static EntityManager getEntityManager() {
+        return EMF.get().createEntityManager();
     }
 
 }
