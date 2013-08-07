@@ -27,3 +27,11 @@ android {
         targetSdkVersion 17
     }
 }
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile project(':Squawk-endpoints')
+}

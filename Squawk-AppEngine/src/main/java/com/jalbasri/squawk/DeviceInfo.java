@@ -29,8 +29,6 @@ import javax.persistence.Id;
 // DeviceInfoEndpoint has NO AUTHENTICATION - it is an OPEN ENDPOINT!
 public class DeviceInfo {
 
-
-
     /**
      * Flag to indicate if this device is online and will collect Tweets
      *
@@ -55,7 +53,7 @@ public class DeviceInfo {
      * Sets the online flag as false
      *
      */
-    public void takeDieviceOffline() {
+    public void takeDeviceOffline() {
         this.online = false;
     }
 

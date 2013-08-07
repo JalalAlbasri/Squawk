@@ -71,6 +71,18 @@
             <version>1.0.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
+            <version>[3.0,)</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-stream</artifactId>
+            <version>[3.0,)</version>
+        </dependency>
+
         <!-- Test Dependencies -->
         <dependency>
             <groupId>com.google.appengine</groupId>
@@ -129,6 +141,7 @@
                 <version>1.8.0</version>
                 <configuration>
                     <enableJarClasses>false</enableJarClasses>
+                    <oauth2>false</oauth2>
                 </configuration>
                 <executions>
                     <execution>

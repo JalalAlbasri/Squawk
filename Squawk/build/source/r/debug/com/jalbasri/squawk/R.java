@@ -189,23 +189,26 @@ containing a value of this type.
         public static final int twitter_bird=0x7f02001c;
     }
     public static final class id {
-        public static final int action_clear=0x7f07000c;
-        public static final int action_reload=0x7f07000a;
-        public static final int action_settings=0x7f07000b;
+        public static final int action_clear=0x7f07000e;
+        public static final int action_reload=0x7f07000c;
+        public static final int action_settings=0x7f07000d;
         public static final int fragment_container=0x7f070005;
         public static final int hybrid=0x7f070004;
         public static final int map_fragment=0x7f070007;
+        public static final int msgView=0x7f070008;
         public static final int none=0x7f070000;
         public static final int normal=0x7f070001;
+        public static final int regButton=0x7f070009;
         public static final int satellite=0x7f070002;
         public static final int status_list_fragment=0x7f070006;
         public static final int terrain=0x7f070003;
-        public static final int twitter_status=0x7f070009;
-        public static final int twitter_user=0x7f070008;
+        public static final int twitter_status=0x7f07000b;
+        public static final int twitter_user=0x7f07000a;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int twitter_status_list=0x7f030001;
+        public static final int activity_register=0x7f030001;
+        public static final int twitter_status_list=0x7f030002;
     }
     public static final class menu {
         public static final int main=0x7f0b0000;

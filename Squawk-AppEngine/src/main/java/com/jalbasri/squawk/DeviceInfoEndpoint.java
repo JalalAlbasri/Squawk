@@ -66,13 +66,15 @@ public class DeviceInfoEndpoint {
 
     /**
      * Queries the database for all online devices and stores the results in memcache
+     * called after deviceInfo updates.
+     *
      */
     private void updateOnlineDevicesMemcache() {
         List<DeviceInfo> onlineDevices = null;
         EntityManager mgr = null;
         try {
             mgr = getEntityManager();
-            javax.persistence.Query query = mgr
+            Query query = mgr
                     .createQuery("select from DeviceInfo as DeviceInfo" +
                             "where DeviceInfo.online = TRUE");
             onlineDevices = (List<DeviceInfo>) query.getResultList();
@@ -202,6 +204,7 @@ public class DeviceInfoEndpoint {
                     twitterQueue.add(withUrl("/handleTwitterTask"));
                 }
             }
+            //Update the online devices in the memcache
             updateOnlineDevicesMemcache();
         } finally {
             mgr.close();

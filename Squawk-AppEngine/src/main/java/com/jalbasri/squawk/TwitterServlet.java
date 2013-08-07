@@ -46,7 +46,7 @@ public class TwitterServlet extends HttpServlet {
      *
      */
     //TODO
-    private static final double[][] entireWorld = {{0, 0},{0, 0}};
+    private static final double[][] entireWorld = {{-180, -90},{180, 90}};
 
     /**
      * The List of Online Devices
@@ -83,6 +83,9 @@ public class TwitterServlet extends HttpServlet {
      * Initialize the Twitter4J twitter service and open the twitter stream
      */
     public void init(ServletConfig config) throws ServletException {
+        //Debug
+        System.out.println("TwitterServlet.init()");
+
         super.init(config);
         enqueueNextTwitterTask();
         refreshOnlinceDeviceList();
@@ -96,6 +99,8 @@ public class TwitterServlet extends HttpServlet {
      * Queues the next Twitter Service Task in the twitter-queue
      */
     private void enqueueNextTwitterTask() {
+        //Debug
+        System.out.println("TwitterServlet.enqueueNextTwitterTask");
         Queue twitterQueue = QueueFactory.getQueue("twitter-queue");
         twitterQueue.add(withUrl("/handleTwitterTask"));
     }
@@ -105,16 +110,17 @@ public class TwitterServlet extends HttpServlet {
      * Failing refresh from memcache queries the datastore.
      */
     private void refreshOnlinceDeviceList() {
-
+        //Debug
+        System.out.println("TwitterServlet.refreshOnlineDeviceList()");
         //Try to retrieve the online devices list from the memcache.
         MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
         syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
         onlineDevices = (List<DeviceInfo>)syncCache.get(DeviceInfoEndpoint.KEY_ONLINE_DEVICES);
         if (onlineDevices == null) {
             //If memcache retrieval failed, retrieve list of the online devices from the datastore
-            mgr = getEntityManager();
-            try {
 
+            try {
+                mgr = getEntityManager();
                 javax.persistence.Query query = mgr
                         .createQuery("select from DeviceInfo as DeviceInfo" +
                                 "where DeviceInfo.online = TRUE");

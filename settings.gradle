@@ -1,1 +1,1 @@
-include ':Squawk', ':Squawk-AppEngine'
+include ':Squawk', ':Squawk-AppEngine', ':Squawk-endpoints'
