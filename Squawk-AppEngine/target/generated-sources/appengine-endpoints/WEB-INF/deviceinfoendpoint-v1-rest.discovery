@@ -1,0 +1,756 @@
+{
+ "kind": "discovery#restDescription",
+ "etag": "\"nPbVolg1F8jpPe9kkErPtt8mpZE/-lTzu-Ioki7KOeKQRBlBqQq0KBo\"",
+ "discoveryVersion": "v1",
+ "id": "deviceinfoendpoint:v1",
+ "name": "deviceinfoendpoint",
+ "version": "v1",
+ "description": "This is an API",
+ "ownerDomain": "jalbasri.com",
+ "ownerName": "jalbasri.com",
+ "packagePath": "squawk",
+ "icons": {
+  "x16": "http://www.google.com/images/icons/product/search-16.gif",
+  "x32": "http://www.google.com/images/icons/product/search-32.gif"
+ },
+ "protocol": "rest",
+ "baseUrl": "https://squawk-android.appspot.com/_ah/api/deviceinfoendpoint/v1/",
+ "basePath": "/_ah/api/deviceinfoendpoint/v1/",
+ "rootUrl": "https://squawk-android.appspot.com/_ah/api/",
+ "servicePath": "deviceinfoendpoint/v1/",
+ "batchPath": "batch",
+ "parameters": {
+  "alt": {
+   "type": "string",
+   "description": "Data format for the response.",
+   "default": "json",
+   "enum": [
+    "json"
+   ],
+   "enumDescriptions": [
+    "Responses with Content-Type of application/json"
+   ],
+   "location": "query"
+  },
+  "fields": {
+   "type": "string",
+   "description": "Selector specifying which fields to include in a partial response.",
+   "location": "query"
+  },
+  "key": {
+   "type": "string",
+   "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+   "location": "query"
+  },
+  "oauth_token": {
+   "type": "string",
+   "description": "OAuth 2.0 token for the current user.",
+   "location": "query"
+  },
+  "prettyPrint": {
+   "type": "boolean",
+   "description": "Returns response with indentations and line breaks.",
+   "default": "true",
+   "location": "query"
+  },
+  "quotaUser": {
+   "type": "string",
+   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "location": "query"
+  },
+  "userIp": {
+   "type": "string",
+   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "location": "query"
+  }
+ },
+ "schemas": {
+  "CollectionResponse_DeviceInfo": {
+   "id": "CollectionResponse_DeviceInfo",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "DeviceInfo"
+     }
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "DeviceInfo": {
+   "id": "DeviceInfo",
+   "type": "object",
+   "properties": {
+    "deviceInformation": {
+     "type": "string"
+    },
+    "deviceRegistrationID": {
+     "type": "string"
+    },
+    "online": {
+     "type": "boolean"
+    },
+    "timestamp": {
+     "type": "string",
+     "format": "int64"
+    }
+   }
+  },
+  "GeoLocation": {
+   "id": "GeoLocation",
+   "type": "object",
+   "properties": {
+    "latitude": {
+     "type": "number",
+     "format": "double"
+    },
+    "longitude": {
+     "type": "number",
+     "format": "double"
+    }
+   }
+  },
+  "HashtagEntity": {
+   "id": "HashtagEntity",
+   "type": "object",
+   "properties": {
+    "end": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "start": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "text": {
+     "type": "string"
+    }
+   }
+  },
+  "JsonMap": {
+   "id": "JsonMap",
+   "type": "object"
+  },
+  "MediaEntity": {
+   "id": "MediaEntity",
+   "type": "object",
+   "properties": {
+    "displayURL": {
+     "type": "string"
+    },
+    "end": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "expandedURL": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string",
+     "format": "int64"
+    },
+    "mediaURL": {
+     "type": "string"
+    },
+    "mediaURLHttps": {
+     "type": "string"
+    },
+    "sizes": {
+     "$ref": "JsonMap"
+    },
+    "start": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "type": {
+     "type": "string"
+    },
+    "url": {
+     "type": "string"
+    }
+   }
+  },
+  "Place": {
+   "id": "Place",
+   "type": "object",
+   "properties": {
+    "accessLevel": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "boundingBoxCoordinates": {
+     "type": "array",
+     "items": {
+      "type": "array",
+      "items": {
+       "$ref": "GeoLocation"
+      }
+     }
+    },
+    "boundingBoxType": {
+     "type": "string"
+    },
+    "containedWithIn": {
+     "type": "array",
+     "items": {
+      "$ref": "Place"
+     }
+    },
+    "country": {
+     "type": "string"
+    },
+    "countryCode": {
+     "type": "string"
+    },
+    "fullName": {
+     "type": "string"
+    },
+    "geometryCoordinates": {
+     "type": "array",
+     "items": {
+      "type": "array",
+      "items": {
+       "$ref": "GeoLocation"
+      }
+     }
+    },
+    "geometryType": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "placeType": {
+     "type": "string"
+    },
+    "rateLimitStatus": {
+     "$ref": "RateLimitStatus"
+    },
+    "streetAddress": {
+     "type": "string"
+    },
+    "url": {
+     "type": "string"
+    }
+   }
+  },
+  "RateLimitStatus": {
+   "id": "RateLimitStatus",
+   "type": "object",
+   "properties": {
+    "limit": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "remaining": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "remainingHits": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "resetTimeInSeconds": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "secondsUntilReset": {
+     "type": "integer",
+     "format": "int32"
+    }
+   }
+  },
+  "Status": {
+   "id": "Status",
+   "type": "object",
+   "properties": {
+    "accessLevel": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "contributors": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "format": "int64"
+     }
+    },
+    "createdAt": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "currentUserRetweetId": {
+     "type": "string",
+     "format": "int64"
+    },
+    "favorited": {
+     "type": "boolean"
+    },
+    "geoLocation": {
+     "$ref": "GeoLocation"
+    },
+    "hashtagEntities": {
+     "type": "array",
+     "items": {
+      "$ref": "HashtagEntity"
+     }
+    },
+    "id": {
+     "type": "string",
+     "format": "int64"
+    },
+    "inReplyToScreenName": {
+     "type": "string"
+    },
+    "inReplyToStatusId": {
+     "type": "string",
+     "format": "int64"
+    },
+    "inReplyToUserId": {
+     "type": "string",
+     "format": "int64"
+    },
+    "mediaEntities": {
+     "type": "array",
+     "items": {
+      "$ref": "MediaEntity"
+     }
+    },
+    "place": {
+     "$ref": "Place"
+    },
+    "possiblySensitive": {
+     "type": "boolean"
+    },
+    "rateLimitStatus": {
+     "$ref": "RateLimitStatus"
+    },
+    "retweet": {
+     "type": "boolean"
+    },
+    "retweetCount": {
+     "type": "string",
+     "format": "int64"
+    },
+    "retweetedByMe": {
+     "type": "boolean"
+    },
+    "retweetedStatus": {
+     "$ref": "Status"
+    },
+    "source": {
+     "type": "string"
+    },
+    "text": {
+     "type": "string"
+    },
+    "truncated": {
+     "type": "boolean"
+    },
+    "urlentities": {
+     "type": "array",
+     "items": {
+      "$ref": "URLEntity"
+     }
+    },
+    "user": {
+     "$ref": "User"
+    },
+    "userMentionEntities": {
+     "type": "array",
+     "items": {
+      "$ref": "UserMentionEntity"
+     }
+    }
+   }
+  },
+  "Tweet": {
+   "id": "Tweet",
+   "type": "object",
+   "properties": {
+    "status": {
+     "$ref": "Status"
+    }
+   }
+  },
+  "TweetCollection": {
+   "id": "TweetCollection",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "Tweet"
+     }
+    }
+   }
+  },
+  "URL": {
+   "id": "URL",
+   "type": "object",
+   "properties": {
+    "authority": {
+     "type": "string"
+    },
+    "content": {
+     "type": "any"
+    },
+    "defaultPort": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "file": {
+     "type": "string"
+    },
+    "host": {
+     "type": "string"
+    },
+    "path": {
+     "type": "string"
+    },
+    "port": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "protocol": {
+     "type": "string"
+    },
+    "query": {
+     "type": "string"
+    },
+    "ref": {
+     "type": "string"
+    },
+    "userInfo": {
+     "type": "string"
+    }
+   }
+  },
+  "URLEntity": {
+   "id": "URLEntity",
+   "type": "object",
+   "properties": {
+    "displayURL": {
+     "type": "string"
+    },
+    "end": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "expandedURL": {
+     "type": "string"
+    },
+    "start": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "url": {
+     "type": "string"
+    }
+   }
+  },
+  "User": {
+   "id": "User",
+   "type": "object",
+   "properties": {
+    "accessLevel": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "biggerProfileImageURL": {
+     "type": "string"
+    },
+    "biggerProfileImageURLHttps": {
+     "type": "string"
+    },
+    "contributorsEnabled": {
+     "type": "boolean"
+    },
+    "createdAt": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "description": {
+     "type": "string"
+    },
+    "descriptionURLEntities": {
+     "type": "array",
+     "items": {
+      "$ref": "URLEntity"
+     }
+    },
+    "favouritesCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "followRequestSent": {
+     "type": "boolean"
+    },
+    "followersCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "friendsCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "geoEnabled": {
+     "type": "boolean"
+    },
+    "id": {
+     "type": "string",
+     "format": "int64"
+    },
+    "lang": {
+     "type": "string"
+    },
+    "listedCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "location": {
+     "type": "string"
+    },
+    "miniProfileImageURL": {
+     "type": "string"
+    },
+    "miniProfileImageURLHttps": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "originalProfileImageURL": {
+     "type": "string"
+    },
+    "originalProfileImageURLHttps": {
+     "type": "string"
+    },
+    "profileBackgroundColor": {
+     "type": "string"
+    },
+    "profileBackgroundImageURL": {
+     "type": "string"
+    },
+    "profileBackgroundImageUrl": {
+     "type": "string"
+    },
+    "profileBackgroundImageUrlHttps": {
+     "type": "string"
+    },
+    "profileBackgroundTiled": {
+     "type": "boolean"
+    },
+    "profileBannerIPadRetinaURL": {
+     "type": "string"
+    },
+    "profileBannerIPadURL": {
+     "type": "string"
+    },
+    "profileBannerMobileRetinaURL": {
+     "type": "string"
+    },
+    "profileBannerMobileURL": {
+     "type": "string"
+    },
+    "profileBannerRetinaURL": {
+     "type": "string"
+    },
+    "profileBannerURL": {
+     "type": "string"
+    },
+    "profileImageURL": {
+     "type": "string"
+    },
+    "profileImageURLHttps": {
+     "type": "string"
+    },
+    "profileImageUrlHttps": {
+     "$ref": "URL"
+    },
+    "profileLinkColor": {
+     "type": "string"
+    },
+    "profileSidebarBorderColor": {
+     "type": "string"
+    },
+    "profileSidebarFillColor": {
+     "type": "string"
+    },
+    "profileTextColor": {
+     "type": "string"
+    },
+    "profileUseBackgroundImage": {
+     "type": "boolean"
+    },
+    "protected": {
+     "type": "boolean"
+    },
+    "rateLimitStatus": {
+     "$ref": "RateLimitStatus"
+    },
+    "screenName": {
+     "type": "string"
+    },
+    "showAllInlineMedia": {
+     "type": "boolean"
+    },
+    "status": {
+     "$ref": "Status"
+    },
+    "statusesCount": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "timeZone": {
+     "type": "string"
+    },
+    "translator": {
+     "type": "boolean"
+    },
+    "url": {
+     "type": "string"
+    },
+    "urlentity": {
+     "$ref": "URLEntity"
+    },
+    "utcOffset": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "verified": {
+     "type": "boolean"
+    }
+   }
+  },
+  "UserMentionEntity": {
+   "id": "UserMentionEntity",
+   "type": "object",
+   "properties": {
+    "end": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "id": {
+     "type": "string",
+     "format": "int64"
+    },
+    "name": {
+     "type": "string"
+    },
+    "screenName": {
+     "type": "string"
+    },
+    "start": {
+     "type": "integer",
+     "format": "int32"
+    }
+   }
+  }
+ },
+ "methods": {
+  "getDeviceInfo": {
+   "id": "deviceinfoendpoint.getDeviceInfo",
+   "path": "deviceinfo/{id}",
+   "httpMethod": "GET",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "response": {
+    "$ref": "DeviceInfo"
+   }
+  },
+  "getNewTweets": {
+   "id": "deviceinfoendpoint.getNewTweets",
+   "path": "tweetcollection/{id}",
+   "httpMethod": "GET",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "response": {
+    "$ref": "TweetCollection"
+   }
+  },
+  "insertDeviceInfo": {
+   "id": "deviceinfoendpoint.insertDeviceInfo",
+   "path": "deviceinfo",
+   "httpMethod": "POST",
+   "request": {
+    "$ref": "DeviceInfo",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "DeviceInfo"
+   }
+  },
+  "listDeviceInfo": {
+   "id": "deviceinfoendpoint.listDeviceInfo",
+   "path": "deviceinfo",
+   "httpMethod": "GET",
+   "parameters": {
+    "cursor": {
+     "type": "string",
+     "location": "query"
+    },
+    "limit": {
+     "type": "integer",
+     "format": "int32",
+     "location": "query"
+    }
+   },
+   "response": {
+    "$ref": "CollectionResponse_DeviceInfo"
+   }
+  },
+  "removeDeviceInfo": {
+   "id": "deviceinfoendpoint.removeDeviceInfo",
+   "path": "deviceinfo/{id}",
+   "httpMethod": "DELETE",
+   "parameters": {
+    "id": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "id"
+   ],
+   "response": {
+    "$ref": "DeviceInfo"
+   }
+  },
+  "updateDeviceInfo": {
+   "id": "deviceinfoendpoint.updateDeviceInfo",
+   "path": "deviceinfo",
+   "httpMethod": "PUT",
+   "request": {
+    "$ref": "DeviceInfo",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "DeviceInfo"
+   }
+  }
+ }
+}
