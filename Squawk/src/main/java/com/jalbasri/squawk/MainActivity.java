@@ -2,11 +2,13 @@ package com.jalbasri.squawk;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -27,38 +29,93 @@ import com.google.android.gms.maps.model.LatLng;
 public class MainActivity extends Activity implements
         StatusMapFragment.OnMapFragmentCreatedListener,
         LocationProvider.OnNewLocationListener {
+
     private static final String TAG = MainActivity.class.getName();
 
+    private String mDeviceId;
+    private int mRadius = 1;
+    private boolean mBound = false;
+
+    private static final int REGISTER_SUBACTIVITY = 1;
+    private static final int SHOW_PREFERENCES = 2;
+    private static final String KEY_DEVICE_ID = "device_id";
+    private static final String KEY_ACTION_BAR_INDEX = "action_bar_index";
+    private static final String DEFAULT_DEVICE_ID = "";
+    private static final String DEFAULT_PREF_RADIUS = "1";
+    private static final String MAP_FRAGMENT_TAG = "map_fragment_tag";
+
+    ContentResolver mContentResolver;
     private LocationProvider mLocationProvider;
     private TwitterStatusUpdateService mTwitterStatusUpdateService;
     private StatusMapFragment mStatusMapFragment;
-    private static String ACTION_BAR_INDEX = "ACTION_BAR_INDEX";
-    private TabListener<StatusListFragment> listTabListener;
-    private TabListener<StatusMapFragment> mapTabListener;
+
+    private TabListener<StatusListFragment> mListTabListener;
+    private TabListener<StatusMapFragment> mMapTabListener;
     private ActionBar mActionBar;
-
-    private static final String MAP_FRAGMENT_TAG = "MAP_FRAGMENT_TAG";
-
-    boolean mBound = false;
-
-    ContentResolver contentResolver;
-    private Button reloadButton;
-
-    private static final String DEFAULT_PREF_RADIUS = "1";
-    private static final int SHOW_PREFERENCES = 1;
-    public int radius = 1;
+    private Button mReloadButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         updateFromPreferences();
-        contentResolver = getContentResolver();
+        if (mDeviceId.equals(DEFAULT_DEVICE_ID)) { //Device is not registered.
+            Intent registerIntent = new Intent(this, RegisterActivity.class);
+            startActivityForResult(registerIntent, REGISTER_SUBACTIVITY);
+        }
+
+        //TODO Check Wifi or GPS and prompt user to turn on if off.
+
+    }
+
+    private void updateFromPreferences() {
+        Context context = getApplicationContext();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        //Update Device Registration Id.
+        mDeviceId = sharedPreferences.getString(KEY_DEVICE_ID, DEFAULT_DEVICE_ID);
+        Log.d(TAG, "updateFromPreferences(), Device Registration Id: " + mDeviceId);
+        //Update Radius
+        mRadius = Integer.parseInt(sharedPreferences.getString(SettingsActivity.PREF_RADIUS_LIST, DEFAULT_PREF_RADIUS));
+        Log.d(TAG, "Radius: " + mRadius);
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case REGISTER_SUBACTIVITY:
+                if (resultCode == RESULT_OK) {
+                        showDialog("Successfully registered with endpoint server.");
+                        startMainActivity();
+                } else {
+                        showDialog("Error occurred registering with endpoint server.");
+                }
+            break;
+            case SHOW_PREFERENCES:
+                if (resultCode == RESULT_OK)
+                    updateFromPreferences();
+                break;
+            default: break;
+        }
+    }
+
+    private void startMainActivity() {
+        setContentView(R.layout.activity_main);
+        mContentResolver = getContentResolver();
         //Initialize the ActionBar
         initActionBar();
         mLocationProvider = new LocationProvider(this);
-        //TODO Check Wifi or GPS and prompt user to turn on if off.
+    }
 
+    private void showDialog(String message) {
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        }).show();
     }
 
     @Override
@@ -70,7 +127,7 @@ public class MainActivity extends Activity implements
 
         if (!tabletLayout) {
             SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
-            int actionBarIndex = pref.getInt("ACTION_BAR_INDEX", 0);
+            int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
             getActionBar().setSelectedNavigationItem(actionBarIndex);
             mStatusMapFragment = (StatusMapFragment) getFragmentManager()
                     .findFragmentByTag(StatusMapFragment.class.getName());
@@ -102,7 +159,7 @@ public class MainActivity extends Activity implements
                 return true;
 
             case R.id.action_clear:
-                contentResolver.delete(TwitterStatusContentProvider.CONTENT_URI, null, null);
+                mContentResolver.delete(TwitterStatusContentProvider.CONTENT_URI, null, null);
                 if (mStatusMapFragment != null) {
                     mStatusMapFragment.clearMarkers();
                 }
@@ -121,13 +178,13 @@ public class MainActivity extends Activity implements
         boolean tabletLayout = fragmentContainer == null;
 
         if (!tabletLayout) {
-            listTabListener.fragment = getFragmentManager()
+            mListTabListener.fragment = getFragmentManager()
                     .findFragmentByTag(StatusListFragment.class.getName());
-            mapTabListener.fragment = getFragmentManager()
+            mMapTabListener.fragment = getFragmentManager()
                     .findFragmentByTag(MapFragment.class.getName());
 
             SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
-            int actionBarIndex = pref.getInt("ACTION_BAR_INDEX", 0);
+            int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
             getActionBar().setSelectedNavigationItem(actionBarIndex);
         }
     }
@@ -140,27 +197,7 @@ public class MainActivity extends Activity implements
 
 
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SHOW_PREFERENCES) {
-            if (resultCode == Activity.RESULT_OK) {
-                updateFromPreferences();
-            }
-        }
-    }
 
-    private void updateFromPreferences() {
-        Context context = getApplicationContext();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        //Update Radius
-        Log.d(TAG, "Radius: " + sharedPreferences.getString(SettingsActivity.PREF_RADIUS_LIST, DEFAULT_PREF_RADIUS));
-        radius = Integer.parseInt(sharedPreferences.getString(SettingsActivity.PREF_RADIUS_LIST, DEFAULT_PREF_RADIUS));
-//        if (radiusIndex < 0)
-//            radiusIndex = 0;
-//        String[] radiusValues = getResources().getStringArray(R.array.pref_radius_values);
-//        radius = Integer.valueOf(radiusValues[radiusIndex]);
-
-    }
 
     private void initActionBar() {
         mActionBar = getActionBar();
@@ -177,24 +214,24 @@ public class MainActivity extends Activity implements
             mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
             Tab listTab = mActionBar.newTab();
-            listTabListener = new TabListener<StatusListFragment>
+            mListTabListener = new TabListener<StatusListFragment>
                     (this, StatusListFragment.class, R.id.fragment_container);
             listTab
 //                    .setText("List")
                     .setIcon(R.drawable.collections_view_as_list)
                     .setContentDescription("List of Status Updates")
-                    .setTabListener(listTabListener);
+                    .setTabListener(mListTabListener);
 
             mActionBar.addTab(listTab);
 
             Tab mapTab = mActionBar.newTab();
-            mapTabListener = new TabListener<StatusMapFragment>
+            mMapTabListener = new TabListener<StatusMapFragment>
                     (this, StatusMapFragment.class, R.id.fragment_container);
             mapTab
 //                    .setText("Map")
                     .setIcon(R.drawable.location_map)
                     .setContentDescription("Map of Status Updates")
-                    .setTabListener(mapTabListener);
+                    .setTabListener(mMapTabListener);
 
             mActionBar.addTab(mapTab);
         }
@@ -234,7 +271,7 @@ public class MainActivity extends Activity implements
                 mStatusMapFragment.moveMaptoLocation(
                         new LatLng(location.getLatitude(), location.getLongitude()));
             if (mTwitterStatusUpdateService != null)
-                mTwitterStatusUpdateService.updateTwitterStream(location, radius);
+                mTwitterStatusUpdateService.updateTwitterStream(location, mRadius);
         }
     }
 
@@ -339,14 +376,14 @@ public class MainActivity extends Activity implements
         if (!tabletLayout) {
             int actionBarIndex = getActionBar().getSelectedTab().getPosition();
             SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
-            editor.putInt(ACTION_BAR_INDEX, actionBarIndex);
+            editor.putInt(KEY_ACTION_BAR_INDEX, actionBarIndex);
             editor.apply();
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            if (listTabListener.fragment != null) {
-                transaction.detach(listTabListener.fragment);
+            if (mListTabListener.fragment != null) {
+                transaction.detach(mListTabListener.fragment);
             }
-            if (mapTabListener.fragment != null) {
-                transaction.detach(mapTabListener.fragment);
+            if (mMapTabListener.fragment != null) {
+                transaction.detach(mMapTabListener.fragment);
             }
             transaction.commit();
         }
