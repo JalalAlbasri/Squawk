@@ -62,6 +62,7 @@ public class DeviceInfoEndpoint {
             mgr.close();
         }
         return tweets;
+        //TODO Remove the tweets sent from the datastore
     }
 
     /**

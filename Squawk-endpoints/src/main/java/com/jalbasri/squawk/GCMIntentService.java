@@ -101,7 +101,7 @@ public class GCMIntentService extends GCMBaseIntentService {
             + ("".equals(PROJECT_NUMBER) ? "<unset>"
                 : PROJECT_NUMBER)
             + ")  set correctly, and do you have Google Cloud Messaging enabled for the "
-            + "project?", true, true);
+            + "project?", true, true, null);
   }
 
   /**
@@ -112,7 +112,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     sendNotificationIntent(
         context,
         "Message received via Google Cloud Messaging:\n\n"
-            + intent.getStringExtra("message"), true, false);
+            + intent.getStringExtra("message"), true, false, null);
   }
 
   /**
@@ -180,7 +180,7 @@ public class GCMIntentService extends GCMBaseIntentService {
               + ". Either your Cloud Endpoints server is not deployed to App Engine, or "
               + "your settings need to be changed to run against a local instance "
               + "by setting LOCAL_ANDROID_RUN to 'true' in CloudEndpointUtils.java.",
-          true, true);
+          true, true, null);
       return;
     }
 
@@ -193,7 +193,7 @@ public class GCMIntentService extends GCMBaseIntentService {
             + " succeeded!\n\n"
             + "To send a message to this device, "
             + "open your browser and navigate to the sample application at "
-            + getWebSampleUrl(endpoint.getRootUrl()), false, true);
+            + getWebSampleUrl(endpoint.getRootUrl()), false, true, registration);
   }
 
   /**
@@ -222,7 +222,7 @@ public class GCMIntentService extends GCMBaseIntentService {
                 + "Endpoints server running at "
                 + endpoint.getRootUrl() + "."
                 + "See your Android log for more information.",
-            true, true);
+            true, true, null);
         return;
       }
     }
@@ -232,7 +232,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         "1) De-registration with Google Cloud Messaging....SUCCEEDED!\n\n"
             + "2) De-registration with Endpoints Server...SUCCEEDED!\n\n"
             + "Device de-registration with Cloud Endpoints server running at  "
-            + endpoint.getRootUrl() + " succeeded!", false, true);
+            + endpoint.getRootUrl() + " succeeded!", false, true, registrationId);
   }
 
   /**
@@ -254,13 +254,15 @@ public class GCMIntentService extends GCMBaseIntentService {
    *            true if this message is related to registration/unregistration
    */
   private void sendNotificationIntent(Context context, String message,
-      boolean isError, boolean isRegistrationMessage) {
+      boolean isError, boolean isRegistrationMessage, String registration) {
     Intent notificationIntent = new Intent(context, RegisterActivity.class);
     notificationIntent.putExtra("gcmIntentServiceMessage", true);
     notificationIntent.putExtra("registrationMessage",
         isRegistrationMessage);
     notificationIntent.putExtra("error", isError);
     notificationIntent.putExtra("message", message);
+    if (registration != null)
+        notificationIntent.putExtra("registraionId", registration);
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     startActivity(notificationIntent);
   }

@@ -16,6 +16,20 @@
         <item>50</item>
         <item>100</item>
     </string-array>
+    <string-array name="pref_update_frequency_titles">
+        <item>5s</item>
+        <item>10s</item>
+        <item>30s</item>
+        <item>1m</item>
+        <item>5m</item>
+    </string-array>
+    <string-array name="pref_update_frequency_values">
+        <item>5000</item>
+        <item>10000</item>
+        <item>30000</item>
+        <item>60000</item>
+        <item>300000</item>
+    </string-array>
     <!-- From: file:/home/jalal/workspace/SquawkProject/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values/colors.xml -->
     <color name="common_action_bar_splitter">#d2d2d2</color>
     <color name="common_signin_btn_dark_text_default">@android:color/white</color>
@@ -90,7 +104,10 @@
     <string name="pref_radius_title">Radius</string>
     <!-- From: file:/home/jalal/workspace/SquawkProject/Squawk/src/main/res/values/strings_activity_settings.xml -->
     <string name="pref_summary_radius">Load tweets in given radius</string>
+    <string name="pref_summary_update_frequency">How often to update the Twitter feed</string>
+    <string name="pref_title_auto_update">Auto Update</string>
     <string name="pref_title_radius">Radius</string>
+    <string name="pref_title_update_frequency">Update Frequency</string>
     <string name="title_activity_settings">Settings</string>
     <!-- From: file:/home/jalal/workspace/SquawkProject/Squawk/src/main/res/values/styles.xml -->
     <style name="AppBaseTheme" parent="android:Theme.Light">

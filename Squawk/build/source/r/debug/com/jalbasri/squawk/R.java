@@ -13,6 +13,8 @@ public final class R {
          */
         public static final int pref_radius_titles=0x7f050000;
         public static final int pref_radius_values=0x7f050001;
+        public static final int pref_update_frequency_titles=0x7f050002;
+        public static final int pref_update_frequency_values=0x7f050003;
     }
     public static final class attr {
         /** <p>Must be a floating point value, such as "<code>1.2</code>".
@@ -308,8 +310,11 @@ containing a value of this type.
         /**  From: file:/home/jalal/workspace/SquawkProject/Squawk/src/main/res/values/strings_activity_settings.xml 
          */
         public static final int pref_summary_radius=0x7f09001d;
-        public static final int pref_title_radius=0x7f09001e;
-        public static final int title_activity_settings=0x7f09001f;
+        public static final int pref_summary_update_frequency=0x7f09001e;
+        public static final int pref_title_auto_update=0x7f09001f;
+        public static final int pref_title_radius=0x7f090020;
+        public static final int pref_title_update_frequency=0x7f090021;
+        public static final int title_activity_settings=0x7f090022;
     }
     public static final class style {
         /**  From: file:/home/jalal/workspace/SquawkProject/Squawk/src/main/res/values/styles.xml 

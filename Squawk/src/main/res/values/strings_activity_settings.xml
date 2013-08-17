@@ -21,4 +21,23 @@
         <item>100</item>
     </string-array>
 
+    <string name="pref_title_auto_update">Auto Update</string>
+
+    <string name="pref_title_update_frequency">Update Frequency</string>
+    <string name="pref_summary_update_frequency">How often to update the Twitter feed</string>
+    <string-array name="pref_update_frequency_titles">
+        <item>5s</item>
+        <item>10s</item>
+        <item>30s</item>
+        <item>1m</item>
+        <item>5m</item>
+    </string-array>
+    <string-array name="pref_update_frequency_values">
+        <item>5000</item>
+        <item>10000</item>
+        <item>30000</item>
+        <item>60000</item>
+        <item>300000</item>
+    </string-array>
+
 </resources>

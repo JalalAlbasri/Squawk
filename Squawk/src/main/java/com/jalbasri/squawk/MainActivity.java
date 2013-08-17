@@ -12,6 +12,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Activity;
@@ -26,6 +28,8 @@ import android.widget.Button;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Date;
+
 public class MainActivity extends Activity implements
         StatusMapFragment.OnMapFragmentCreatedListener,
         LocationProvider.OnNewLocationListener {
@@ -33,6 +37,8 @@ public class MainActivity extends Activity implements
     private static final String TAG = MainActivity.class.getName();
 
     private String mDeviceId;
+    private int mRegisteredVersion;
+    private long mDeviceIdExpirationTime;
     private int mRadius = 1;
     private boolean mBound = false;
 
@@ -40,9 +46,14 @@ public class MainActivity extends Activity implements
     private static final int SHOW_PREFERENCES = 2;
     private static final String KEY_DEVICE_ID = "device_id";
     private static final String KEY_ACTION_BAR_INDEX = "action_bar_index";
+    private static final String KEY_DEVICE_ID_EXPIRATION_TIME = "expiration_time";
+    private static final String KEY_REGISTERED_VERSION = "registered_version";
+    private static final String KEY_APP_VERSION = "app_version";
     private static final String DEFAULT_DEVICE_ID = "";
     private static final String DEFAULT_PREF_RADIUS = "1";
     private static final String MAP_FRAGMENT_TAG = "map_fragment_tag";
+    //Default Device Id expiration time set to one week.
+    private static final long DEVICE_ID_EXPIRATION_TIME = 1000 * 3600 * 24 * 7;
 
     ContentResolver mContentResolver;
     private LocationProvider mLocationProvider;
@@ -58,25 +69,68 @@ public class MainActivity extends Activity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         updateFromPreferences();
-        if (mDeviceId.equals(DEFAULT_DEVICE_ID)) { //Device is not registered.
+        setContentView(R.layout.activity_main);
+        mContentResolver = getContentResolver();
+        //Initialize the ActionBar
+        initActionBar();
+        mLocationProvider = new LocationProvider(this);
+        //TODO Check Wifi or GPS and prompt user to turn on if off.
+
+        //TODO Check that Google Play Services exists on device. http://developer.android.com/google/gcm/client.html
+
+        int appVersion = getAppVersion();
+
+        /*
+        If we have no device Id, the app version number has changed since registration or
+        the registration Id has expired, acquire and new registration key.
+         */
+        if (mDeviceId.equals("") || getAppVersion() != mRegisteredVersion ||
+                System.currentTimeMillis() > mDeviceIdExpirationTime) {
+
+            Log.d(TAG, "Device Id not found in Preferences.");
             Intent registerIntent = new Intent(this, RegisterActivity.class);
             startActivityForResult(registerIntent, REGISTER_SUBACTIVITY);
+        } else {
+            Date expirationDate = new Date(mDeviceIdExpirationTime);
+            Log.d(TAG, "Device Already Registered with Id: " + mDeviceId + ". " +
+                    "Registration will expire on " + expirationDate);
         }
 
-        //TODO Check Wifi or GPS and prompt user to turn on if off.
+
+
 
     }
 
     private void updateFromPreferences() {
         Context context = getApplicationContext();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+
         //Update Device Registration Id.
         mDeviceId = sharedPreferences.getString(KEY_DEVICE_ID, DEFAULT_DEVICE_ID);
         Log.d(TAG, "updateFromPreferences(), Device Registration Id: " + mDeviceId);
+
+        //Update Device Registration Id. Expiration
+        mDeviceIdExpirationTime = sharedPreferences.getLong(KEY_DEVICE_ID_EXPIRATION_TIME, -1);
+
+        //Update Registered App Version
+        mRegisteredVersion = sharedPreferences.getInt(KEY_REGISTERED_VERSION, -1);
+
         //Update Radius
-        mRadius = Integer.parseInt(sharedPreferences.getString(SettingsActivity.PREF_RADIUS_LIST, DEFAULT_PREF_RADIUS));
+        mRadius = Integer.parseInt(sharedPreferences
+                .getString(SettingsActivity.PREF_RADIUS_LIST, DEFAULT_PREF_RADIUS));
         Log.d(TAG, "Radius: " + mRadius);
 
+    }
+
+    private int getAppVersion() {
+        try {
+            PackageInfo packageInfo = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException("Could not get package name: " + e);
+        }
     }
 
     @Override
@@ -85,10 +139,17 @@ public class MainActivity extends Activity implements
         switch(requestCode) {
             case REGISTER_SUBACTIVITY:
                 if (resultCode == RESULT_OK) {
-                        showDialog("Successfully registered with endpoint server.");
-                        startMainActivity();
+                    String registrationId = data.getStringExtra("registrationId");
+                    if (registrationId != null) {
+                        setDeviceId(registrationId);
+                        Log.d(TAG, "onActivityResult: RegisterActivity Successful");
+                        showDialog("Successfully registered with endpoint server." +
+                                " Registration Id: " + registrationId);
+                    }
+
                 } else {
-                        showDialog("Error occurred registering with endpoint server.");
+                    Log.d(TAG, "onActivityResult: RegisterActivity Failed");
+                    showDialog("Error occurred registering with endpoint server.");
                 }
             break;
             case SHOW_PREFERENCES:
@@ -99,12 +160,11 @@ public class MainActivity extends Activity implements
         }
     }
 
-    private void startMainActivity() {
-        setContentView(R.layout.activity_main);
-        mContentResolver = getContentResolver();
-        //Initialize the ActionBar
-        initActionBar();
-        mLocationProvider = new LocationProvider(this);
+    private void setDeviceId(String deviceId) {
+        SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
+        editor.putString(KEY_DEVICE_ID, deviceId);
+        editor.apply();
+
     }
 
     private void showDialog(String message) {
@@ -191,13 +251,11 @@ public class MainActivity extends Activity implements
 
     @Override
     protected void onPause() {
-        mLocationProvider.unregisterLocationListeners();
+        if (mLocationProvider != null) {
+            mLocationProvider.unregisterLocationListeners();
+        }
         super.onPause();
     }
-
-
-
-
 
     private void initActionBar() {
         mActionBar = getActionBar();
@@ -238,11 +296,10 @@ public class MainActivity extends Activity implements
     }
 
     public void reloadFeed() {
+        //TODO Rewrite to make a single request from the endpoint for new tweets.
         if (mLocationProvider != null) {
             Log.d(TAG, "reloadFeed()");
-            Location location;
-            location = mLocationProvider.getLocation();
-            Log.d(TAG, "reloadFeed() loc: " + location.toString());
+            Location location = mLocationProvider.getLocation();
             onNewLocation(location);
         }
     }
@@ -251,12 +308,18 @@ public class MainActivity extends Activity implements
     public void onNewLocation(Location location) {
 //        Log.d(TAG, "onNewLocation() loc: " + location.toString());
 
+        if (location != null) {
+            Log.d(TAG, "onNewLocation() loc: " + location.toString());
+        } else {
+            Log.d(TAG, "onNewLocation() location is null");
+        }
+
+
         if (mStatusMapFragment == null) {
             View fragmentContainer = findViewById(R.id.fragment_container);
             boolean tabletLayout = fragmentContainer == null;
 
             if (!tabletLayout) {
-
                 mStatusMapFragment = (StatusMapFragment) getFragmentManager()
                         .findFragmentByTag(StatusMapFragment.class.getName());
             } else {

@@ -146,15 +146,16 @@ public class RegisterActivity extends Activity {
         super.onCreate(savedInstanceState);
         if (GCMIntentService.PROJECT_NUMBER == null
                 || GCMIntentService.PROJECT_NUMBER.length() == 0) {
-            updateState(State.UNREGISTERED);
+            setResult(RESULT_CANCELED);
         } else {
             try {
                 GCMIntentService.register(getApplicationContext());
             } catch (Exception e) {
                 Log.e(RegisterActivity.class.getName(),
                         "Exception received when attempting to register for Google Cloud ", e);
-                updateState(State.UNREGISTERED);
+                setResult(RESULT_CANCELED);
             }
+
         }
 
     /*
@@ -187,29 +188,16 @@ public class RegisterActivity extends Activity {
                 if (intent.getBooleanExtra("error", false)) {
           /*
            * If we get a registration/unregistration-related error,
-           * and we're in the process of registering, then we move
-           * back to the unregistered state. If we're in the process
-           * of unregistering, then we move back to the registered
-           * state.
+           * Return failure code
            */
-                    if (curState == State.REGISTERING) {
-                        updateState(State.UNREGISTERED);
-                    } else {
-                        updateState(State.REGISTERED);
-                    }
+                    setResult(RESULT_CANCELED);
+
                 } else {
           /*
            * If we get a registration/unregistration-related success,
-           * and we're in the process of registering, then we move to
-           * the registered state. If we're in the process of
-           * unregistering, the we move back to the unregistered
-           * state.
+           * Return success code
            */
-                    if (curState == State.REGISTERING) {
-                        updateState(State.REGISTERED);
-                    } else {
-                        updateState(State.UNREGISTERED);
-                    }
+                    setResult(RESULT_OK, intent);
                 }
             }
             else {
@@ -221,37 +209,6 @@ public class RegisterActivity extends Activity {
             }
             finish();
         }
-    }
-
-    private void updateState(State newState) {
-//        Button registerButton = (Button) findViewById(R.id.regButton);
-        switch (newState) {
-            case REGISTERED:
-//                registerButton.setText("Unregister");
-//                registerButton.setOnTouchListener(unregisterListener);
-//                registerButton.setEnabled(true);
-                setResult(Activity.RESULT_OK);
-                break;
-
-            case REGISTERING:
-//                registerButton.setText("Registering...");
-//                registerButton.setEnabled(false);
-
-                break;
-
-            case UNREGISTERED:
-//                registerButton.setText("Register");
-//                registerButton.setOnTouchListener(registerListener);
-//                registerButton.setEnabled(true);
-                setResult(Activity.RESULT_CANCELED);
-                break;
-
-            case UNREGISTERING:
-//                registerButton.setText("Unregistering...");
-//                registerButton.setEnabled(false);
-                break;
-        }
-        curState = newState;
     }
 
 //    private void showDialog(String message) {

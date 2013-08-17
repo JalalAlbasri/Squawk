@@ -15,11 +15,11 @@ public class LocationProvider {
 
     private static final String TAG = LocationProvider.class.getSimpleName();
     private LocationManager mLocationManager;
-    private static int mMinUpdateTime = 0;
-    private static int mMinUpdateDistance = 0;
+    private static int mMinUpdateTime = 5000;
+    private static int mMinUpdateDistance = 1;
     private final Criteria mCriteria = new Criteria();
     private MainActivity mActivity;
-    private OnNewLocationListener mOnNewLicationListener;
+    private OnNewLocationListener mOnNewLocationListener;
     private Location mLocation;
 
     public interface OnNewLocationListener {
@@ -28,7 +28,7 @@ public class LocationProvider {
 
     public LocationProvider(Activity activity) {
         mActivity = (MainActivity) activity;
-        mOnNewLicationListener = mActivity;
+        mOnNewLocationListener = mActivity;
         mLocationManager = (LocationManager)mActivity.getSystemService(Context.LOCATION_SERVICE);
         mCriteria.setAccuracy(Criteria.ACCURACY_FINE);
         mCriteria.setPowerRequirement(Criteria.POWER_LOW);
@@ -60,8 +60,10 @@ public class LocationProvider {
             Log.d(TAG, "No Location Provider on Device");
         } else if (bestProvider.equals(bestAvailableProvider)){
             mLocation = mLocationManager.getLastKnownLocation(bestAvailableProvider);
-            if (mLocation != null)
-                mOnNewLicationListener.onNewLocation(mLocation);
+            if (mLocation != null) {
+                Log.d(TAG, "New Location acquired from: " + bestAvailableProvider + " " + mLocation.toString());
+                mOnNewLocationListener.onNewLocation(mLocation);
+            }
             mLocationManager.requestLocationUpdates(bestAvailableProvider,
                     mMinUpdateTime, mMinUpdateDistance, mLocationListener);
         } else {
@@ -71,7 +73,7 @@ public class LocationProvider {
             if (bestAvailableProvider != null) {
                 mLocation = mLocationManager.getLastKnownLocation(bestAvailableProvider);
                 if (mLocation != null)
-                    mOnNewLicationListener.onNewLocation(mLocation);
+                    mOnNewLocationListener.onNewLocation(mLocation);
                 mLocationManager.requestLocationUpdates(bestAvailableProvider,
                         mMinUpdateTime, mMinUpdateDistance, mLocationListener);
             } else {
@@ -90,7 +92,7 @@ public class LocationProvider {
 
     private LocationListener mLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
-            mOnNewLicationListener.onNewLocation(location);
+            mOnNewLocationListener.onNewLocation(location);
         }
 
         public void onProviderDisabled(String provider) {
