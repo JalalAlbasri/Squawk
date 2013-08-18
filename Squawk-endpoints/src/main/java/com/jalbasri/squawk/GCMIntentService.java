@@ -262,7 +262,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     notificationIntent.putExtra("error", isError);
     notificationIntent.putExtra("message", message);
     if (registration != null)
-        notificationIntent.putExtra("registraionId", registration);
+        notificationIntent.putExtra("registrationId", registration);
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     startActivity(notificationIntent);
   }

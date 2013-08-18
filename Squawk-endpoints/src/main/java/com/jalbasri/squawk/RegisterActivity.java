@@ -53,6 +53,8 @@ import android.widget.TextView;
  */
 public class RegisterActivity extends Activity {
 
+    private static final String TAG = RegisterActivity.class.getSimpleName();
+
     enum State {
         REGISTERED, REGISTERING, UNREGISTERED, UNREGISTERING
     }
@@ -180,7 +182,7 @@ public class RegisterActivity extends Activity {
      * class, then display the provided message.
      */
         if (intent.getBooleanExtra("gcmIntentServiceMessage", false)) {
-
+            Log.d(TAG, "onNewIntent: Registration Message received");
 //            showDialog(intent.getStringExtra("message"));
 
             if (intent.getBooleanExtra("registrationMessage", false)) {
@@ -190,6 +192,7 @@ public class RegisterActivity extends Activity {
            * If we get a registration/unregistration-related error,
            * Return failure code
            */
+                    Log.d(TAG, "onNewIntent: Registration Error, SetResult Canceled");
                     setResult(RESULT_CANCELED);
 
                 } else {
@@ -197,6 +200,7 @@ public class RegisterActivity extends Activity {
            * If we get a registration/unregistration-related success,
            * Return success code
            */
+                    Log.d(TAG, "onNewIntent: Registration Success SetResult OK");
                     setResult(RESULT_OK, intent);
                 }
             }

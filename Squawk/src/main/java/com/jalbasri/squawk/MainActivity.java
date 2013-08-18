@@ -44,13 +44,12 @@ public class MainActivity extends Activity implements
 
     private static final int REGISTER_SUBACTIVITY = 1;
     private static final int SHOW_PREFERENCES = 2;
-    private static final String KEY_DEVICE_ID = "device_id";
-    private static final String KEY_ACTION_BAR_INDEX = "action_bar_index";
-    private static final String KEY_DEVICE_ID_EXPIRATION_TIME = "expiration_time";
-    private static final String KEY_REGISTERED_VERSION = "registered_version";
-    private static final String KEY_APP_VERSION = "app_version";
-    private static final String DEFAULT_DEVICE_ID = "";
-    private static final String DEFAULT_PREF_RADIUS = "1";
+    public static final String KEY_DEVICE_ID = "device_id";
+    public static final String KEY_ACTION_BAR_INDEX = "action_bar_index";
+    public  static final String KEY_DEVICE_ID_EXPIRATION_TIME = "expiration_time";
+    public  static final String KEY_APP_VERSION = "app_version";
+    public  static final String DEFAULT_DEVICE_ID = "";
+    public  static final String DEFAULT_PREF_RADIUS = "1";
     private static final String MAP_FRAGMENT_TAG = "map_fragment_tag";
     //Default Device Id expiration time set to one week.
     private static final long DEVICE_ID_EXPIRATION_TIME = 1000 * 3600 * 24 * 7;
@@ -75,7 +74,6 @@ public class MainActivity extends Activity implements
         initActionBar();
         mLocationProvider = new LocationProvider(this);
         //TODO Check Wifi or GPS and prompt user to turn on if off.
-
         //TODO Check that Google Play Services exists on device. http://developer.android.com/google/gcm/client.html
 
         int appVersion = getAppVersion();
@@ -84,20 +82,28 @@ public class MainActivity extends Activity implements
         If we have no device Id, the app version number has changed since registration or
         the registration Id has expired, acquire and new registration key.
          */
-        if (mDeviceId.equals("") || getAppVersion() != mRegisteredVersion ||
+
+        Log.d(TAG, "[Registration] Checks DeviceId = " + mDeviceId +
+                ", Current App Version = " + getAppVersion() +
+                ", Preferences App Version = " + mRegisteredVersion);
+
+        Log.d(TAG, "[Registration] DeviceId Check: " + (mDeviceId.equals("")) +
+                ", AppVersion Check: " + (appVersion != mRegisteredVersion) +
+                ", ExpirationTime Check: " + (System.currentTimeMillis() > mDeviceIdExpirationTime));
+
+        if (mDeviceId.equals("") || appVersion != mRegisteredVersion ||
                 System.currentTimeMillis() > mDeviceIdExpirationTime) {
 
-            Log.d(TAG, "Device Id not found in Preferences.");
+            Log.d(TAG, "[Registration] Device Id not found in Preferences.");
             Intent registerIntent = new Intent(this, RegisterActivity.class);
             startActivityForResult(registerIntent, REGISTER_SUBACTIVITY);
+
         } else {
+
             Date expirationDate = new Date(mDeviceIdExpirationTime);
-            Log.d(TAG, "Device Already Registered with Id: " + mDeviceId + ". " +
+            Log.d(TAG, "[Registration] Device Already Registered with Id: " + mDeviceId + ". " +
                     "Registration will expire on " + expirationDate);
         }
-
-
-
 
     }
 
@@ -114,7 +120,7 @@ public class MainActivity extends Activity implements
         mDeviceIdExpirationTime = sharedPreferences.getLong(KEY_DEVICE_ID_EXPIRATION_TIME, -1);
 
         //Update Registered App Version
-        mRegisteredVersion = sharedPreferences.getInt(KEY_REGISTERED_VERSION, -1);
+        mRegisteredVersion = sharedPreferences.getInt(KEY_APP_VERSION, -1);
 
         //Update Radius
         mRadius = Integer.parseInt(sharedPreferences
@@ -135,6 +141,7 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
             case REGISTER_SUBACTIVITY:
@@ -142,7 +149,7 @@ public class MainActivity extends Activity implements
                     String registrationId = data.getStringExtra("registrationId");
                     if (registrationId != null) {
                         setDeviceId(registrationId);
-                        Log.d(TAG, "onActivityResult: RegisterActivity Successful");
+                        Log.d(TAG, "[Registration] onActivityResult: RegisterActivity Successful");
                         showDialog("Successfully registered with endpoint server." +
                                 " Registration Id: " + registrationId);
                     }
@@ -161,9 +168,15 @@ public class MainActivity extends Activity implements
     }
 
     private void setDeviceId(String deviceId) {
-        SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
+        Log.d(TAG, "[Registration] setDeviceId, DeviceId = " + deviceId);
+        Context context = getApplicationContext();
+        SharedPreferences.Editor editor = PreferenceManager
+                .getDefaultSharedPreferences(context).edit();
         editor.putString(KEY_DEVICE_ID, deviceId);
-        editor.apply();
+        editor.putInt(KEY_APP_VERSION, getAppVersion());
+        long expirationTime = System.currentTimeMillis() + DEVICE_ID_EXPIRATION_TIME;
+        editor.putLong(KEY_DEVICE_ID_EXPIRATION_TIME, expirationTime);
+        editor.commit();
 
     }
 
@@ -440,7 +453,7 @@ public class MainActivity extends Activity implements
             int actionBarIndex = getActionBar().getSelectedTab().getPosition();
             SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
             editor.putInt(KEY_ACTION_BAR_INDEX, actionBarIndex);
-            editor.apply();
+            editor.commit();
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             if (mListTabListener.fragment != null) {
                 transaction.detach(mListTabListener.fragment);
