@@ -165,6 +165,7 @@ public class GCMIntentService extends GCMBaseIntentService {
                             + " "
                             + android.os.Build.PRODUCT,
                             "UTF-8"))).execute();
+          //TODO Set the location of the device
       }
     } catch (IOException e) {
       Log.e(GCMIntentService.class.getName(),

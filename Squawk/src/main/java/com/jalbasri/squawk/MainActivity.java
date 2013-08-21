@@ -56,7 +56,7 @@ public class MainActivity extends Activity implements
 
     ContentResolver mContentResolver;
     private LocationProvider mLocationProvider;
-    private TwitterStatusUpdateService mTwitterStatusUpdateService;
+//    private TwitterStatusUpdateService mTwitterStatusUpdateService;
     private StatusMapFragment mStatusMapFragment;
 
     private TabListener<StatusListFragment> mListTabListener;
@@ -211,8 +211,10 @@ public class MainActivity extends Activity implements
 
         if (!mBound) {
             //Start Twitter Update Service
-            Intent intent = new Intent(this, TwitterStatusUpdateService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+//            Intent intent = new Intent(this, TwitterStatusUpdateService.class);
+//            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            Intent twitterEndpointServiceIntent = new Intent(this, TwitterEndpointService.class);
+            startService(twitterEndpointServiceIntent);
         }
     }
 
