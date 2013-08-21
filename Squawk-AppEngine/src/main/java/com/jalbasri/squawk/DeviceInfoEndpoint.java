@@ -213,6 +213,7 @@ public class DeviceInfoEndpoint {
         return deviceinfo;
     }
 
+
     /**
      * This method removes the entity with primary key id.
      * It uses HTTP DELETE method.
