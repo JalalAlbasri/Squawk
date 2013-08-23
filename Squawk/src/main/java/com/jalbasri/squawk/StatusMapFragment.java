@@ -18,6 +18,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
+
+import java.util.ArrayList;
+
 
 /*
     Warning, com.google.android.gms.maps.model.LatLng is used
@@ -39,6 +43,36 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     public void moveMaptoLocation(LatLng latLng) {
         if (mGoogleMap != null)
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+    }
+
+    public void clearMarkers() {
+        if (mGoogleMap != null) {
+            mGoogleMap.clear();
+        }
+    }
+
+    public ArrayList<ArrayList<Double>> getMapRegionAsList() {
+        double[][] mapRegion = getMapRegion();
+        ArrayList<Double> sw = new ArrayList<Double>();
+        ArrayList<Double> ne = new ArrayList<Double>();
+        sw.add(mapRegion[0][0]);
+        sw.add(mapRegion[0][1]);
+        ne.add(mapRegion[1][0]);
+        ne.add(mapRegion[1][1]);
+        ArrayList<ArrayList<Double>> result = new ArrayList<ArrayList<Double>>();
+        result.add(sw);
+        result.add(ne);
+        return result;
+    }
+
+    public double[][] getMapRegion() {
+
+        if (mGoogleMap != null) {
+            VisibleRegion visibleRegion = mGoogleMap.getProjection().getVisibleRegion();
+            return new double[][] {{visibleRegion.nearLeft.longitude, visibleRegion.nearLeft.latitude},
+                    {visibleRegion.farRight.longitude, visibleRegion.farRight.latitude}};
+        }
+        return null;
     }
 
     @Override
@@ -66,7 +100,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         if (mGoogleMap == null) {
             initGoogleMap();
         }
-        //TODO Set Zoon Level Here.
+        //TODO Set Zoom Level Here.
     }
 
     private void initGoogleMap() {
@@ -103,12 +137,6 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 .snippet(snippet);
         if (mGoogleMap != null && latLng != null) {
             mGoogleMap.addMarker(markerOptions);
-        }
-    }
-
-    public void clearMarkers() {
-        if (mGoogleMap != null) {
-            mGoogleMap.clear();
         }
     }
 

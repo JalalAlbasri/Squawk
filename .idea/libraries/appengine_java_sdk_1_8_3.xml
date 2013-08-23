@@ -1,0 +1,29 @@
+<component name="libraryTable">
+  <library name="appengine-java-sdk-1.8.3">
+    <CLASSES>
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/docs/spi/javadoc" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/docs/tools/javadoc" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/docs/javadoc" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/docs/testing/javadoc" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/docs/remoteapi/javadoc" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/sticky/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/helloorm/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/guestbook/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/helloorm2/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/helloxmpp/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/mandelbrot/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/mediastore/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/taskengine/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/jdoexamples/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/helloservers/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/shardedcounter/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/taskqueueexamples/src" />
+      <root url="file://$USER_HOME$/appengine-java-sdk-1.8.3/demos/new_project_template/src" />
+    </SOURCES>
+  </library>
+</component>

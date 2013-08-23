@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
@@ -129,6 +130,7 @@ public class GCMIntentService extends GCMBaseIntentService {
      * with the DevAppServer and methods that return null in App Engine 1.7.5.
      */
     boolean alreadyRegisteredWithEndpointServer = false;
+    DeviceInfo deviceInfo = null;
 
     try {
 
@@ -154,7 +156,7 @@ public class GCMIntentService extends GCMBaseIntentService {
          * product information over to the backend. Then, we'll be
          * registered.
          */
-        DeviceInfo deviceInfo = new DeviceInfo();
+        deviceInfo = new DeviceInfo();
         endpoint.insertDeviceInfo(
             deviceInfo
                 .setDeviceRegistrationID(registration)
@@ -165,7 +167,7 @@ public class GCMIntentService extends GCMBaseIntentService {
                             + " "
                             + android.os.Build.PRODUCT,
                             "UTF-8"))).execute();
-          //TODO Set the location of the device
+
       }
     } catch (IOException e) {
       Log.e(GCMIntentService.class.getName(),
@@ -194,7 +196,7 @@ public class GCMIntentService extends GCMBaseIntentService {
             + " succeeded!\n\n"
             + "To send a message to this device, "
             + "open your browser and navigate to the sample application at "
-            + getWebSampleUrl(endpoint.getRootUrl()), false, true, registration);
+            + getWebSampleUrl(endpoint.getRootUrl()), false, true, deviceInfo);
   }
 
   /**
@@ -233,7 +235,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         "1) De-registration with Google Cloud Messaging....SUCCEEDED!\n\n"
             + "2) De-registration with Endpoints Server...SUCCEEDED!\n\n"
             + "Device de-registration with Cloud Endpoints server running at  "
-            + endpoint.getRootUrl() + " succeeded!", false, true, registrationId);
+            + endpoint.getRootUrl() + " succeeded!", false, true, null);
   }
 
   /**
@@ -255,15 +257,20 @@ public class GCMIntentService extends GCMBaseIntentService {
    *            true if this message is related to registration/unregistration
    */
   private void sendNotificationIntent(Context context, String message,
-      boolean isError, boolean isRegistrationMessage, String registration) {
+      boolean isError, boolean isRegistrationMessage, DeviceInfo deviceInfo) {
     Intent notificationIntent = new Intent(context, RegisterActivity.class);
     notificationIntent.putExtra("gcmIntentServiceMessage", true);
     notificationIntent.putExtra("registrationMessage",
         isRegistrationMessage);
     notificationIntent.putExtra("error", isError);
     notificationIntent.putExtra("message", message);
-    if (registration != null)
-        notificationIntent.putExtra("registrationId", registration);
+    if (deviceInfo != null) {
+        Bundle deviceInfoBundle = new Bundle();
+        deviceInfoBundle.putString("deviceInfoId", deviceInfo.getDeviceRegistrationID());
+        deviceInfoBundle.putString("deviceInformation", deviceInfo.getDeviceInformation());
+        deviceInfoBundle.putLong("deviceTimestamp", deviceInfo.getTimestamp());
+        notificationIntent.putExtra("deviceInfoBundle", deviceInfoBundle);
+    }
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     startActivity(notificationIntent);
   }

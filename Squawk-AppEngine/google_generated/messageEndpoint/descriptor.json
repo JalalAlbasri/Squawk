@@ -1,22 +1,29 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/messageEndpoint/v1/20130807055501/java/1.16.0-rc/squawk-android-messageEndpoint-v1-20130807055501-java-1.16.0-rc-sources.jar", 
-      "path": "squawk-android-messageEndpoint-v1-20130807055501-java-1.16.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/messageEndpoint/v1/20130823032235/java/1.16.0-rc/jalbasri.com-messageEndpoint-v1-20130823032235-java-1.16.0-rc-sources.jar", 
+      "path": "jalbasri.com-messageEndpoint-v1-20130823032235-java-1.16.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-08-07 05:55"
+      "timestamp": "2013-08-23 03:22"
     }, 
     {
-      "path": "squawk-android-messageEndpoint-v1-20130807055501-java-1.16.0-rc.jar.properties", 
+      "path": "jalbasri.com-messageEndpoint-v1-20130823032235-java-1.16.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
+  "proguard-config": "proguard-google-api-client.txt", 
   "kind": "discovery#directoryItem", 
   "moduleName": "com.jalbasri.squawk", 
   "name": "messageEndpoint", 
   "language": "java", 
-  "proguard-config": "proguard-google-api-client.txt", 
+  "ownerDomain": "jalbasri.com", 
+  "maven": {
+    "group_id": "com.jalbasri", 
+    "artifact_id": "squawk-messageEndpoint", 
+    "version": "v1-SNAPSHOT"
+  }, 
   "version": "v1", 
+  "ownerName": "jalbasri.com", 
   "dependencies": [
     {
       "files": [
@@ -691,7 +698,7 @@
     }
   ], 
   "language_version": "1.16.0-rc", 
-  "revision": 20130807055501, 
+  "revision": 20130823032235, 
   "id": "messageEndpoint:v1", 
   "modulePath": "com/jalbasri/squawk"
 }

@@ -1,22 +1,29 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/deviceinfoendpoint/v1/20130807055445/java/1.16.0-rc/squawk-android-deviceinfoendpoint-v1-20130807055445-java-1.16.0-rc-sources.jar", 
-      "path": "squawk-android-deviceinfoendpoint-v1-20130807055445-java-1.16.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/deviceinfoendpoint/v1/20130823032218/java/1.16.0-rc/jalbasri.com-deviceinfoendpoint-v1-20130823032218-java-1.16.0-rc-sources.jar", 
+      "path": "jalbasri.com-deviceinfoendpoint-v1-20130823032218-java-1.16.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-08-07 05:54"
+      "timestamp": "2013-08-23 03:22"
     }, 
     {
-      "path": "squawk-android-deviceinfoendpoint-v1-20130807055445-java-1.16.0-rc.jar.properties", 
+      "path": "jalbasri.com-deviceinfoendpoint-v1-20130823032218-java-1.16.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
+  "proguard-config": "proguard-google-api-client.txt", 
   "kind": "discovery#directoryItem", 
   "moduleName": "com.jalbasri.squawk", 
   "name": "deviceinfoendpoint", 
   "language": "java", 
-  "proguard-config": "proguard-google-api-client.txt", 
+  "ownerDomain": "jalbasri.com", 
+  "maven": {
+    "group_id": "com.jalbasri", 
+    "artifact_id": "squawk-deviceinfoendpoint", 
+    "version": "v1-SNAPSHOT"
+  }, 
   "version": "v1", 
+  "ownerName": "jalbasri.com", 
   "dependencies": [
     {
       "files": [
@@ -691,7 +698,7 @@
     }
   ], 
   "language_version": "1.16.0-rc", 
-  "revision": 20130807055445, 
+  "revision": 20130823032218, 
   "id": "deviceinfoendpoint:v1", 
   "modulePath": "com/jalbasri/squawk"
 }

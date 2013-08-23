@@ -92,6 +92,40 @@ public class DeviceInfoEndpoint {
     }
 
     /**
+     * This method is used for updating an existing entity. If the entity does not
+     * exist in the datastore, an exception is thrown.
+     * It uses HTTP PUT method.
+     *
+     * @param deviceinfo the entity to be updated.
+     * @return The updated entity.
+     */
+    @ApiMethod(name = "updateDeviceInfo")
+    public DeviceInfo updateDeviceInfo(DeviceInfo deviceinfo) {
+        EntityManager mgr = getEntityManager();
+        try {
+            if (!containsDeviceInfo(deviceinfo)) {
+                throw new EntityNotFoundException("Object does not exist");
+            }
+            mgr.persist(deviceinfo);
+
+            //If the device updated taken online and there is no twitter task running
+            //Start a twitter task.
+            if (deviceinfo.isOnline()) {
+                Queue twitterQueue = QueueFactory.getQueue("twitter-queue");
+                QueueStatistics queueStatistics = twitterQueue.fetchStatistics();
+                if (queueStatistics.getNumTasks() == 0) {
+                    twitterQueue.add(withUrl("/handleTwitterTask"));
+                }
+            }
+            //Update the online devices in the memcache
+            updateOnlineDevicesMemcache();
+        } finally {
+            mgr.close();
+        }
+        return deviceinfo;
+    }
+
+    /**
      * This method lists all the entities inserted in datastore.
      * It uses HTTP GET method and paging support.
      *
@@ -178,41 +212,6 @@ public class DeviceInfoEndpoint {
         }
         return deviceinfo;
     }
-
-    /**
-     * This method is used for updating an existing entity. If the entity does not
-     * exist in the datastore, an exception is thrown.
-     * It uses HTTP PUT method.
-     *
-     * @param deviceinfo the entity to be updated.
-     * @return The updated entity.
-     */
-    @ApiMethod(name = "updateDeviceInfo")
-    public DeviceInfo updateDeviceInfo(DeviceInfo deviceinfo) {
-        EntityManager mgr = getEntityManager();
-        try {
-            if (!containsDeviceInfo(deviceinfo)) {
-                throw new EntityNotFoundException("Object does not exist");
-            }
-            mgr.persist(deviceinfo);
-
-            //If the device updated taken online and there is no twitter task running
-            //Start a twitter task.
-            if (deviceinfo.isOnline()) {
-                Queue twitterQueue = QueueFactory.getQueue("twitter-queue");
-                QueueStatistics queueStatistics = twitterQueue.fetchStatistics();
-                if (queueStatistics.getNumTasks() == 0) {
-                    twitterQueue.add(withUrl("/handleTwitterTask"));
-                }
-            }
-            //Update the online devices in the memcache
-            updateOnlineDevicesMemcache();
-        } finally {
-            mgr.close();
-        }
-        return deviceinfo;
-    }
-
 
     /**
      * This method removes the entity with primary key id.

@@ -27,8 +27,13 @@ import android.widget.Button;
 
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.jalbasri.squawk.deviceinfoendpoint.model.DeviceInfo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MainActivity extends Activity implements
         StatusMapFragment.OnMapFragmentCreatedListener,
@@ -41,22 +46,30 @@ public class MainActivity extends Activity implements
     private long mDeviceIdExpirationTime;
     private int mRadius = 1;
     private boolean mBound = false;
+    private long mTimestamp;
+    private String mDeviceInformation;
 
     private static final int REGISTER_SUBACTIVITY = 1;
     private static final int SHOW_PREFERENCES = 2;
     public static final String KEY_DEVICE_ID = "device_id";
     public static final String KEY_ACTION_BAR_INDEX = "action_bar_index";
-    public  static final String KEY_DEVICE_ID_EXPIRATION_TIME = "expiration_time";
-    public  static final String KEY_APP_VERSION = "app_version";
-    public  static final String DEFAULT_DEVICE_ID = "";
-    public  static final String DEFAULT_PREF_RADIUS = "1";
+    public static final String KEY_DEVICE_ID_EXPIRATION_TIME = "expiration_time";
+    public static final String KEY_SERVER_DEVICE_INFORMATION = "server_device_information";
+    public static final String KEY_SERVER_DEVICE_TIMESTAMP = "server_device_timestamp";
+    public static final String KEY_APP_VERSION = "app_version";
+    public static final String DEFAULT_DEVICE_ID = "";
+    public static final String DEFAULT_PREF_RADIUS = "1";
+    public static final String DEFAULT_DEVICE_INFORMATION = "";
+    public static final long DEFAULT_DEVICE_TIMESTAMP = -1;
+    public static final long DEFAULT_DEVICE_ID_EXPIRATION_TIME = -1;
+    public static final int DEFAULT_APP_VERSION = -1;
     private static final String MAP_FRAGMENT_TAG = "map_fragment_tag";
     //Default Device Id expiration time set to one week.
     private static final long DEVICE_ID_EXPIRATION_TIME = 1000 * 3600 * 24 * 7;
 
     ContentResolver mContentResolver;
     private LocationProvider mLocationProvider;
-//    private TwitterStatusUpdateService mTwitterStatusUpdateService;
+    private TwitterStatusUpdateService mTwitterStatusUpdateService;
     private StatusMapFragment mStatusMapFragment;
 
     private TabListener<StatusListFragment> mListTabListener;
@@ -82,9 +95,8 @@ public class MainActivity extends Activity implements
         If we have no device Id, the app version number has changed since registration or
         the registration Id has expired, acquire and new registration key.
          */
-
         Log.d(TAG, "[Registration] Checks DeviceId = " + mDeviceId +
-                ", Current App Version = " + getAppVersion() +
+                ", Current App Version = " + appVersion +
                 ", Preferences App Version = " + mRegisteredVersion);
 
         Log.d(TAG, "[Registration] DeviceId Check: " + (mDeviceId.equals("")) +
@@ -99,33 +111,10 @@ public class MainActivity extends Activity implements
             startActivityForResult(registerIntent, REGISTER_SUBACTIVITY);
 
         } else {
-
             Date expirationDate = new Date(mDeviceIdExpirationTime);
             Log.d(TAG, "[Registration] Device Already Registered with Id: " + mDeviceId + ". " +
                     "Registration will expire on " + expirationDate);
         }
-
-    }
-
-    private void updateFromPreferences() {
-        Context context = getApplicationContext();
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-
-        //Update Device Registration Id.
-        mDeviceId = sharedPreferences.getString(KEY_DEVICE_ID, DEFAULT_DEVICE_ID);
-        Log.d(TAG, "updateFromPreferences(), Device Registration Id: " + mDeviceId);
-
-        //Update Device Registration Id. Expiration
-        mDeviceIdExpirationTime = sharedPreferences.getLong(KEY_DEVICE_ID_EXPIRATION_TIME, -1);
-
-        //Update Registered App Version
-        mRegisteredVersion = sharedPreferences.getInt(KEY_APP_VERSION, -1);
-
-        //Update Radius
-        mRadius = Integer.parseInt(sharedPreferences
-                .getString(SettingsActivity.PREF_RADIUS_LIST, DEFAULT_PREF_RADIUS));
-        Log.d(TAG, "Radius: " + mRadius);
 
     }
 
@@ -139,6 +128,34 @@ public class MainActivity extends Activity implements
         }
     }
 
+    private void updateFromPreferences() {
+        Context context = getApplicationContext();
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+
+        //Update Device Registration Id.
+        mDeviceId = sharedPreferences.getString(KEY_DEVICE_ID, DEFAULT_DEVICE_ID);
+        Log.d(TAG, "updateFromPreferences(), Device Registration Id: " + mDeviceId);
+
+        //Update Device Registration Id. Expiration
+        mDeviceIdExpirationTime = sharedPreferences
+                .getLong(KEY_DEVICE_ID_EXPIRATION_TIME, DEFAULT_DEVICE_ID_EXPIRATION_TIME);
+
+        //Update Registered App Version
+        mRegisteredVersion = sharedPreferences.getInt(KEY_APP_VERSION, DEFAULT_APP_VERSION);
+
+        mDeviceInformation = sharedPreferences
+                .getString(KEY_SERVER_DEVICE_INFORMATION, DEFAULT_DEVICE_INFORMATION);
+        mTimestamp = sharedPreferences
+                .getLong(KEY_SERVER_DEVICE_TIMESTAMP, DEFAULT_DEVICE_TIMESTAMP);
+
+        //Update Radius
+        mRadius = Integer.parseInt(sharedPreferences
+                .getString(SettingsActivity.PREF_RADIUS_LIST, DEFAULT_PREF_RADIUS));
+        Log.d(TAG, "Radius: " + mRadius);
+
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult");
@@ -146,12 +163,19 @@ public class MainActivity extends Activity implements
         switch(requestCode) {
             case REGISTER_SUBACTIVITY:
                 if (resultCode == RESULT_OK) {
-                    String registrationId = data.getStringExtra("registrationId");
-                    if (registrationId != null) {
-                        setDeviceId(registrationId);
+
+                    Bundle deviceInfoBundle = data.getBundleExtra("deviceInfoBundle");
+
+                    String deviceId = deviceInfoBundle.getString("deviceInfoId");
+                    String deviceInformation = deviceInfoBundle.getString("deviceInformation");
+                    Long deviceTimestamp =  deviceInfoBundle.getLong("deviceTimestamp");
+
+
+                    if (deviceId != null) {
+                        saveDeviceInfo(deviceId, deviceInformation, deviceTimestamp);
                         Log.d(TAG, "[Registration] onActivityResult: RegisterActivity Successful");
                         showDialog("Successfully registered with endpoint server." +
-                                " Registration Id: " + registrationId);
+                                " Registration Id: " + deviceId);
                     }
 
                 } else {
@@ -167,17 +191,80 @@ public class MainActivity extends Activity implements
         }
     }
 
-    private void setDeviceId(String deviceId) {
+    private void saveDeviceInfo(String deviceId, String deviceInformation, Long deviceTimestamp) {
         Log.d(TAG, "[Registration] setDeviceId, DeviceId = " + deviceId);
         Context context = getApplicationContext();
         SharedPreferences.Editor editor = PreferenceManager
                 .getDefaultSharedPreferences(context).edit();
         editor.putString(KEY_DEVICE_ID, deviceId);
+        editor.putString(KEY_SERVER_DEVICE_INFORMATION, deviceInformation);
+        editor.putLong(KEY_SERVER_DEVICE_TIMESTAMP, deviceTimestamp);
         editor.putInt(KEY_APP_VERSION, getAppVersion());
         long expirationTime = System.currentTimeMillis() + DEVICE_ID_EXPIRATION_TIME;
         editor.putLong(KEY_DEVICE_ID_EXPIRATION_TIME, expirationTime);
         editor.commit();
 
+    }
+
+    /**
+     * Update the deviceInfo taking the device online and explicitly start TwitterEndpointService
+     * to collect any existing tweets on the server.
+     */
+
+    public void updateDeviceInfo(DeviceInfo deviceInfo) {
+
+//        if (location == null && mLocationProvider != null) {
+//            Log.d(TAG, "reloadFeed()");
+//            location = mLocationProvider.getLocation();
+//            onNewLocation(location);
+//        }
+        new UpdateDeviceInfoAsyncTask(this).execute(deviceInfo);
+        startTwitterEndpointService();
+
+    }
+
+    private void startTwitterEndpointService() {
+        Intent twitterEndpointServiceIntent = new Intent(this, TwitterEndpointService.class);
+        startService(twitterEndpointServiceIntent);
+    }
+
+    @Override
+    public void onNewLocation(Location location) {
+
+        if (location != null) {
+            Log.d(TAG, "onNewLocation() loc: " + location.toString());
+        } else {
+            Log.d(TAG, "onNewLocation() location is null");
+        }
+
+        if (mStatusMapFragment == null) {
+            View fragmentContainer = findViewById(R.id.fragment_container);
+            boolean tabletLayout = fragmentContainer == null;
+
+            if (!tabletLayout) {
+                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+                        .findFragmentByTag(StatusMapFragment.class.getName());
+            } else {
+                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+                        .findFragmentById(R.id.map_fragment));
+            }
+        }
+
+        if (location != null) {
+            Log.d(TAG, "onNewLocation(), map fragment null? " + (mStatusMapFragment == null) );
+            if (mStatusMapFragment != null)
+                mStatusMapFragment.moveMaptoLocation(
+                        new LatLng(location.getLatitude(), location.getLongitude()));
+                double[][] mapRegion = mStatusMapFragment.getMapRegion();
+        }
+    }
+
+    private DeviceInfo getBasicDeviceInfo() {
+        updateFromPreferences();
+        return new DeviceInfo()
+                .setDeviceRegistrationID(mDeviceId)
+                .setDeviceInformation(mDeviceInformation)
+                .setTimestamp(mTimestamp);
     }
 
     private void showDialog(String message) {
@@ -209,13 +296,15 @@ public class MainActivity extends Activity implements
                     .findFragmentById(R.id.map_fragment));
         }
 
-        if (!mBound) {
-            //Start Twitter Update Service
+        startTwitterEndpointService();
+
+//        if (!mBound) {
+//            Start Twitter Update Service
 //            Intent intent = new Intent(this, TwitterStatusUpdateService.class);
 //            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-            Intent twitterEndpointServiceIntent = new Intent(this, TwitterEndpointService.class);
-            startService(twitterEndpointServiceIntent);
-        }
+//
+//        }
+
     }
 
     @Override
@@ -240,7 +329,12 @@ public class MainActivity extends Activity implements
                 }
                 return true;
             case R.id.action_reload:
-                reloadFeed();
+                if (mStatusMapFragment != null) {
+                    double[][] mapRegion = mStatusMapFragment.getMapRegion();
+
+//                updateDeviceInfo(getBasicDeviceInfo().setOnline(true)
+
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -307,49 +401,6 @@ public class MainActivity extends Activity implements
                     .setTabListener(mMapTabListener);
 
             mActionBar.addTab(mapTab);
-        }
-    }
-
-    public void reloadFeed() {
-        //TODO Rewrite to make a single request from the endpoint for new tweets.
-        if (mLocationProvider != null) {
-            Log.d(TAG, "reloadFeed()");
-            Location location = mLocationProvider.getLocation();
-            onNewLocation(location);
-        }
-    }
-
-    @Override
-    public void onNewLocation(Location location) {
-//        Log.d(TAG, "onNewLocation() loc: " + location.toString());
-
-        if (location != null) {
-            Log.d(TAG, "onNewLocation() loc: " + location.toString());
-        } else {
-            Log.d(TAG, "onNewLocation() location is null");
-        }
-
-
-        if (mStatusMapFragment == null) {
-            View fragmentContainer = findViewById(R.id.fragment_container);
-            boolean tabletLayout = fragmentContainer == null;
-
-            if (!tabletLayout) {
-                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
-                        .findFragmentByTag(StatusMapFragment.class.getName());
-            } else {
-                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
-                        .findFragmentById(R.id.map_fragment));
-            }
-        }
-
-        if (location != null) {
-            Log.d(TAG, "onNewLocation(), map fragment null? " + (mStatusMapFragment == null) );
-            if (mStatusMapFragment != null)
-                mStatusMapFragment.moveMaptoLocation(
-                        new LatLng(location.getLatitude(), location.getLongitude()));
-            if (mTwitterStatusUpdateService != null)
-                mTwitterStatusUpdateService.updateTwitterStream(location, mRadius);
         }
     }
 
@@ -420,30 +471,30 @@ public class MainActivity extends Activity implements
         }
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d(TAG, "Service Connected");
-            TwitterStatusUpdateService.TwitterServiceBinder binder =
-                    (TwitterStatusUpdateService.TwitterServiceBinder) service;
-            mTwitterStatusUpdateService = binder.getService();
-            mBound = true;
-            reloadFeed();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.d(TAG, "Service Disconnected");
-            mBound = false;
-        }
-    };
-
-    private void unbindFromTwitterService() {
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
-    }
+//    private ServiceConnection mConnection = new ServiceConnection() {
+//        @Override
+//        public void onServiceConnected(ComponentName className, IBinder service) {
+//            Log.d(TAG, "Service Connected");
+//            TwitterStatusUpdateService.TwitterServiceBinder binder =
+//                    (TwitterStatusUpdateService.TwitterServiceBinder) service;
+//            mTwitterStatusUpdateService = binder.getService();
+//            mBound = true;
+//            reloadFeed();
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName arg0) {
+//            Log.d(TAG, "Service Disconnected");
+//            mBound = false;
+//        }
+//    };
+//
+//    private void unbindFromTwitterService() {
+//        if (mBound) {
+//            unbindService(mConnection);
+//            mBound = false;
+//        }
+//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -465,7 +516,10 @@ public class MainActivity extends Activity implements
             }
             transaction.commit();
         }
-        unbindFromTwitterService();
+
+        updateDeviceInfo(getBasicDeviceInfo().setOnline(false));
+
+//        unbindFromTwitterService();
         super.onSaveInstanceState(outState);
 
     }
@@ -474,7 +528,7 @@ public class MainActivity extends Activity implements
     public void onDestroy() {
         //Unbind from Twitter Update Service
         Log.d(TAG, "onDestroy()");
-        unbindFromTwitterService();
+//        unbindFromTwitterService();
         super.onDestroy();
     }
 

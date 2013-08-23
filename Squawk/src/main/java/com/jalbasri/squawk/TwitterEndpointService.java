@@ -65,13 +65,13 @@ public class TwitterEndpointService extends IntentService {
         mDeviceId = prefs.getString(MainActivity.KEY_DEVICE_ID, MainActivity.DEFAULT_DEVICE_ID);
 
         //Set up the endpoint
-        Deviceinfoendpoint.Builder stockpricealertendpointBuilder = new Deviceinfoendpoint.Builder(
+        Deviceinfoendpoint.Builder deviceinfoendpointBuilder = new Deviceinfoendpoint.Builder(
                 AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
                 new HttpRequestInitializer() {
                     public void initialize(HttpRequest httpRequest) {
                     }
                 });
-        deviceinfoendpoint = CloudEndpointUtils.updateBuilder(stockpricealertendpointBuilder).build();
+        deviceinfoendpoint = CloudEndpointUtils.updateBuilder(deviceinfoendpointBuilder).build();
     }
 
     @Override
@@ -86,11 +86,7 @@ public class TwitterEndpointService extends IntentService {
                     .setInexactRepeating(alarmType, timeToRefresh, updateFrequency, alarmIntent);
         } else
             alarmManager.cancel(alarmIntent);
-
         getNewTweets();
-
-        //TODO Connect to endpoint, retrieve new tweets and add them to the database
-
     }
 
     /**

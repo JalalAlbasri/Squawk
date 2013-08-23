@@ -1,8 +1,5 @@
 package com.jalbasri.squawk;
 
-import com.google.api.server.spi.response.CollectionResponse;
-import twitter4j.Status;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -39,41 +36,21 @@ public class DeviceInfo {
      * The map region this device is collecting tweets in
      *
      */
-    private double[][] mapRegion;
+    private MapRegion mapRegion;
 
-    /**
-     * Sets the online flag as true
-     *
-     */
-    public void takeDeviceOnline() {
-        this.online = true;
+    public void setMapRegion(double swlong, double swlat, double nelong, double nelat) {
+        this.mapRegion = new MapRegion(swlong, swlat, nelong, nelat);
     }
 
     /**
-     * Sets the online flag as false
-     *
-     */
-    public void takeDeviceOffline() {
-        this.online = false;
-    }
-
-    /**
-     * Checks if the location passed in is within the map region for this device
-     * @param lat The latitude of the location to check
-     * @param lng The longitude of the location to check
-     * @return true if the location is within the device's map region
-     *
-     */
-    public boolean isInMapRegion(double lat, double lng) {
-        return ((lng >= mapRegion[0][0] && lng <= mapRegion[1][0]) &&
-                (lat >= mapRegion[0][1] && lat <= mapRegion[1][1]));
-    }
-
-    /**
-     * @return the online status of the deivce
+     * @return the online status of the device
      */
     public boolean isOnline() {
         return this.online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 
     /*
