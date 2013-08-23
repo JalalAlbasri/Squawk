@@ -160,6 +160,27 @@
           "timestamp" : {
             "type" : "string",
             "format" : "int64"
+          },
+          "mapRegion" : {
+            "$ref" : "MapRegion"
+          }
+        }
+      },
+      "MapRegion" : {
+        "id" : "MapRegion",
+        "type" : "object",
+        "properties" : {
+          "southWestLongitude" : {
+            "type" : "number"
+          },
+          "southWestLatitude" : {
+            "type" : "number"
+          },
+          "northEastLongitude" : {
+            "type" : "number"
+          },
+          "northEastLatitude" : {
+            "type" : "number"
           }
         }
       },
@@ -193,16 +214,13 @@
               "format" : "int64"
             }
           },
-          "favorited" : {
-            "type" : "boolean"
-          },
-          "user" : {
-            "$ref" : "User"
-          },
           "inReplyToScreenName" : {
             "type" : "string"
           },
-          "inReplyToStatusId" : {
+          "geoLocation" : {
+            "$ref" : "GeoLocation"
+          },
+          "inReplyToUserId" : {
             "type" : "string",
             "format" : "int64"
           },
@@ -216,23 +234,6 @@
             "type" : "string",
             "format" : "int64"
           },
-          "truncated" : {
-            "type" : "boolean"
-          },
-          "geoLocation" : {
-            "$ref" : "GeoLocation"
-          },
-          "place" : {
-            "$ref" : "Place"
-          },
-          "inReplyToUserId" : {
-            "type" : "string",
-            "format" : "int64"
-          },
-          "createdAt" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
           "retweetedByMe" : {
             "type" : "boolean"
           },
@@ -243,11 +244,37 @@
           "possiblySensitive" : {
             "type" : "boolean"
           },
-          "accessLevel" : {
-            "type" : "integer"
+          "user" : {
+            "$ref" : "User"
+          },
+          "truncated" : {
+            "type" : "boolean"
+          },
+          "inReplyToStatusId" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "place" : {
+            "$ref" : "Place"
+          },
+          "favorited" : {
+            "type" : "boolean"
           },
           "rateLimitStatus" : {
             "$ref" : "RateLimitStatus"
+          },
+          "accessLevel" : {
+            "type" : "integer"
+          },
+          "userMentionEntities" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "UserMentionEntity"
+            }
           },
           "urlentities" : {
             "type" : "array",
@@ -266,12 +293,18 @@
             "items" : {
               "$ref" : "MediaEntity"
             }
+          }
+        }
+      },
+      "GeoLocation" : {
+        "id" : "GeoLocation",
+        "type" : "object",
+        "properties" : {
+          "latitude" : {
+            "type" : "number"
           },
-          "userMentionEntities" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "UserMentionEntity"
-            }
+          "longitude" : {
+            "type" : "number"
           }
         }
       },
@@ -298,26 +331,11 @@
           "timeZone" : {
             "type" : "string"
           },
-          "status" : {
-            "$ref" : "Status"
-          },
           "description" : {
             "type" : "string"
           },
-          "contributorsEnabled" : {
-            "type" : "boolean"
-          },
-          "translator" : {
-            "type" : "boolean"
-          },
-          "utcOffset" : {
-            "type" : "integer"
-          },
-          "followersCount" : {
-            "type" : "integer"
-          },
-          "profileBackgroundColor" : {
-            "type" : "string"
+          "status" : {
+            "$ref" : "Status"
           },
           "profileTextColor" : {
             "type" : "string"
@@ -373,14 +391,41 @@
           "profileBackgroundTiled" : {
             "type" : "boolean"
           },
-          "miniProfileImageURL" : {
+          "statusesCount" : {
+            "type" : "integer"
+          },
+          "geoEnabled" : {
+            "type" : "boolean"
+          },
+          "verified" : {
+            "type" : "boolean"
+          },
+          "profileImageURL" : {
             "type" : "string"
+          },
+          "utcOffset" : {
+            "type" : "integer"
           },
           "originalProfileImageURL" : {
             "type" : "string"
           },
           "profileImageUrlHttps" : {
             "$ref" : "URL"
+          },
+          "lang" : {
+            "type" : "string"
+          },
+          "contributorsEnabled" : {
+            "type" : "boolean"
+          },
+          "screenName" : {
+            "type" : "string"
+          },
+          "biggerProfileImageURL" : {
+            "type" : "string"
+          },
+          "miniProfileImageURL" : {
+            "type" : "string"
           },
           "profileImageURLHttps" : {
             "type" : "string"
@@ -394,8 +439,14 @@
           "originalProfileImageURLHttps" : {
             "type" : "string"
           },
-          "statusesCount" : {
+          "followersCount" : {
             "type" : "integer"
+          },
+          "profileBackgroundColor" : {
+            "type" : "string"
+          },
+          "translator" : {
+            "type" : "boolean"
           },
           "listedCount" : {
             "type" : "integer"
@@ -412,33 +463,15 @@
           "urlentity" : {
             "$ref" : "URLEntity"
           },
-          "profileImageURL" : {
-            "type" : "string"
-          },
-          "biggerProfileImageURL" : {
-            "type" : "string"
-          },
           "createdAt" : {
             "type" : "string",
             "format" : "date-time"
           },
-          "geoEnabled" : {
-            "type" : "boolean"
-          },
-          "lang" : {
-            "type" : "string"
-          },
-          "screenName" : {
-            "type" : "string"
-          },
-          "verified" : {
-            "type" : "boolean"
+          "rateLimitStatus" : {
+            "$ref" : "RateLimitStatus"
           },
           "accessLevel" : {
             "type" : "integer"
-          },
-          "rateLimitStatus" : {
-            "$ref" : "RateLimitStatus"
           }
         }
       },
@@ -512,26 +545,14 @@
           "limit" : {
             "type" : "integer"
           },
+          "secondsUntilReset" : {
+            "type" : "integer"
+          },
           "remainingHits" : {
             "type" : "integer"
           },
           "resetTimeInSeconds" : {
             "type" : "integer"
-          },
-          "secondsUntilReset" : {
-            "type" : "integer"
-          }
-        }
-      },
-      "GeoLocation" : {
-        "id" : "GeoLocation",
-        "type" : "object",
-        "properties" : {
-          "latitude" : {
-            "type" : "number"
-          },
-          "longitude" : {
-            "type" : "number"
           }
         }
       },
@@ -554,10 +575,10 @@
           "fullName" : {
             "type" : "string"
           },
-          "streetAddress" : {
+          "placeType" : {
             "type" : "string"
           },
-          "placeType" : {
+          "streetAddress" : {
             "type" : "string"
           },
           "countryCode" : {
@@ -593,11 +614,33 @@
               "$ref" : "Place"
             }
           },
-          "accessLevel" : {
-            "type" : "integer"
-          },
           "rateLimitStatus" : {
             "$ref" : "RateLimitStatus"
+          },
+          "accessLevel" : {
+            "type" : "integer"
+          }
+        }
+      },
+      "UserMentionEntity" : {
+        "id" : "UserMentionEntity",
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "int64"
+          },
+          "end" : {
+            "type" : "integer"
+          },
+          "start" : {
+            "type" : "integer"
+          },
+          "screenName" : {
+            "type" : "string"
           }
         }
       },
@@ -627,14 +670,14 @@
           "type" : {
             "type" : "string"
           },
-          "sizes" : {
-            "$ref" : "JsonMap"
-          },
           "mediaURLHttps" : {
             "type" : "string"
           },
           "mediaURL" : {
             "type" : "string"
+          },
+          "sizes" : {
+            "$ref" : "JsonMap"
           },
           "url" : {
             "type" : "string"
@@ -656,28 +699,6 @@
       "JsonMap" : {
         "id" : "JsonMap",
         "type" : "object"
-      },
-      "UserMentionEntity" : {
-        "id" : "UserMentionEntity",
-        "type" : "object",
-        "properties" : {
-          "name" : {
-            "type" : "string"
-          },
-          "id" : {
-            "type" : "string",
-            "format" : "int64"
-          },
-          "end" : {
-            "type" : "integer"
-          },
-          "start" : {
-            "type" : "integer"
-          },
-          "screenName" : {
-            "type" : "string"
-          }
-        }
       },
       "TweetCollection" : {
         "id" : "TweetCollection",

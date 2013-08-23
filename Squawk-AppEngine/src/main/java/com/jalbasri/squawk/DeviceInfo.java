@@ -33,16 +33,6 @@ public class DeviceInfo {
     private boolean online;
 
     /**
-     * The map region this device is collecting tweets in
-     *
-     */
-    private MapRegion mapRegion;
-
-    public void setMapRegion(double swlong, double swlat, double nelong, double nelat) {
-        this.mapRegion = new MapRegion(swlong, swlat, nelong, nelat);
-    }
-
-    /**
      * @return the online status of the device
      */
     public boolean isOnline() {
@@ -71,6 +61,20 @@ public class DeviceInfo {
      */
     private long timestamp;
 
+    /**
+     * The map region this device is collecting tweets in
+     *
+     */
+    private MapRegion mapRegion;
+
+    public MapRegion getMapRegion() {
+        return mapRegion;
+    }
+
+    public void setMapRegion(MapRegion mapRegion) {
+        this.mapRegion = mapRegion;
+    }
+
     public String getDeviceRegistrationID() {
         return deviceRegistrationID;
     }
@@ -94,4 +98,5 @@ public class DeviceInfo {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
+
 }

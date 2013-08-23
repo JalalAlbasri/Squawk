@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/-lTzu-Ioki7KOeKQRBlBqQq0KBo\"",
+ "etag": "\"VkkzLg1qSf2dHM9_JADuPMcBnRo/LHMj5OFlGh_G6gKekLMrz-MdwIY\"",
  "discoveryVersion": "v1",
  "id": "deviceinfoendpoint:v1",
  "name": "deviceinfoendpoint",
@@ -88,6 +88,9 @@
     "deviceRegistrationID": {
      "type": "string"
     },
+    "mapRegion": {
+     "$ref": "MapRegion"
+    },
     "online": {
      "type": "boolean"
     },
@@ -131,6 +134,28 @@
   "JsonMap": {
    "id": "JsonMap",
    "type": "object"
+  },
+  "MapRegion": {
+   "id": "MapRegion",
+   "type": "object",
+   "properties": {
+    "northEastLatitude": {
+     "type": "number",
+     "format": "double"
+    },
+    "northEastLongitude": {
+     "type": "number",
+     "format": "double"
+    },
+    "southWestLatitude": {
+     "type": "number",
+     "format": "double"
+    },
+    "southWestLongitude": {
+     "type": "number",
+     "format": "double"
+    }
+   }
   },
   "MediaEntity": {
    "id": "MediaEntity",

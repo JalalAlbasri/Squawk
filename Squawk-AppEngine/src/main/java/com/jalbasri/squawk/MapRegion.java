@@ -1,20 +1,18 @@
 package com.jalbasri.squawk;
 
 /**
- * Object represents a rectangular region on the map by defining the South West and North
- * East Corners.
- *
+ * Created by jalal on 23/08/13.
  */
-
 public class MapRegion {
+
 
     private double southWestLongitude;
     private double southWestLatitude;
     private double northEastLongitude;
     private double northEastLatitude;
 
-    public MapRegion(double southWestLongitude, double southWestLatitude,
-                     double northEastLongitude, double northEastLatitude) {
+    public void MapRegion(double southWestLongitude, double southWestLatitude,
+                             double northEastLongitude, double northEastLatitude) {
         this.southWestLongitude = southWestLongitude;
         this.southWestLatitude = southWestLatitude;
         this.northEastLongitude = northEastLongitude;
@@ -47,6 +45,22 @@ public class MapRegion {
 
     public double getNorthEastLatitude() {
         return northEastLatitude;
+    }
+
+    public void setSouthWestLongitude(double southWestLongitude) {
+        this.southWestLongitude = southWestLongitude;
+    }
+
+    public void setSouthWestLatitude(double southWestLatitude) {
+        this.southWestLatitude = southWestLatitude;
+    }
+
+    public void setNorthEastLongitude(double northEastLongitude) {
+        this.northEastLongitude = northEastLongitude;
+    }
+
+    public void setNorthEastLatitude(double northEastLatitude) {
+        this.northEastLatitude = northEastLatitude;
     }
 
 }

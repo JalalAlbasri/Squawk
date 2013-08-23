@@ -216,7 +216,7 @@ public class TwitterServlet extends HttpServlet {
         mgr = getEntityManager();
         try {
             for (DeviceInfo device: onlineDevices) {
-                if (device.isInMapRegion(latitude, longitude)) {
+                if (device.getMapRegion().isInMapRegion(latitude, longitude)) {
                     Tweet tweet = new Tweet (status, device.getDeviceRegistrationID());
                     mgr.persist(tweet);
                 }
