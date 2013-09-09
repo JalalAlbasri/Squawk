@@ -1,7 +1,5 @@
 package com.jalbasri.squawk;
 
-import com.jalbasri.squawk.EMF;
-
 import com.google.appengine.api.memcache.ErrorHandlers;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
@@ -9,6 +7,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.apphosting.api.DeadlineExceededException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,19 +45,19 @@ public class TwitterServlet extends HttpServlet {
      *
      */
     //TODO
-    private static final double[][] entireWorld = {{-180, -90},{180, 90}};
+    private static final double[][] ENTIRE_WORLD = {{-180, -90},{180, 90}};
 
     /**
      * The List of Online Devices
      *
      */
-    private List<DeviceInfo> onlineDevices = null;
+    private List<DeviceInfo> mOnlineDevices = null;
 
     /**
      * Twitter4j configuration options and stream object.
      */
-    private ConfigurationBuilder configurationBuilder;
-    private TwitterStream twitterStream;
+    private ConfigurationBuilder mConfigurationBuilder;
+    private TwitterStream mTwitterStream;
 
     /**
      * Entity Manager
@@ -72,12 +71,12 @@ public class TwitterServlet extends HttpServlet {
         handleTwitterTask(req, resp);
     }
 
-/*    @Override
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         handleTwitterTask(req, resp);
     }
-*/
+
 
     /**
      * Initialize the Twitter4J twitter service and open the twitter stream
@@ -87,10 +86,10 @@ public class TwitterServlet extends HttpServlet {
         System.out.println("TwitterServlet.init()");
 
         super.init(config);
-        enqueueNextTwitterTask();
+        //enqueueNextTwitterTask();
         refreshOnlinceDeviceList();
         initTwitterService();
-        if (!onlineDevices.isEmpty()) {
+        if (!mOnlineDevices.isEmpty()) {
             openTwitterStream();
         }
     }
@@ -113,10 +112,12 @@ public class TwitterServlet extends HttpServlet {
         //Debug
         System.out.println("TwitterServlet.refreshOnlineDeviceList()");
         //Try to retrieve the online devices list from the memcache.
-        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-        syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
-        onlineDevices = (List<DeviceInfo>)syncCache.get(DeviceInfoEndpoint.KEY_ONLINE_DEVICES);
-        if (onlineDevices == null) {
+
+        //MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+        //syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
+        //mOnlineDevices = (List<DeviceInfo>)syncCache.get(DeviceInfoEndpoint.KEY_ONLINE_DEVICES);
+
+        if (mOnlineDevices == null) {
             //If memcache retrieval failed, retrieve list of the online devices from the datastore
 
             try {
@@ -124,27 +125,29 @@ public class TwitterServlet extends HttpServlet {
                 javax.persistence.Query query = mgr
                         .createQuery("select from DeviceInfo as DeviceInfo" +
                                 "where DeviceInfo.online = TRUE");
-                onlineDevices = (List<DeviceInfo>) query.getResultList();
-                syncCache.put(DeviceInfoEndpoint.KEY_ONLINE_DEVICES, onlineDevices);
+                mOnlineDevices = (List<DeviceInfo>) query.getResultList();
+                //syncCache.put(DeviceInfoEndpoint.KEY_ONLINE_DEVICES, mOnlineDevices);
             } finally {
                 mgr.close();
+                System.out.println("Refresh online devices list successful.");
             }
         }
 
     }
 
     private void handleTwitterTask(HttpServletRequest req, HttpServletResponse resp) {
+        System.out.println("handleTwitterTask()");
         try {
             while(true) {
                 refreshOnlinceDeviceList();
-                if(onlineDevices == null || onlineDevices.isEmpty()) {
+                if(mOnlineDevices == null || mOnlineDevices.isEmpty()) {
                     break;
                 }
             }
         } catch (DeadlineExceededException e) {
             logger.log(Level.SEVERE, "Deadline Exceeded Exception" + e.getMessage());
         } finally {
-            twitterStream.cleanUp();
+            mTwitterStream.cleanUp();
             resp.setStatus(HttpServletResponse.SC_OK);
         }
 
@@ -154,19 +157,22 @@ public class TwitterServlet extends HttpServlet {
      * Opens the twitter stream
      */
     private void openTwitterStream() {
+        System.out.println("openTwitterStream()");
         FilterQuery filterQuery = new FilterQuery();
-        filterQuery.locations(entireWorld);
-        twitterStream.filter(filterQuery);
+        filterQuery.locations(ENTIRE_WORLD);
+        mTwitterStream.filter(filterQuery);
+        System.out.println("openTwitterStream() Successful.");
     }
 
     private void initTwitterService() {
-        configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.setDebugEnabled(true)
+        System.out.println("initTwitterService()");
+        mConfigurationBuilder = new ConfigurationBuilder();
+        mConfigurationBuilder.setDebugEnabled(true)
                 .setOAuthConsumerKey("JmPCgGdftlNXuh21WQ7hFA")
                 .setOAuthConsumerSecret("drMLhPvOWs2Crol2LwQuqdKVRTFCVbQlkJQOCrV8uI")
                 .setOAuthAccessToken("72023528-NFWdbv2h4vDVdZC1ML2jNT0gXt9fqZLpMdvtGDjnH")
                 .setOAuthAccessTokenSecret("JW7Y2e8D086oDsU1wpNKgtsPZAwF1TQl5KkMdbHdnQ");
-        twitterStream = new TwitterStreamFactory(configurationBuilder.build()).getInstance();
+        mTwitterStream = new TwitterStreamFactory(mConfigurationBuilder.build()).getInstance();
 
         StatusListener statusListener = new StatusListener() {
 
@@ -207,7 +213,7 @@ public class TwitterServlet extends HttpServlet {
                 logger.log(Level.WARNING, "onTrackLimitationNotice()");
             }
         };
-        twitterStream.addListener(statusListener);
+        mTwitterStream.addListener(statusListener);
     }
 
     private void addNewTwitterStatus(Status status) {
@@ -215,7 +221,7 @@ public class TwitterServlet extends HttpServlet {
         double longitude = status.getGeoLocation().getLongitude();
         mgr = getEntityManager();
         try {
-            for (DeviceInfo device: onlineDevices) {
+            for (DeviceInfo device: mOnlineDevices) {
                 if (device.getMapRegion().isInMapRegion(latitude, longitude)) {
                     Tweet tweet = new Tweet (status, device.getDeviceRegistrationID());
                     mgr.persist(tweet);

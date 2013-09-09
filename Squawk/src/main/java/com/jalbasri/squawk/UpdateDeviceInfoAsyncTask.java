@@ -1,5 +1,7 @@
 package com.jalbasri.squawk;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -23,6 +25,7 @@ public class UpdateDeviceInfoAsyncTask extends AsyncTask<DeviceInfo, Void, Devic
 
     private MainActivity activity;
     private Deviceinfoendpoint deviceinfoendpoint;
+    private Context context;
 
     public UpdateDeviceInfoAsyncTask(MainActivity activity) {
         this.activity = activity;
@@ -32,7 +35,7 @@ public class UpdateDeviceInfoAsyncTask extends AsyncTask<DeviceInfo, Void, Devic
     protected void onPreExecute() {
         //Set up the deviceinfoendpoint
         super.onPreExecute();
-
+        context = activity.getApplicationContext();
         Deviceinfoendpoint.Builder deviceinfoendpointBuilder = new Deviceinfoendpoint.Builder(
                 AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
                 new HttpRequestInitializer() {
@@ -47,6 +50,7 @@ public class UpdateDeviceInfoAsyncTask extends AsyncTask<DeviceInfo, Void, Devic
     protected DeviceInfo doInBackground(DeviceInfo... params) {
         Log.d(TAG, "doInBackground...");
         DeviceInfo deviceInfo = params[0];
+        Log.d(TAG, "DeviceInfoId: " + deviceInfo.getDeviceRegistrationID());
         DeviceInfo resultDeviceInfo = null;
         if (deviceInfo != null) {
             try {
@@ -62,6 +66,8 @@ public class UpdateDeviceInfoAsyncTask extends AsyncTask<DeviceInfo, Void, Devic
     protected void onPostExecute(DeviceInfo result) {
         if (result != null) {
             Log.d(TAG, "Update Device Info Successful");
+            Intent twitterEndpointServiceIntent = new Intent(context, TwitterEndpointService.class);
+            context.startService(twitterEndpointServiceIntent);
         }
     }
 

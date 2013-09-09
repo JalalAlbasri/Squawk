@@ -28,6 +28,7 @@ import android.widget.Button;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.jalbasri.squawk.deviceinfoendpoint.model.DeviceInfo;
+import com.jalbasri.squawk.deviceinfoendpoint.model.MapRegion;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +76,7 @@ public class MainActivity extends Activity implements
     private TabListener<StatusListFragment> mListTabListener;
     private TabListener<StatusMapFragment> mMapTabListener;
     private ActionBar mActionBar;
+    //TODO Remove the reload button.
     private Button mReloadButton;
 
     @Override
@@ -207,8 +209,8 @@ public class MainActivity extends Activity implements
     }
 
     /**
-     * Update the deviceInfo taking the device online and explicitly start TwitterEndpointService
-     * to collect any existing tweets on the server.
+     * Update the deviceInfo taking the device online which in turn
+     * explicitly starts the TwitterEndpointService to collect any existing tweets on the server.
      */
 
     public void updateDeviceInfo(DeviceInfo deviceInfo) {
@@ -218,8 +220,12 @@ public class MainActivity extends Activity implements
 //            location = mLocationProvider.getLocation();
 //            onNewLocation(location);
 //        }
+        updateFromPreferences();
+        deviceInfo.setDeviceRegistrationID(mDeviceId)
+                .setDeviceInformation(mDeviceInformation)
+                .setTimestamp(mTimestamp);
+
         new UpdateDeviceInfoAsyncTask(this).execute(deviceInfo);
-        startTwitterEndpointService();
 
     }
 
@@ -252,19 +258,28 @@ public class MainActivity extends Activity implements
 
         if (location != null) {
             Log.d(TAG, "onNewLocation(), map fragment null? " + (mStatusMapFragment == null) );
-            if (mStatusMapFragment != null)
+            if (mStatusMapFragment != null) {
+
                 mStatusMapFragment.moveMaptoLocation(
                         new LatLng(location.getLatitude(), location.getLongitude()));
-                double[][] mapRegion = mStatusMapFragment.getMapRegion();
-        }
-    }
 
-    private DeviceInfo getBasicDeviceInfo() {
-        updateFromPreferences();
-        return new DeviceInfo()
-                .setDeviceRegistrationID(mDeviceId)
-                .setDeviceInformation(mDeviceInformation)
-                .setTimestamp(mTimestamp);
+                double[][] mapRegion = mStatusMapFragment.getMapRegion();
+                if (mapRegion != null) {
+                    MapRegion deviceInfoMapRegion = new MapRegion();
+                    deviceInfoMapRegion.setSouthWestLongitude(mapRegion[0][0])
+                            .setSouthWestLatitude(mapRegion[0][1])
+                            .setNorthEastLongitude(mapRegion[1][0])
+                            .setNorthEastLatitude(mapRegion[1][1]);
+
+                    DeviceInfo updatedDeviceInfo = new DeviceInfo();
+                    updatedDeviceInfo.setMapRegion(deviceInfoMapRegion)
+                            .setOnline(true);
+
+                    updateDeviceInfo(updatedDeviceInfo);
+                }
+            }
+
+        }
     }
 
     private void showDialog(String message) {
@@ -331,8 +346,22 @@ public class MainActivity extends Activity implements
             case R.id.action_reload:
                 if (mStatusMapFragment != null) {
                     double[][] mapRegion = mStatusMapFragment.getMapRegion();
+                    if (mapRegion != null) {
+                        MapRegion deviceInfoMapRegion = new MapRegion();
+                        deviceInfoMapRegion.setSouthWestLongitude(mapRegion[0][0])
+                                .setSouthWestLatitude(mapRegion[0][1])
+                                .setNorthEastLongitude(mapRegion[1][0])
+                                .setNorthEastLatitude(mapRegion[1][1]);
 
-//                updateDeviceInfo(getBasicDeviceInfo().setOnline(true)
+                        DeviceInfo updatedDeviceInfo = new DeviceInfo();
+                        updatedDeviceInfo.setMapRegion(deviceInfoMapRegion)
+                                .setOnline(true);
+
+                        updateDeviceInfo(updatedDeviceInfo);
+                    }
+                    else {
+                        Log.d(TAG, "action_reload cancelled, could not obtain mapRegion");
+                    }
 
                 }
                 return true;
@@ -517,7 +546,7 @@ public class MainActivity extends Activity implements
             transaction.commit();
         }
 
-        updateDeviceInfo(getBasicDeviceInfo().setOnline(false));
+        updateDeviceInfo(new DeviceInfo().setOnline(false));
 
 //        unbindFromTwitterService();
         super.onSaveInstanceState(outState);

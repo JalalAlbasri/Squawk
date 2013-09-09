@@ -1,13 +1,13 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/messageEndpoint/v1/20130823055010/java/1.16.0-rc/jalbasri.com-messageEndpoint-v1-20130823055010-java-1.16.0-rc-sources.jar", 
-      "path": "jalbasri.com-messageEndpoint-v1-20130823055010-java-1.16.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/messageEndpoint/v1/20130826102415/java/1.16.0-rc/jalbasri.com-messageEndpoint-v1-20130826102415-java-1.16.0-rc-sources.jar", 
+      "path": "jalbasri.com-messageEndpoint-v1-20130826102415-java-1.16.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-08-23 05:50"
+      "timestamp": "2013-08-26 10:24"
     }, 
     {
-      "path": "jalbasri.com-messageEndpoint-v1-20130823055010-java-1.16.0-rc.jar.properties", 
+      "path": "jalbasri.com-messageEndpoint-v1-20130826102415-java-1.16.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -698,7 +698,7 @@
     }
   ], 
   "language_version": "1.16.0-rc", 
-  "revision": 20130823055010, 
+  "revision": 20130826102415, 
   "id": "messageEndpoint:v1", 
   "modulePath": "com/jalbasri/squawk"
 }

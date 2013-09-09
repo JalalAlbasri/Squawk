@@ -16,6 +16,7 @@ import com.google.appengine.datanucleus.query.JPACursorHelper;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -76,14 +77,23 @@ public class DeviceInfoEndpoint {
         try {
             mgr = getEntityManager();
             Query query = mgr
-                    .createQuery("select from DeviceInfo as DeviceInfo" +
-                            "where DeviceInfo.online = TRUE");
+                    .createQuery("select from DeviceInfo as DeviceInfo");
+//            +                            "where DeviceInfo.online = TRUE");
+
             onlineDevices = (List<DeviceInfo>) query.getResultList();
             //Add the online devices list to the memcache
+//            DeviceInfo[] onlineDevicesArray = new DeviceInfo[onlineDevices.size()];
+//            for (int i = 0; i < onlineDevices.size(); i++) {
+//                onlineDevicesArray[i] = onlineDevices.get(i);
+//            }
+
+            ArrayList<DeviceInfo> onlineDevicesArray = new ArrayList<DeviceInfo>(onlineDevices);
+
             MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
             syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
             if (onlineDevices != null) {
-                syncCache.put(KEY_ONLINE_DEVICES, onlineDevices);
+//                DeviceInfo[] onlineDevicesArray = onlineDevices.toArray(new DeviceInfo[0]);
+                syncCache.put(KEY_ONLINE_DEVICES, onlineDevicesArray);
             }
 
         } finally {
@@ -118,7 +128,7 @@ public class DeviceInfoEndpoint {
                 }
             }
             //Update the online devices in the memcache
-            updateOnlineDevicesMemcache();
+//            updateOnlineDevicesMemcache();
         } finally {
             mgr.close();
         }

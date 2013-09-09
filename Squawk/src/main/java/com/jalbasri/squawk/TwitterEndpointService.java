@@ -92,7 +92,6 @@ public class TwitterEndpointService extends IntentService {
     /**
      * Retrieve new tweets for this device from the TwitterEndpoint.
      */
-
     private void getNewTweets() {
         if (!mDeviceId.equals(MainActivity.DEFAULT_DEVICE_ID)) {
             List<Tweet> tweets;

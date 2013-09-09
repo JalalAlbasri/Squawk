@@ -1,13 +1,13 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/deviceinfoendpoint/v1/20130823054944/java/1.16.0-rc/jalbasri.com-deviceinfoendpoint-v1-20130823054944-java-1.16.0-rc-sources.jar", 
-      "path": "jalbasri.com-deviceinfoendpoint-v1-20130823054944-java-1.16.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/deviceinfoendpoint/v1/20130826102359/java/1.16.0-rc/jalbasri.com-deviceinfoendpoint-v1-20130826102359-java-1.16.0-rc-sources.jar", 
+      "path": "jalbasri.com-deviceinfoendpoint-v1-20130826102359-java-1.16.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-08-23 05:49"
+      "timestamp": "2013-08-26 10:24"
     }, 
     {
-      "path": "jalbasri.com-deviceinfoendpoint-v1-20130823054944-java-1.16.0-rc.jar.properties", 
+      "path": "jalbasri.com-deviceinfoendpoint-v1-20130826102359-java-1.16.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -698,7 +698,7 @@
     }
   ], 
   "language_version": "1.16.0-rc", 
-  "revision": 20130823054944, 
+  "revision": 20130826102359, 
   "id": "deviceinfoendpoint:v1", 
   "modulePath": "com/jalbasri/squawk"
 }
