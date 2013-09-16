@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee          http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
     <servlet>
-        <servlet-name>TwitterServlet</servlet-name>
-        <servlet-class>com.jalbasri.squawk.TwitterServlet</servlet-class>
+        <servlet-name>PushTweetServlet</servlet-name>
+        <servlet-class>com.jalbasri.squawk.PushTweetServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>TwitterServlet</servlet-name>
-        <url-pattern>/handleTwitterTask</url-pattern>
+        <servlet-name>PushTweetServlet</servlet-name>
+        <url-pattern>/pushTweet</url-pattern>
     </servlet-mapping>
 
  <servlet>

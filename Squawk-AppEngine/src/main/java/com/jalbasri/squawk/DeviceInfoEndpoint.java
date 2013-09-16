@@ -41,67 +41,6 @@ import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 public class DeviceInfoEndpoint {
 
     /**
-     * A key used to save and retrieve the list of online devices from memcache
-     */
-    public static final String KEY_ONLINE_DEVICES = "online_devices";
-
-    /**
-     * Retrieve the collection of new tweets in datastore to be sent to this device
-     * @param id the device id
-     *
-     */
-    @ApiMethod(name = "getNewTweets")
-    public List<Tweet> getNewTweets(@Named("id") String id) {
-        EntityManager mgr = getEntityManager();
-        List<Tweet> tweets = null;
-        try {
-            Query query = mgr
-                    .createQuery("select from Tweet as Tweet" +
-                            "where Tweet.deviceId = " + id);
-            tweets = (List<Tweet>) query.getResultList();
-        } finally {
-            mgr.close();
-        }
-        return tweets;
-        //TODO Remove the tweets sent from the datastore
-    }
-
-    /**
-     * Queries the database for all online devices and stores the results in memcache
-     * called after deviceInfo updates.
-     *
-     */
-    private void updateOnlineDevicesMemcache() {
-        List<DeviceInfo> onlineDevices = null;
-        EntityManager mgr = null;
-        try {
-            mgr = getEntityManager();
-            Query query = mgr
-                    .createQuery("select from DeviceInfo as DeviceInfo");
-//            +                            "where DeviceInfo.online = TRUE");
-
-            onlineDevices = (List<DeviceInfo>) query.getResultList();
-            //Add the online devices list to the memcache
-//            DeviceInfo[] onlineDevicesArray = new DeviceInfo[onlineDevices.size()];
-//            for (int i = 0; i < onlineDevices.size(); i++) {
-//                onlineDevicesArray[i] = onlineDevices.get(i);
-//            }
-
-            ArrayList<DeviceInfo> onlineDevicesArray = new ArrayList<DeviceInfo>(onlineDevices);
-
-            MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-            syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
-            if (onlineDevices != null) {
-//                DeviceInfo[] onlineDevicesArray = onlineDevices.toArray(new DeviceInfo[0]);
-                syncCache.put(KEY_ONLINE_DEVICES, onlineDevicesArray);
-            }
-
-        } finally {
-            mgr.close();
-        }
-    }
-
-    /**
      * This method is used for updating an existing entity. If the entity does not
      * exist in the datastore, an exception is thrown.
      * It uses HTTP PUT method.
@@ -117,18 +56,6 @@ public class DeviceInfoEndpoint {
                 throw new EntityNotFoundException("Object does not exist");
             }
             mgr.persist(deviceinfo);
-
-            //If the device updated taken online and there is no twitter task running
-            //Start a twitter task.
-            if (deviceinfo.isOnline()) {
-                Queue twitterQueue = QueueFactory.getQueue("twitter-queue");
-                QueueStatistics queueStatistics = twitterQueue.fetchStatistics();
-                if (queueStatistics.getNumTasks() == 0) {
-                    twitterQueue.add(withUrl("/handleTwitterTask"));
-                }
-            }
-            //Update the online devices in the memcache
-//            updateOnlineDevicesMemcache();
         } finally {
             mgr.close();
         }

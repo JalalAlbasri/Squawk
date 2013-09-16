@@ -66,8 +66,8 @@ public class UpdateDeviceInfoAsyncTask extends AsyncTask<DeviceInfo, Void, Devic
     protected void onPostExecute(DeviceInfo result) {
         if (result != null) {
             Log.d(TAG, "Update Device Info Successful");
-            Intent twitterEndpointServiceIntent = new Intent(context, TwitterEndpointService.class);
-            context.startService(twitterEndpointServiceIntent);
+//            Intent twitterEndpointServiceIntent = new Intent(context, TwitterEndpointService.class);
+//            context.startService(twitterEndpointServiceIntent);
         }
     }
 

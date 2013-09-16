@@ -26,23 +26,6 @@ import javax.persistence.Id;
 // DeviceInfoEndpoint has NO AUTHENTICATION - it is an OPEN ENDPOINT!
 public class DeviceInfo {
 
-    /**
-     * Flag to indicate if this device is online and will collect Tweets
-     *
-     */
-    private boolean online;
-
-    /**
-     * @return the online status of the device
-     */
-    public boolean isOnline() {
-        return this.online;
-    }
-
-    public void setOnline(boolean online) {
-        this.online = online;
-    }
-
     /*
      * The Google Cloud Messaging registration token for the device. This token
      * indicates that the device is able to receive messages sent via GCM.
@@ -60,20 +43,6 @@ public class DeviceInfo {
      * Timestamp indicating when this device registered with the application.
      */
     private long timestamp;
-
-    /**
-     * The map region this device is collecting tweets in
-     *
-     */
-    private MapRegion mapRegion;
-
-    public MapRegion getMapRegion() {
-        return mapRegion;
-    }
-
-    public void setMapRegion(MapRegion mapRegion) {
-        this.mapRegion = mapRegion;
-    }
 
     public String getDeviceRegistrationID() {
         return deviceRegistrationID;

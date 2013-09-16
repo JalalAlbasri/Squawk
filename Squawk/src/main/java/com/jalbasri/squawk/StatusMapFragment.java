@@ -69,8 +69,8 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
         if (mGoogleMap != null) {
             VisibleRegion visibleRegion = mGoogleMap.getProjection().getVisibleRegion();
-            return new double[][] {{visibleRegion.nearLeft.longitude, visibleRegion.nearLeft.latitude},
-                    {visibleRegion.farRight.longitude, visibleRegion.farRight.latitude}};
+            return new double[][] {{visibleRegion.nearLeft.latitude, visibleRegion.nearLeft.longitude},
+                    {visibleRegion.farRight.latitude, visibleRegion.farRight.longitude}};
         }
         return null;
     }

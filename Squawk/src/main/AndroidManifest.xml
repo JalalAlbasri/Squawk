@@ -51,11 +51,6 @@
             android:enabled="true"
             android:permission="com.jalbasri.squawk.MY_SERVICE_PERMISSON" />
 
-        <service
-            android:name="com.jalbasri.squawk.TwitterEndpointService"
-            android:enabled="true"
-            android:permission="com.jalbasri.TWITTER_ENDPOINT_SERVICE_PERMISSION" />
-
         <receiver android:name="com.jalbasri.squawk.TwitterUpdateAlarmReceiver">
             <intent-filter>
                 <action android:name="com.jalbasri.squawk.ACTION_UPDATE_TWITTER_ALARM" />

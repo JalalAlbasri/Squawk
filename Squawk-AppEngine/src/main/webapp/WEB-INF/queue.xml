@@ -1,11 +1,9 @@
 <queue-entries>
+  <!--
     <queue>
-        <name>twitter-queue</name>
-        <max-concurrent-requests>1</max-concurrent-requests>
-        <rate>1/s</rate>
-        <bucket-size>1</bucket-size>
-        <retry-parameters>
-            <task-retry-limit>0</task-retry-limit>
-        </retry-parameters>
+        <name>message-queue</name>
+        <rate>20/s</rate>
+        <bucket-size>40</bucket-size>
     </queue>
+    -->
 </queue-entries>

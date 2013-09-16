@@ -18,8 +18,8 @@ public class TwitterUpdateAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive, received alarm broadcast, starting update service....");
-        Intent twitterEndpointServiceIntent = new Intent(context, TwitterEndpointService.class);
-        context.startService(twitterEndpointServiceIntent);
+//        Intent twitterEndpointServiceIntent = new Intent(context, TwitterEndpointService.class);
+//        context.startService(twitterEndpointServiceIntent);
     }
 
 }

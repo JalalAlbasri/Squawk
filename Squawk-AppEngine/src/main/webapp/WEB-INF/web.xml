@@ -6,12 +6,12 @@
          version="2.5">
 
     <servlet>
-        <servlet-name>TwitterServlet</servlet-name>
-        <servlet-class>com.jalbasri.squawk.TwitterServlet</servlet-class>
+        <servlet-name>PushTweetServlet</servlet-name>
+        <servlet-class>com.jalbasri.squawk.PushTweetServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>TwitterServlet</servlet-name>
-        <url-pattern>/handleTwitterTask</url-pattern>
+        <servlet-name>PushTweetServlet</servlet-name>
+        <url-pattern>/pushTweet</url-pattern>
     </servlet-mapping>
 
 </web-app>

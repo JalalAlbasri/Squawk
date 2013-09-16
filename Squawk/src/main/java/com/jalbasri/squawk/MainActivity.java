@@ -5,19 +5,16 @@ import android.app.ActionBar.Tab;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Activity;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -28,13 +25,8 @@ import android.widget.Button;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.jalbasri.squawk.deviceinfoendpoint.model.DeviceInfo;
-import com.jalbasri.squawk.deviceinfoendpoint.model.MapRegion;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 public class MainActivity extends Activity implements
         StatusMapFragment.OnMapFragmentCreatedListener,
@@ -46,7 +38,6 @@ public class MainActivity extends Activity implements
     private int mRegisteredVersion;
     private long mDeviceIdExpirationTime;
     private int mRadius = 1;
-    private boolean mBound = false;
     private long mTimestamp;
     private String mDeviceInformation;
 
@@ -70,7 +61,6 @@ public class MainActivity extends Activity implements
 
     ContentResolver mContentResolver;
     private LocationProvider mLocationProvider;
-    private TwitterStatusUpdateService mTwitterStatusUpdateService;
     private StatusMapFragment mStatusMapFragment;
 
     private TabListener<StatusListFragment> mListTabListener;
@@ -82,17 +72,17 @@ public class MainActivity extends Activity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContentResolver = getContentResolver();
+        int appVersion = getAppVersion();
         updateFromPreferences();
         setContentView(R.layout.activity_main);
-        mContentResolver = getContentResolver();
+
         //Initialize the ActionBar
         initActionBar();
         mLocationProvider = new LocationProvider(this);
         //TODO Check Wifi or GPS and prompt user to turn on if off.
         //TODO Check that Google Play Services exists on device. http://developer.android.com/google/gcm/client.html
-
-        int appVersion = getAppVersion();
-
+        //TODO Remove radius
         /*
         If we have no device Id, the app version number has changed since registration or
         the registration Id has expired, acquire and new registration key.
@@ -100,10 +90,6 @@ public class MainActivity extends Activity implements
         Log.d(TAG, "[Registration] Checks DeviceId = " + mDeviceId +
                 ", Current App Version = " + appVersion +
                 ", Preferences App Version = " + mRegisteredVersion);
-
-        Log.d(TAG, "[Registration] DeviceId Check: " + (mDeviceId.equals("")) +
-                ", AppVersion Check: " + (appVersion != mRegisteredVersion) +
-                ", ExpirationTime Check: " + (System.currentTimeMillis() > mDeviceIdExpirationTime));
 
         if (mDeviceId.equals("") || appVersion != mRegisteredVersion ||
                 System.currentTimeMillis() > mDeviceIdExpirationTime) {
@@ -146,6 +132,7 @@ public class MainActivity extends Activity implements
         //Update Registered App Version
         mRegisteredVersion = sharedPreferences.getInt(KEY_APP_VERSION, DEFAULT_APP_VERSION);
 
+        //Update Server Registration Information
         mDeviceInformation = sharedPreferences
                 .getString(KEY_SERVER_DEVICE_INFORMATION, DEFAULT_DEVICE_INFORMATION);
         mTimestamp = sharedPreferences
@@ -194,7 +181,7 @@ public class MainActivity extends Activity implements
     }
 
     private void saveDeviceInfo(String deviceId, String deviceInformation, Long deviceTimestamp) {
-        Log.d(TAG, "[Registration] setDeviceId, DeviceId = " + deviceId);
+        Log.d(TAG, "[Registration] saveDeviceId, DeviceId = " + deviceId);
         Context context = getApplicationContext();
         SharedPreferences.Editor editor = PreferenceManager
                 .getDefaultSharedPreferences(context).edit();
@@ -207,6 +194,22 @@ public class MainActivity extends Activity implements
         editor.commit();
 
     }
+
+    /**
+     * Add device to Amazon Server
+     */
+    private void addDeviceToAmazon(double[][] mapRegion) {
+        if (mapRegion != null && mDeviceId != null) {
+            new AmazonAddDeviceAsyncTask(this).execute(mDeviceId,
+                    Double.toString(mapRegion[0][0]),
+                    Double.toString(mapRegion[0][1]),
+                    Double.toString(mapRegion[1][0]),
+                    Double.toString(mapRegion[1][1]));
+        }
+    }
+
+
+
 
     /**
      * Update the deviceInfo taking the device online which in turn
@@ -229,10 +232,10 @@ public class MainActivity extends Activity implements
 
     }
 
-    private void startTwitterEndpointService() {
-        Intent twitterEndpointServiceIntent = new Intent(this, TwitterEndpointService.class);
-        startService(twitterEndpointServiceIntent);
-    }
+//    private void startTwitterEndpointService() {
+//        Intent twitterEndpointServiceIntent = new Intent(this, TwitterEndpointService.class);
+//        startService(twitterEndpointServiceIntent);
+//    }
 
     @Override
     public void onNewLocation(Location location) {
@@ -257,7 +260,7 @@ public class MainActivity extends Activity implements
         }
 
         if (location != null) {
-            Log.d(TAG, "onNewLocation(), map fragment null? " + (mStatusMapFragment == null) );
+            Log.d(TAG, "onNewLocation(), map fragment == null: " + (mStatusMapFragment == null) );
             if (mStatusMapFragment != null) {
 
                 mStatusMapFragment.moveMaptoLocation(
@@ -265,17 +268,20 @@ public class MainActivity extends Activity implements
 
                 double[][] mapRegion = mStatusMapFragment.getMapRegion();
                 if (mapRegion != null) {
-                    MapRegion deviceInfoMapRegion = new MapRegion();
-                    deviceInfoMapRegion.setSouthWestLongitude(mapRegion[0][0])
-                            .setSouthWestLatitude(mapRegion[0][1])
-                            .setNorthEastLongitude(mapRegion[1][0])
-                            .setNorthEastLatitude(mapRegion[1][1]);
+                    //TODO Update Amazon Server With New Location.
+                    addDeviceToAmazon(mapRegion);
 
-                    DeviceInfo updatedDeviceInfo = new DeviceInfo();
-                    updatedDeviceInfo.setMapRegion(deviceInfoMapRegion)
-                            .setOnline(true);
+//                    MapRegion deviceInfoMapRegion = new MapRegion();
+//                    deviceInfoMapRegion.setSouthWestLongitude(mapRegion[0][0])
+//                            .setSouthWestLatitude(mapRegion[0][1])
+//                            .setNorthEastLongitude(mapRegion[1][0])
+//                            .setNorthEastLatitude(mapRegion[1][1]);
+//
+//                    DeviceInfo updatedDeviceInfo = new DeviceInfo();
+//                    updatedDeviceInfo.setMapRegion(deviceInfoMapRegion)
+//                            .setOnline(true);
 
-                    updateDeviceInfo(updatedDeviceInfo);
+//                    updateDeviceInfo(updatedDeviceInfo);
                 }
             }
 
@@ -311,8 +317,13 @@ public class MainActivity extends Activity implements
                     .findFragmentById(R.id.map_fragment));
         }
 
-        startTwitterEndpointService();
-
+        if (mStatusMapFragment != null) {
+            double[][] mapRegion = mStatusMapFragment.getMapRegion();
+            if (mapRegion != null) {
+                //TODO Update Amazon Server With new Location (add device).
+                addDeviceToAmazon(mapRegion);
+            }
+        }
 //        if (!mBound) {
 //            Start Twitter Update Service
 //            Intent intent = new Intent(this, TwitterStatusUpdateService.class);
@@ -347,17 +358,19 @@ public class MainActivity extends Activity implements
                 if (mStatusMapFragment != null) {
                     double[][] mapRegion = mStatusMapFragment.getMapRegion();
                     if (mapRegion != null) {
-                        MapRegion deviceInfoMapRegion = new MapRegion();
-                        deviceInfoMapRegion.setSouthWestLongitude(mapRegion[0][0])
-                                .setSouthWestLatitude(mapRegion[0][1])
-                                .setNorthEastLongitude(mapRegion[1][0])
-                                .setNorthEastLatitude(mapRegion[1][1]);
-
-                        DeviceInfo updatedDeviceInfo = new DeviceInfo();
-                        updatedDeviceInfo.setMapRegion(deviceInfoMapRegion)
-                                .setOnline(true);
-
-                        updateDeviceInfo(updatedDeviceInfo);
+                        //TODO Update Amazon Server With new Location (add device).
+                        addDeviceToAmazon(mapRegion);
+//                        MapRegion deviceInfoMapRegion = new MapRegion();
+//                        deviceInfoMapRegion.setSouthWestLongitude(mapRegion[0][0])
+//                                .setSouthWestLatitude(mapRegion[0][1])
+//                                .setNorthEastLongitude(mapRegion[1][0])
+//                                .setNorthEastLatitude(mapRegion[1][1]);
+//
+//                        DeviceInfo updatedDeviceInfo = new DeviceInfo();
+//                        updatedDeviceInfo.setMapRegion(deviceInfoMapRegion)
+//                                .setOnline(true);
+//
+//                        updateDeviceInfo(updatedDeviceInfo);
                     }
                     else {
                         Log.d(TAG, "action_reload cancelled, could not obtain mapRegion");
@@ -395,6 +408,7 @@ public class MainActivity extends Activity implements
         super.onPause();
     }
 
+    //TODO move action bar to its own class
     private void initActionBar() {
         mActionBar = getActionBar();
         mActionBar.setDisplayUseLogoEnabled(false);
@@ -446,7 +460,6 @@ public class MainActivity extends Activity implements
             boolean tabletLayout = fragmentContainer == null;
 
             if (!tabletLayout) {
-
                 mStatusMapFragment = (StatusMapFragment) getFragmentManager()
                         .findFragmentByTag(StatusMapFragment.class.getName());
             } else {
@@ -454,7 +467,6 @@ public class MainActivity extends Activity implements
                         .findFragmentById(R.id.map_fragment));
             }
         }
-        Log.d(TAG, "onMapFragmentCreated() " + "location null? " + (location == null) + " map fragment null? " + (mStatusMapFragment == null));
         if (location != null && mStatusMapFragment != null) {
             mStatusMapFragment.moveMaptoLocation(
                     new LatLng(location.getLatitude(), location.getLongitude()));
@@ -482,48 +494,20 @@ public class MainActivity extends Activity implements
             } else {
                 transaction.attach(fragment);
             }
-
         }
 
         public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
             if (fragment != null) {
                 transaction.detach(fragment);
             }
-
         }
 
         public void onTabReselected(Tab tab, FragmentTransaction transaction) {
             if (fragment != null) {
                 transaction.attach(fragment);
             }
-
         }
     }
-
-//    private ServiceConnection mConnection = new ServiceConnection() {
-//        @Override
-//        public void onServiceConnected(ComponentName className, IBinder service) {
-//            Log.d(TAG, "Service Connected");
-//            TwitterStatusUpdateService.TwitterServiceBinder binder =
-//                    (TwitterStatusUpdateService.TwitterServiceBinder) service;
-//            mTwitterStatusUpdateService = binder.getService();
-//            mBound = true;
-//            reloadFeed();
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName arg0) {
-//            Log.d(TAG, "Service Disconnected");
-//            mBound = false;
-//        }
-//    };
-//
-//    private void unbindFromTwitterService() {
-//        if (mBound) {
-//            unbindService(mConnection);
-//            mBound = false;
-//        }
-//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -545,8 +529,9 @@ public class MainActivity extends Activity implements
             }
             transaction.commit();
         }
+        //TODO Unregsiter from Amazon Server.
 
-        updateDeviceInfo(new DeviceInfo().setOnline(false));
+//        updateDeviceInfo(new DeviceInfo().setOnline(false));
 
 //        unbindFromTwitterService();
         super.onSaveInstanceState(outState);
