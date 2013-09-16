@@ -1,10 +1,6 @@
 package com.jalbasri.squawk;
 
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,11 +16,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.jalbasri.squawk.deviceinfoendpoint.model.DeviceInfo;
 
 import java.util.Date;
 
@@ -62,8 +55,6 @@ public class MainActivity extends Activity implements
     private LocationProvider mLocationProvider;
     private StatusMapFragment mStatusMapFragment;
     private ActionBarManager mActionBarManager;
-
-    private ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,45 +94,6 @@ public class MainActivity extends Activity implements
 
     }
 
-    private int getAppVersion() {
-        try {
-            PackageInfo packageInfo = getPackageManager()
-                    .getPackageInfo(getPackageName(), 0);
-            return packageInfo.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException("Could not get package name: " + e);
-        }
-    }
-
-    private void updateFromPreferences() {
-        Context context = getApplicationContext();
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-
-        //Update Device Registration Id.
-        mDeviceId = sharedPreferences.getString(KEY_DEVICE_ID, DEFAULT_DEVICE_ID);
-        Log.d(TAG, "updateFromPreferences(), Device Registration Id: " + mDeviceId);
-
-        //Update Device Registration Id. Expiration
-        mDeviceIdExpirationTime = sharedPreferences
-                .getLong(KEY_DEVICE_ID_EXPIRATION_TIME, DEFAULT_DEVICE_ID_EXPIRATION_TIME);
-
-        //Update Registered App Version
-        mRegisteredVersion = sharedPreferences.getInt(KEY_APP_VERSION, DEFAULT_APP_VERSION);
-
-        //Update Server Registration Information
-        mDeviceInformation = sharedPreferences
-                .getString(KEY_SERVER_DEVICE_INFORMATION, DEFAULT_DEVICE_INFORMATION);
-        mTimestamp = sharedPreferences
-                .getLong(KEY_SERVER_DEVICE_TIMESTAMP, DEFAULT_DEVICE_TIMESTAMP);
-
-        //Update Radius
-        mRadius = Integer.parseInt(sharedPreferences
-                .getString(SettingsActivity.PREF_RADIUS_LIST, DEFAULT_PREF_RADIUS));
-        Log.d(TAG, "Radius: " + mRadius);
-
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult");
@@ -149,19 +101,10 @@ public class MainActivity extends Activity implements
         switch(requestCode) {
             case REGISTER_SUBACTIVITY:
                 if (resultCode == RESULT_OK) {
-
                     Bundle deviceInfoBundle = data.getBundleExtra("deviceInfoBundle");
-
-                    String deviceId = deviceInfoBundle.getString("deviceInfoId");
-                    String deviceInformation = deviceInfoBundle.getString("deviceInformation");
-                    Long deviceTimestamp =  deviceInfoBundle.getLong("deviceTimestamp");
-
-
-                    if (deviceId != null) {
-                        saveDeviceInfo(deviceId, deviceInformation, deviceTimestamp);
-                        Log.d(TAG, "[Registration] onActivityResult: RegisterActivity Successful");
-                        showDialog("Successfully registered with endpoint server." +
-                                " Registration Id: " + deviceId);
+                    if (deviceInfoBundle != null) {
+                            saveDeviceInfo(deviceInfoBundle);
+                            Log.d(TAG, "[Registration] onActivityResult: RegisterActivity Successful");
                     }
 
                 } else {
@@ -175,21 +118,6 @@ public class MainActivity extends Activity implements
                 break;
             default: break;
         }
-    }
-
-    private void saveDeviceInfo(String deviceId, String deviceInformation, Long deviceTimestamp) {
-        Log.d(TAG, "[Registration] saveDeviceId, DeviceId = " + deviceId);
-        Context context = getApplicationContext();
-        SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(context).edit();
-        editor.putString(KEY_DEVICE_ID, deviceId);
-        editor.putString(KEY_SERVER_DEVICE_INFORMATION, deviceInformation);
-        editor.putLong(KEY_SERVER_DEVICE_TIMESTAMP, deviceTimestamp);
-        editor.putInt(KEY_APP_VERSION, getAppVersion());
-        long expirationTime = System.currentTimeMillis() + DEVICE_ID_EXPIRATION_TIME;
-        editor.putLong(KEY_DEVICE_ID_EXPIRATION_TIME, expirationTime);
-        editor.commit();
-
     }
 
     //TODO move to amazon package
@@ -247,22 +175,6 @@ public class MainActivity extends Activity implements
                 }
             }
 
-        }
-    }
-
-    private void setStatusMapFragment() {
-        View fragmentContainer = findViewById(R.id.fragment_container);
-        boolean tabletLayout = fragmentContainer == null;
-
-        if (!tabletLayout) {
-            SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
-            int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
-            getActionBar().setSelectedNavigationItem(actionBarIndex);
-            mStatusMapFragment = (StatusMapFragment) getFragmentManager()
-                    .findFragmentByTag(StatusMapFragment.class.getName());
-        } else {
-            mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
-                    .findFragmentById(R.id.map_fragment));
         }
     }
 
@@ -365,6 +277,63 @@ public class MainActivity extends Activity implements
         super.onDestroy();
     }
 
+    /*
+     * Helper Functions
+     *
+     */
+
+    private int getAppVersion() {
+        try {
+            PackageInfo packageInfo = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+
+    private void setStatusMapFragment() {
+        View fragmentContainer = findViewById(R.id.fragment_container);
+        boolean tabletLayout = fragmentContainer == null;
+
+        if (!tabletLayout) {
+            SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
+            int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
+            getActionBar().setSelectedNavigationItem(actionBarIndex);
+            mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+                    .findFragmentByTag(StatusMapFragment.class.getName());
+        } else {
+            mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+                    .findFragmentById(R.id.map_fragment));
+        }
+    }
+
+    private void saveDeviceInfo(Bundle deviceInfoBundle) {
+
+        String deviceId = deviceInfoBundle.getString("deviceInfoId");
+        String deviceInformation = deviceInfoBundle.getString("deviceInformation");
+        Long deviceTimestamp =  deviceInfoBundle.getLong("deviceTimestamp");
+
+        Log.d(TAG, "[Registration] saveDeviceId, DeviceId = " + deviceId);
+        Context context = getApplicationContext();
+        SharedPreferences.Editor editor = PreferenceManager
+                .getDefaultSharedPreferences(context).edit();
+
+        editor.putString(KEY_DEVICE_ID, deviceId);
+        editor.putString(KEY_SERVER_DEVICE_INFORMATION, deviceInformation);
+        editor.putLong(KEY_SERVER_DEVICE_TIMESTAMP, deviceTimestamp);
+        editor.putInt(KEY_APP_VERSION, getAppVersion());
+        long expirationTime = System.currentTimeMillis() + DEVICE_ID_EXPIRATION_TIME;
+        editor.putLong(KEY_DEVICE_ID_EXPIRATION_TIME, expirationTime);
+
+        editor.commit();
+
+        showDialog("Successfully registered with endpoint server." +
+                " Registration Id: " + deviceId);
+    }
+
+
     private void showDialog(String message) {
         new AlertDialog.Builder(this)
                 .setMessage(message)
@@ -376,5 +345,34 @@ public class MainActivity extends Activity implements
                         }).show();
     }
 
+
+    private void updateFromPreferences() {
+        Context context = getApplicationContext();
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+
+        //Update Device Registration Id.
+        mDeviceId = sharedPreferences.getString(KEY_DEVICE_ID, DEFAULT_DEVICE_ID);
+        Log.d(TAG, "updateFromPreferences(), Device Registration Id: " + mDeviceId);
+
+        //Update Device Registration Id. Expiration
+        mDeviceIdExpirationTime = sharedPreferences
+                .getLong(KEY_DEVICE_ID_EXPIRATION_TIME, DEFAULT_DEVICE_ID_EXPIRATION_TIME);
+
+        //Update Registered App Version
+        mRegisteredVersion = sharedPreferences.getInt(KEY_APP_VERSION, DEFAULT_APP_VERSION);
+
+        //Update Server Registration Information
+        mDeviceInformation = sharedPreferences
+                .getString(KEY_SERVER_DEVICE_INFORMATION, DEFAULT_DEVICE_INFORMATION);
+        mTimestamp = sharedPreferences
+                .getLong(KEY_SERVER_DEVICE_TIMESTAMP, DEFAULT_DEVICE_TIMESTAMP);
+
+        //Update Radius
+        mRadius = Integer.parseInt(sharedPreferences
+                .getString(SettingsActivity.PREF_RADIUS_LIST, DEFAULT_PREF_RADIUS));
+        Log.d(TAG, "Radius: " + mRadius);
+
+    }
 
 }
