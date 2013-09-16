@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.jalbasri.squawk.amazon.Amazon;
 
 import java.util.Date;
 
@@ -55,6 +56,7 @@ public class MainActivity extends Activity implements
     private LocationProvider mLocationProvider;
     private StatusMapFragment mStatusMapFragment;
     private ActionBarManager mActionBarManager;
+    private Amazon mAmazon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +70,11 @@ public class MainActivity extends Activity implements
         mActionBarManager = new ActionBarManager(this);
         mActionBarManager.initActionBar();
         mLocationProvider = new LocationProvider(this);
+        mAmazon = new Amazon();
         //TODO Check Wifi or GPS and prompt user to turn on if off.
         //TODO Check that Google Play Services exists on device. http://developer.android.com/google/gcm/client.html
         //TODO Remove radius
+        //TODO Update Amazon when the map view changes not just the location
         /*
         If we have no device Id, the app version number has changed since registration or
         the registration Id has expired, acquire and new registration key.
@@ -120,73 +124,35 @@ public class MainActivity extends Activity implements
         }
     }
 
-    //TODO move to amazon package
     /**
-     * Add device to Amazon Server
-     */
-    private void addDeviceToAmazon(double[][] mapRegion) {
-        if (mapRegion != null && mDeviceId != null) {
-            new AmazonAddDeviceAsyncTask(this).execute(mDeviceId,
-                    Double.toString(mapRegion[0][0]),
-                    Double.toString(mapRegion[0][1]),
-                    Double.toString(mapRegion[1][0]),
-                    Double.toString(mapRegion[1][1]));
-        }
-    }
-
-    /**
-     * Update the deviceInfo taking the device online which in turn
-     * explicitly starts the TwitterEndpointService to collect any existing tweets on the server.
+     * Callback called when a new location is acquired in the Location Provider
+     * Moves the map to the new location.
+     * Updates the Amazon Server with the new location.
      */
 
     @Override
     public void onNewLocation(Location location) {
+        setStatusMapFragment();
+        if (location != null && mStatusMapFragment != null && mDeviceId != null) {
+            mStatusMapFragment.moveMaptoLocation(
+                    new LatLng(location.getLatitude(), location.getLongitude()));
 
-        if (location != null) {
-            Log.d(TAG, "onNewLocation() loc: " + location.toString());
-        } else {
-            Log.d(TAG, "onNewLocation() location is null");
-        }
-
-        if (mStatusMapFragment == null) {
-            View fragmentContainer = findViewById(R.id.fragment_container);
-            boolean tabletLayout = fragmentContainer == null;
-
-            if (!tabletLayout) {
-                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
-                        .findFragmentByTag(StatusMapFragment.class.getName());
-            } else {
-                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
-                        .findFragmentById(R.id.map_fragment));
+            double[][] mapRegion = mStatusMapFragment.getMapRegion();
+            if (mapRegion != null) {
+                mAmazon.addDevice(mDeviceId, mapRegion);
             }
-        }
-
-        if (location != null) {
-            Log.d(TAG, "onNewLocation(), map fragment == null: " + (mStatusMapFragment == null) );
-            if (mStatusMapFragment != null) {
-
-                mStatusMapFragment.moveMaptoLocation(
-                        new LatLng(location.getLatitude(), location.getLongitude()));
-
-                double[][] mapRegion = mStatusMapFragment.getMapRegion();
-                if (mapRegion != null) {
-                    //TODO Update Amazon Server With New Location.
-                    addDeviceToAmazon(mapRegion);
-                }
-            }
-
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        mActionBarManager.restoreTabState();
         setStatusMapFragment();
         if (mStatusMapFragment != null) {
             double[][] mapRegion = mStatusMapFragment.getMapRegion();
             if (mapRegion != null) {
-                //TODO Update Amazon Server With new Location (add device).
-                addDeviceToAmazon(mapRegion);
+                mAmazon.addDevice(mDeviceId,mapRegion);
             }
         }
     }
@@ -216,8 +182,7 @@ public class MainActivity extends Activity implements
                 if (mStatusMapFragment != null) {
                     double[][] mapRegion = mStatusMapFragment.getMapRegion();
                     if (mapRegion != null) {
-                        //TODO Update Amazon Server With new Location (add device).
-                        addDeviceToAmazon(mapRegion);
+                        mAmazon.addDevice(mDeviceId,mapRegion);
                     }
                     else {
                         Log.d(TAG, "action_reload cancelled, could not obtain mapRegion");
@@ -232,6 +197,7 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onRestoreInstanceState");
         mActionBarManager.restoreTabState();
     }
 
@@ -264,16 +230,15 @@ public class MainActivity extends Activity implements
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState()");
         mActionBarManager.saveTabState();
-        //TODO Unregister from Amazon Server.
+        mAmazon.removeDevice(mDeviceId);
         super.onSaveInstanceState(outState);
 
     }
 
     @Override
     public void onDestroy() {
-        //Unbind from Twitter Update Service
         Log.d(TAG, "onDestroy()");
-//        unbindFromTwitterService();
+        mAmazon.removeDevice(mDeviceId);
         super.onDestroy();
     }
 
@@ -294,18 +259,20 @@ public class MainActivity extends Activity implements
 
 
     private void setStatusMapFragment() {
-        View fragmentContainer = findViewById(R.id.fragment_container);
-        boolean tabletLayout = fragmentContainer == null;
+        if (mStatusMapFragment == null) {
+            View fragmentContainer = findViewById(R.id.fragment_container);
+            boolean tabletLayout = fragmentContainer == null;
 
-        if (!tabletLayout) {
-            SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
-            int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
-            getActionBar().setSelectedNavigationItem(actionBarIndex);
-            mStatusMapFragment = (StatusMapFragment) getFragmentManager()
-                    .findFragmentByTag(StatusMapFragment.class.getName());
-        } else {
-            mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
-                    .findFragmentById(R.id.map_fragment));
+            if (!tabletLayout) {
+                SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
+                int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
+                getActionBar().setSelectedNavigationItem(actionBarIndex);
+                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+                        .findFragmentByTag(StatusMapFragment.class.getName());
+            } else {
+                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+                        .findFragmentById(R.id.map_fragment));
+            }
         }
     }
 

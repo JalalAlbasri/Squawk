@@ -8,6 +8,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.maps.MapFragment;
@@ -86,6 +87,7 @@ public class ActionBarManager {
     }
 
     public void restoreTabState() {
+        Log.d(TAG, "restoreTabState()");
         View fragmentContainer = mActivity.findViewById(R.id.fragment_container);
         boolean tabletLayout = fragmentContainer == null;
         if (!tabletLayout) {
