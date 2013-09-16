@@ -55,19 +55,15 @@ public class MainActivity extends Activity implements
     public static final long DEFAULT_DEVICE_TIMESTAMP = -1;
     public static final long DEFAULT_DEVICE_ID_EXPIRATION_TIME = -1;
     public static final int DEFAULT_APP_VERSION = -1;
-    private static final String MAP_FRAGMENT_TAG = "map_fragment_tag";
     //Default Device Id expiration time set to one week.
     private static final long DEVICE_ID_EXPIRATION_TIME = 1000 * 3600 * 24 * 7;
 
     ContentResolver mContentResolver;
     private LocationProvider mLocationProvider;
     private StatusMapFragment mStatusMapFragment;
+    private ActionBarManager mActionBarManager;
 
-    private TabListener<StatusListFragment> mListTabListener;
-    private TabListener<StatusMapFragment> mMapTabListener;
     private ActionBar mActionBar;
-    //TODO Remove the reload button.
-    private Button mReloadButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +74,8 @@ public class MainActivity extends Activity implements
         setContentView(R.layout.activity_main);
 
         //Initialize the ActionBar
-        initActionBar();
+        mActionBarManager = new ActionBarManager(this);
+        mActionBarManager.initActionBar();
         mLocationProvider = new LocationProvider(this);
         //TODO Check Wifi or GPS and prompt user to turn on if off.
         //TODO Check that Google Play Services exists on device. http://developer.android.com/google/gcm/client.html
@@ -195,6 +192,7 @@ public class MainActivity extends Activity implements
 
     }
 
+    //TODO move to amazon package
     /**
      * Add device to Amazon Server
      */
@@ -208,34 +206,10 @@ public class MainActivity extends Activity implements
         }
     }
 
-
-
-
     /**
      * Update the deviceInfo taking the device online which in turn
      * explicitly starts the TwitterEndpointService to collect any existing tweets on the server.
      */
-
-    public void updateDeviceInfo(DeviceInfo deviceInfo) {
-
-//        if (location == null && mLocationProvider != null) {
-//            Log.d(TAG, "reloadFeed()");
-//            location = mLocationProvider.getLocation();
-//            onNewLocation(location);
-//        }
-        updateFromPreferences();
-        deviceInfo.setDeviceRegistrationID(mDeviceId)
-                .setDeviceInformation(mDeviceInformation)
-                .setTimestamp(mTimestamp);
-
-        new UpdateDeviceInfoAsyncTask(this).execute(deviceInfo);
-
-    }
-
-//    private void startTwitterEndpointService() {
-//        Intent twitterEndpointServiceIntent = new Intent(this, TwitterEndpointService.class);
-//        startService(twitterEndpointServiceIntent);
-//    }
 
     @Override
     public void onNewLocation(Location location) {
@@ -270,39 +244,13 @@ public class MainActivity extends Activity implements
                 if (mapRegion != null) {
                     //TODO Update Amazon Server With New Location.
                     addDeviceToAmazon(mapRegion);
-
-//                    MapRegion deviceInfoMapRegion = new MapRegion();
-//                    deviceInfoMapRegion.setSouthWestLongitude(mapRegion[0][0])
-//                            .setSouthWestLatitude(mapRegion[0][1])
-//                            .setNorthEastLongitude(mapRegion[1][0])
-//                            .setNorthEastLatitude(mapRegion[1][1]);
-//
-//                    DeviceInfo updatedDeviceInfo = new DeviceInfo();
-//                    updatedDeviceInfo.setMapRegion(deviceInfoMapRegion)
-//                            .setOnline(true);
-
-//                    updateDeviceInfo(updatedDeviceInfo);
                 }
             }
 
         }
     }
 
-    private void showDialog(String message) {
-        new AlertDialog.Builder(this)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        }).show();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
+    private void setStatusMapFragment() {
         View fragmentContainer = findViewById(R.id.fragment_container);
         boolean tabletLayout = fragmentContainer == null;
 
@@ -316,7 +264,12 @@ public class MainActivity extends Activity implements
             mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
                     .findFragmentById(R.id.map_fragment));
         }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        setStatusMapFragment();
         if (mStatusMapFragment != null) {
             double[][] mapRegion = mStatusMapFragment.getMapRegion();
             if (mapRegion != null) {
@@ -324,13 +277,6 @@ public class MainActivity extends Activity implements
                 addDeviceToAmazon(mapRegion);
             }
         }
-//        if (!mBound) {
-//            Start Twitter Update Service
-//            Intent intent = new Intent(this, TwitterStatusUpdateService.class);
-//            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-//
-//        }
-
     }
 
     @Override
@@ -360,17 +306,6 @@ public class MainActivity extends Activity implements
                     if (mapRegion != null) {
                         //TODO Update Amazon Server With new Location (add device).
                         addDeviceToAmazon(mapRegion);
-//                        MapRegion deviceInfoMapRegion = new MapRegion();
-//                        deviceInfoMapRegion.setSouthWestLongitude(mapRegion[0][0])
-//                                .setSouthWestLatitude(mapRegion[0][1])
-//                                .setNorthEastLongitude(mapRegion[1][0])
-//                                .setNorthEastLatitude(mapRegion[1][1]);
-//
-//                        DeviceInfo updatedDeviceInfo = new DeviceInfo();
-//                        updatedDeviceInfo.setMapRegion(deviceInfoMapRegion)
-//                                .setOnline(true);
-//
-//                        updateDeviceInfo(updatedDeviceInfo);
                     }
                     else {
                         Log.d(TAG, "action_reload cancelled, could not obtain mapRegion");
@@ -385,19 +320,7 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        View fragmentContainer = findViewById(R.id.fragment_container);
-        boolean tabletLayout = fragmentContainer == null;
-
-        if (!tabletLayout) {
-            mListTabListener.fragment = getFragmentManager()
-                    .findFragmentByTag(StatusListFragment.class.getName());
-            mMapTabListener.fragment = getFragmentManager()
-                    .findFragmentByTag(MapFragment.class.getName());
-
-            SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
-            int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
-            getActionBar().setSelectedNavigationItem(actionBarIndex);
-        }
+        mActionBarManager.restoreTabState();
     }
 
     @Override
@@ -406,45 +329,6 @@ public class MainActivity extends Activity implements
             mLocationProvider.unregisterLocationListeners();
         }
         super.onPause();
-    }
-
-    //TODO move action bar to its own class
-    private void initActionBar() {
-        mActionBar = getActionBar();
-        mActionBar.setDisplayUseLogoEnabled(false);
-        mActionBar.setDisplayShowHomeEnabled(false);
-        mActionBar.setDisplayShowTitleEnabled(false);
-        //TODO: Enable up navigation on icon in actionbar
-        //mActionBar.setDisplayHomeAsUpEnabled(true);
-
-        View fragmentContainer = findViewById(R.id.fragment_container);
-        boolean tabletLayout = fragmentContainer == null;
-
-        if (!tabletLayout) {
-            mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-            Tab listTab = mActionBar.newTab();
-            mListTabListener = new TabListener<StatusListFragment>
-                    (this, StatusListFragment.class, R.id.fragment_container);
-            listTab
-//                    .setText("List")
-                    .setIcon(R.drawable.collections_view_as_list)
-                    .setContentDescription("List of Status Updates")
-                    .setTabListener(mListTabListener);
-
-            mActionBar.addTab(listTab);
-
-            Tab mapTab = mActionBar.newTab();
-            mMapTabListener = new TabListener<StatusMapFragment>
-                    (this, StatusMapFragment.class, R.id.fragment_container);
-            mapTab
-//                    .setText("Map")
-                    .setIcon(R.drawable.location_map)
-                    .setContentDescription("Map of Status Updates")
-                    .setTabListener(mMapTabListener);
-
-            mActionBar.addTab(mapTab);
-        }
     }
 
     /**
@@ -456,16 +340,7 @@ public class MainActivity extends Activity implements
 
         Location location = mLocationProvider.getLocation();
         if (mStatusMapFragment == null) {
-            View fragmentContainer = findViewById(R.id.fragment_container);
-            boolean tabletLayout = fragmentContainer == null;
-
-            if (!tabletLayout) {
-                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
-                        .findFragmentByTag(StatusMapFragment.class.getName());
-            } else {
-                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
-                        .findFragmentById(R.id.map_fragment));
-            }
+            setStatusMapFragment();
         }
         if (location != null && mStatusMapFragment != null) {
             mStatusMapFragment.moveMaptoLocation(
@@ -473,67 +348,11 @@ public class MainActivity extends Activity implements
         }
     }
 
-    public class TabListener<T extends Fragment> implements ActionBar.TabListener {
-        private Fragment fragment;
-        private Activity activity;
-        private Class<T> fragmentClass;
-        private int fragmentContainer;
-
-        public TabListener(Activity activity, Class<T> fragmentClass, int fragmentContainer) {
-            this.activity = activity;
-            this.fragmentClass = fragmentClass;
-            this.fragmentContainer = fragmentContainer;
-        }
-
-        public void onTabSelected(Tab tab, FragmentTransaction transaction) {
-
-            if (fragment == null) {
-                String fragmentName = fragmentClass.getName();
-                fragment = Fragment.instantiate(activity, fragmentName);
-                transaction.add(fragmentContainer, fragment, fragmentName);
-            } else {
-                transaction.attach(fragment);
-            }
-        }
-
-        public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
-            if (fragment != null) {
-                transaction.detach(fragment);
-            }
-        }
-
-        public void onTabReselected(Tab tab, FragmentTransaction transaction) {
-            if (fragment != null) {
-                transaction.attach(fragment);
-            }
-        }
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState()");
-        View fragmentContainer = findViewById(R.id.fragment_container);
-        boolean tabletLayout = fragmentContainer == null;
-
-        if (!tabletLayout) {
-            int actionBarIndex = getActionBar().getSelectedTab().getPosition();
-            SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
-            editor.putInt(KEY_ACTION_BAR_INDEX, actionBarIndex);
-            editor.commit();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            if (mListTabListener.fragment != null) {
-                transaction.detach(mListTabListener.fragment);
-            }
-            if (mMapTabListener.fragment != null) {
-                transaction.detach(mMapTabListener.fragment);
-            }
-            transaction.commit();
-        }
-        //TODO Unregsiter from Amazon Server.
-
-//        updateDeviceInfo(new DeviceInfo().setOnline(false));
-
-//        unbindFromTwitterService();
+        mActionBarManager.saveTabState();
+        //TODO Unregister from Amazon Server.
         super.onSaveInstanceState(outState);
 
     }
@@ -545,5 +364,17 @@ public class MainActivity extends Activity implements
 //        unbindFromTwitterService();
         super.onDestroy();
     }
+
+    private void showDialog(String message) {
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+    }
+
 
 }

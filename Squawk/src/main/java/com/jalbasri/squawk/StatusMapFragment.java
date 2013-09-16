@@ -51,20 +51,6 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         }
     }
 
-    public ArrayList<ArrayList<Double>> getMapRegionAsList() {
-        double[][] mapRegion = getMapRegion();
-        ArrayList<Double> sw = new ArrayList<Double>();
-        ArrayList<Double> ne = new ArrayList<Double>();
-        sw.add(mapRegion[0][0]);
-        sw.add(mapRegion[0][1]);
-        ne.add(mapRegion[1][0]);
-        ne.add(mapRegion[1][1]);
-        ArrayList<ArrayList<Double>> result = new ArrayList<ArrayList<Double>>();
-        result.add(sw);
-        result.add(ne);
-        return result;
-    }
-
     public double[][] getMapRegion() {
 
         if (mGoogleMap != null) {

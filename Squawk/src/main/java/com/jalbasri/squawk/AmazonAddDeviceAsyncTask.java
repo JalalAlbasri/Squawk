@@ -25,6 +25,7 @@ public class AmazonAddDeviceAsyncTask  extends AsyncTask<String, Void, HttpRespo
     private static final String TAG = AmazonAddDeviceAsyncTask.class.getSimpleName();
 
     private MainActivity activity;
+    private String mHost = "http://ec2-user@ec2-54-200-2-207.us-west-2.compute.amazonaws.com";
 
     public AmazonAddDeviceAsyncTask(Activity activity) {
         this.activity = (MainActivity) activity;
@@ -38,15 +39,15 @@ public class AmazonAddDeviceAsyncTask  extends AsyncTask<String, Void, HttpRespo
     @Override
     protected HttpResponse doInBackground(String... deviceInfo) {
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://ec2-user@ec2-54-200-2-207.us-west-2.compute.amazonaws.com/addDevice");
+        HttpPost httpPost = new HttpPost(mHost + deviceInfo[0]);
         HttpResponse response = null;
         try {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(5);
-            nameValuePairs.add(new BasicNameValuePair("DeviceId", deviceInfo[0]));
-            nameValuePairs.add(new BasicNameValuePair("swLat", deviceInfo[1]));
-            nameValuePairs.add(new BasicNameValuePair("swLong", deviceInfo[2]));
-            nameValuePairs.add(new BasicNameValuePair("neLat", deviceInfo[3]));
-            nameValuePairs.add(new BasicNameValuePair("neLong", deviceInfo[4]));
+            nameValuePairs.add(new BasicNameValuePair("DeviceId", deviceInfo[1]));
+            nameValuePairs.add(new BasicNameValuePair("swLat", deviceInfo[2]));
+            nameValuePairs.add(new BasicNameValuePair("swLong", deviceInfo[3]));
+            nameValuePairs.add(new BasicNameValuePair("neLat", deviceInfo[4]));
+            nameValuePairs.add(new BasicNameValuePair("neLong", deviceInfo[5]));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             //Execute Http Post Request
