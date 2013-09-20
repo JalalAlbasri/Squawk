@@ -55,6 +55,7 @@ public class MainActivity extends Activity implements
     public static final int DEFAULT_APP_VERSION = -1;
     //Default Device Id expiration time set to one week.
     private static final long DEVICE_ID_EXPIRATION_TIME = 1000 * 3600 * 24 * 7;
+//    private static final String MAP_FRAGMENT_TAG = "map_fragment_tag";
 
     ContentResolver mContentResolver;
     private LocationProvider mLocationProvider;
@@ -70,6 +71,24 @@ public class MainActivity extends Activity implements
         mContentResolver = getContentResolver();
         int appVersion = getAppVersion();
         updateFromPreferences();
+        Log.d(TAG, "[Registration] Checks DeviceId = " + mDeviceId +
+                ", Current App Version = " + appVersion +
+                ", Preferences App Version = " + mRegisteredVersion +
+                ", Expiration Time = " + mDeviceIdExpirationTime +
+                ", Current Time = " + System.currentTimeMillis()
+        );
+
+        if (mDeviceId.equals("") || appVersion != mRegisteredVersion) {
+
+            Log.d(TAG, "[Registration] Device Id not found in Preferences.");
+            Intent registerIntent = new Intent(this, RegisterActivity.class);
+            startActivityForResult(registerIntent, REGISTER_SUBACTIVITY);
+
+        } else {
+            Date expirationDate = new Date(mDeviceIdExpirationTime);
+            Log.d(TAG, "[Registration] Device Already Registered with Id: " + mDeviceId + ". " +
+                    "Registration will expire on " + expirationDate);
+        }
         setContentView(R.layout.activity_main);
 
         //Initialize the ActionBar
@@ -84,22 +103,7 @@ public class MainActivity extends Activity implements
         If we have no device Id, the app version number has changed since registration or
         the registration Id has expired, acquire and new registration key.
          */
-        Log.d(TAG, "[Registration] Checks DeviceId = " + mDeviceId +
-                ", Current App Version = " + appVersion +
-                ", Preferences App Version = " + mRegisteredVersion);
 
-        if (mDeviceId.equals("") || appVersion != mRegisteredVersion ||
-                System.currentTimeMillis() > mDeviceIdExpirationTime) {
-
-            Log.d(TAG, "[Registration] Device Id not found in Preferences.");
-            Intent registerIntent = new Intent(this, RegisterActivity.class);
-            startActivityForResult(registerIntent, REGISTER_SUBACTIVITY);
-
-        } else {
-            Date expirationDate = new Date(mDeviceIdExpirationTime);
-            Log.d(TAG, "[Registration] Device Already Registered with Id: " + mDeviceId + ". " +
-                    "Registration will expire on " + expirationDate);
-        }
 
     }
 
@@ -111,6 +115,7 @@ public class MainActivity extends Activity implements
             case REGISTER_SUBACTIVITY:
                 if (resultCode == RESULT_OK) {
                     Bundle deviceInfoBundle = data.getBundleExtra("deviceInfoBundle");
+                    Log.d(TAG, "[Registration] onActivityResult OK, " + (deviceInfoBundle != null) );
                     if (deviceInfoBundle != null) {
                             saveDeviceInfo(deviceInfoBundle);
                             Log.d(TAG, "[Registration] onActivityResult: RegisterActivity Successful");
@@ -137,7 +142,19 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onNewLocation(Location location) {
-        setStatusMapFragment();
+        //set mStatusMapFragment
+        if (mStatusMapFragment == null) {
+            View fragmentContainer = findViewById(R.id.fragment_container);
+            boolean tabletLayout = fragmentContainer == null;
+
+            if (!tabletLayout) {
+                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+                        .findFragmentByTag(StatusMapFragment.class.getName());
+            } else {
+                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+                        .findFragmentById(R.id.map_fragment));
+            }
+        }
         if (location != null && mStatusMapFragment != null && mDeviceId != null) {
             mStatusMapFragment.moveMaptoLocation(
                     new LatLng(location.getLatitude(), location.getLongitude()));
@@ -153,14 +170,19 @@ public class MainActivity extends Activity implements
     @Override
     public void onResume() {
         super.onResume();
+        //set mStatusMapFragment, and restore tab state.
         View fragmentContainer = findViewById(R.id.fragment_container);
         boolean tabletLayout = fragmentContainer == null;
         if (!tabletLayout) {
             SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
             int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
-            getActionBar().setSelectedNavigationItem(actionBarIndex);
+            mActionBar.setSelectedNavigationItem(actionBarIndex);
+            mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+                    .findFragmentByTag(StatusMapFragment.class.getName());
+        } else {
+            mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+                    .findFragmentById(R.id.map_fragment));
         }
-        setStatusMapFragment();
         if (mStatusMapFragment != null) {
             double[][] mapRegion = mStatusMapFragment.getMapRegion();
             if (mapRegion != null) {
@@ -225,8 +247,19 @@ public class MainActivity extends Activity implements
     public void onMapFragmentCreated() {
         Log.d(TAG, "on map fragment created");
         Location location = mLocationProvider.getLocation();
+        //set mStatusMapFragment
         if (mStatusMapFragment == null) {
-            setStatusMapFragment();
+            View fragmentContainer = findViewById(R.id.fragment_container);
+            boolean tabletLayout = fragmentContainer == null;
+
+            if (!tabletLayout) {
+
+                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+                        .findFragmentByTag(StatusMapFragment.class.getName());
+            } else {
+                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+                        .findFragmentById(R.id.map_fragment));
+            }
         }
 
         if (location != null && mStatusMapFragment != null) {
@@ -252,7 +285,7 @@ public class MainActivity extends Activity implements
         View fragmentContainer = findViewById(R.id.fragment_container);
         boolean tabletLayout = fragmentContainer == null;
         if (!tabletLayout) {
-            int actionBarIndex = getActionBar().getSelectedTab().getPosition();
+            int actionBarIndex = mActionBar.getSelectedTab().getPosition();
             SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
             editor.putInt(KEY_ACTION_BAR_INDEX, actionBarIndex);
             editor.commit();
@@ -267,7 +300,6 @@ public class MainActivity extends Activity implements
         }
         mAmazon.removeDevice(mDeviceId);
         super.onSaveInstanceState(outState);
-
     }
 
     @Override
@@ -289,25 +321,6 @@ public class MainActivity extends Activity implements
             return packageInfo.versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException("Could not get package name: " + e);
-        }
-    }
-
-    private void setStatusMapFragment() {
-        Log.d(TAG, "setStatusMapFragment()");
-        if (mStatusMapFragment == null) {
-            View fragmentContainer = findViewById(R.id.fragment_container);
-            boolean tabletLayout = fragmentContainer == null;
-
-            if (!tabletLayout) {
-                SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
-                int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
-                getActionBar().setSelectedNavigationItem(actionBarIndex);
-                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
-                        .findFragmentByTag(StatusMapFragment.class.getName());
-            } else {
-                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
-                        .findFragmentById(R.id.map_fragment));
-            }
         }
     }
 
@@ -428,11 +441,13 @@ public class MainActivity extends Activity implements
         }
 
         public void onTabSelected(Tab tab, FragmentTransaction transaction) {
+            String fragmentTag = fragmentClass.getName();
+//            getFragmentManager().executePendingTransactions();
+            fragment = getFragmentManager().findFragmentByTag(fragmentTag);
 
             if (fragment == null) {
-                String fragmentName = fragmentClass.getName();
-                fragment = Fragment.instantiate(activity, fragmentName);
-                transaction.add(fragmentContainer, fragment, fragmentName);
+                fragment = Fragment.instantiate(activity, fragmentTag);
+                transaction.add(fragmentContainer, fragment, fragmentTag);
             } else {
                 Log.d(TAG, "onTabSelected, Attach Fragment: " + fragmentClass.getSimpleName());
                 transaction.attach(fragment);
@@ -441,6 +456,7 @@ public class MainActivity extends Activity implements
 
         public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
             if (fragment != null) {
+                Log.d(TAG, "onTabUnselected, Detach Fragment: " + fragmentClass.getSimpleName());
                 transaction.detach(fragment);
             }
 
@@ -451,10 +467,6 @@ public class MainActivity extends Activity implements
                 Log.d(TAG, "onTabReselected, Attach Fragment: " + fragmentClass.getSimpleName());
                 transaction.attach(fragment);
             }
-
         }
     }
-
-
-
 }

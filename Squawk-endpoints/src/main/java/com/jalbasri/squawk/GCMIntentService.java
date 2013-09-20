@@ -126,6 +126,7 @@ public class GCMIntentService extends GCMBaseIntentService {
             Log.d(TAG, "Tweet Message Received.");
             addNewTwitterStatus(intent);
         } else {
+            Log.d(TAG, "Registration Message Received.");
             sendNotificationIntent(
                     context,
                     "Message received via Google Cloud Messaging:\n\n"

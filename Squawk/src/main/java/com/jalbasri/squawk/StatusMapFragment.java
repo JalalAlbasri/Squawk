@@ -59,6 +59,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             Log.d(TAG, e.getMessage());
         }
         getLoaderManager().initLoader(TWITTER_STATUS_LOADER, null, this);
+//        setRetainInstance(true);
 
     }
 
