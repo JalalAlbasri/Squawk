@@ -24,6 +24,7 @@ public class StatusListFragment extends ListFragment implements LoaderManager.Lo
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        Log.d(TAG, "onAttach()");
         this.activity = (MainActivity) activity;
     }
 

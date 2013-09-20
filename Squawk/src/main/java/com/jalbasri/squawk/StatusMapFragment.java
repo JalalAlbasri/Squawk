@@ -11,16 +11,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.util.ArrayList;
+
+//TODO set a default map zoom
+//TODO move the camera to last location when switching tabs and changing orientation
 
 
 /*
@@ -38,9 +45,65 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
     public interface OnMapFragmentCreatedListener {
         public void onMapFragmentCreated();
+        public void onMapRegionChanged();
+    }
+
+    @Override
+    public void onAttach(Activity activity){
+        Log.d(TAG, "map onAttach()");
+        super.onAttach(activity);
+        this.activity = (MainActivity) activity;
+        try {
+            mOnMapFragmentCreatedListener = (OnMapFragmentCreatedListener) activity;
+        } catch (ClassCastException e){
+            Log.d(TAG, e.getMessage());
+        }
+        getLoaderManager().initLoader(TWITTER_STATUS_LOADER, null, this);
+
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceBundle) {
+        Log.d(TAG, "map onActivityCreated() " + (mGoogleMap != null));
+        super.onActivityCreated(savedInstanceBundle);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView()");
+        View v = super.onCreateView(inflater, container, savedInstanceState);
+        initGoogleMap();
+        mOnMapFragmentCreatedListener.onMapFragmentCreated();
+        return v;
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "map onResume()");
+        super.onResume();
+        if (mGoogleMap == null) {
+            initGoogleMap();
+        }
+        //TODO Set Zoom Level Here.
+    }
+
+    private void initGoogleMap() {
+        Log.d(TAG, "initGoogleMap()");
+        mGoogleMap = getMap();
+        mGoogleMap.setMyLocationEnabled(true);
+        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mGoogleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                mOnMapFragmentCreatedListener.onMapRegionChanged();
+            }
+        });
+        Log.d(TAG, "initGoogleMap finished " + (mGoogleMap != null));
     }
 
     public void moveMaptoLocation(LatLng latLng) {
+        Log.d(TAG, "move map to location " + (mGoogleMap != null));
         if (mGoogleMap != null)
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
@@ -59,40 +122,6 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                     {visibleRegion.farRight.latitude, visibleRegion.farRight.longitude}};
         }
         return null;
-    }
-
-    @Override
-    public void onAttach(Activity activity){
-        super.onAttach(activity);
-        this.activity = (MainActivity) activity;
-        try {
-            mOnMapFragmentCreatedListener = (OnMapFragmentCreatedListener) activity;
-        } catch (ClassCastException e){
-            Log.d(TAG, e.getMessage());
-        }
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceBundle) {
-        super.onActivityCreated(savedInstanceBundle);
-        getLoaderManager().initLoader(TWITTER_STATUS_LOADER, null, this);
-        initGoogleMap();
-        mOnMapFragmentCreatedListener.onMapFragmentCreated();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mGoogleMap == null) {
-            initGoogleMap();
-        }
-        //TODO Set Zoom Level Here.
-    }
-
-    private void initGoogleMap() {
-        mGoogleMap = getMap();
-        mGoogleMap.setMyLocationEnabled(true);
-        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 
     private void refreshMapMarkers() {

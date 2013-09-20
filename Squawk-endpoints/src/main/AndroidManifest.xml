@@ -14,6 +14,8 @@
    	<uses-permission android:name="android.permission.WAKE_LOCK"/>
    	<uses-permission android:name="android.permission.GET_ACCOUNTS"/>
    	<uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+    <uses-permission android:name="com.jalbasri.squawk.permission.READ_TWITTER_STATUS_CONTENT_PROVIDER"/>
+    <uses-permission android:name="com.jalbasri.squawk.permission.WRITE_TWITTER_STATUS_CONTENT_PROVIDER"/>
 
     <application>
     	<service android:name="com.jalbasri.squawk.GCMIntentService"/>

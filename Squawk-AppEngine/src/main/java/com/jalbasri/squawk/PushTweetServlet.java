@@ -1,10 +1,13 @@
 package com.jalbasri.squawk;
 
+import com.google.android.gcm.server.MulticastResult;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,30 +49,18 @@ public class PushTweetServlet extends HttpServlet {
     private void pushTweet(HttpServletRequest req, HttpServletResponse resp) {
         //TODO extract tweet info from json, push to message queue.
 
-
         try {
-//            Spit out the raw request body.. testing..
-//            StringBuilder buffer = new StringBuilder();
-//            BufferedReader reader = req.getReader();
-//
-//            String line;
-//            while((line = reader.readLine()) != null){
-//                buffer.append(line);
-//            }
-//            // reqBytes = buffer.toString().getBytes();
-//
-//            String input = buffer.toString();
-//            System.out.println(input);
-
-
-
             BufferedReader bufferedReader = req.getReader();
             Gson gson = new Gson();
             TweetBean tweetBean = gson.fromJson(bufferedReader, TweetBean.class);
             System.out.println(tweetBean.toString());
-
             Sender sender = new Sender(API_KEY);
-//            doSendTweetViaGcm(tweetBean, sender, tweetBean.getDeviceId());
+            List<String> devices = Arrays.asList(tweetBean.deviceIds);
+            doSendTweetViaGcm(tweetBean, sender, devices);
+
+//            for(String deviceId: tweetBean.deviceIds) {
+//                doSendTweetViaGcm(tweetBean, sender, deviceId);
+//            }
 
         } catch (IOException e) {
             logger.log(Level.SEVERE, "IOException de-serializing POST data");
@@ -82,18 +73,14 @@ public class PushTweetServlet extends HttpServlet {
      *
      * @param tweet
      *            the tweet to be sent in the GCM ping to the device.
-     * @param sender
-     *            the Sender object to be used for ping,
-     * @param deviceId
-     *            the registration id of the device.
+     * @param devices
+     *            the registration ids of the devices.
      * @return Result the result of the ping.
      */
-    private static Result doSendTweetViaGcm(TweetBean tweet, Sender sender,
-                                       String deviceId) throws IOException {
+    private static MulticastResult doSendTweetViaGcm(TweetBean tweet, Sender sender, List<String> devices) throws IOException {
 
-        DeviceInfo deviceInfo = endpoint.getDeviceInfo(deviceId);
-
-        Message msg = new Message.Builder().addData("tweet", "true")
+        Message msg = new Message.Builder()
+                .addData("tweet", "true")
                 .addData("id", tweet.getId())
                 .addData("text", tweet.getText())
                 .addData("created_at", tweet.getCreated_at())
@@ -106,23 +93,7 @@ public class PushTweetServlet extends HttpServlet {
                 .addData("longitude", tweet.getLongitude())
                 .build();
 
-        Result result = sender.send(msg, deviceId, 5);
-
-        if (result.getMessageId() != null) {
-            String canonicalRegId = result.getCanonicalRegistrationId();
-            if (canonicalRegId != null) {
-                endpoint.removeDeviceInfo(deviceId);
-                deviceInfo.setDeviceRegistrationID(canonicalRegId);
-                endpoint.insertDeviceInfo(deviceInfo);
-            }
-        } else {
-            String error = result.getErrorCodeName();
-            if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
-                //If the returned error is NotRegistered, it's necessary to remove that registration ID,
-                //because the application was uninstalled from the device.
-                endpoint.removeDeviceInfo(deviceInfo.getDeviceRegistrationID());
-            }
-        }
+        MulticastResult result = sender.send(msg, devices, 5);
 
         return result;
     }

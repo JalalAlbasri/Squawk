@@ -1,6 +1,10 @@
 package com.jalbasri.squawk;
 
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -55,7 +59,9 @@ public class MainActivity extends Activity implements
     ContentResolver mContentResolver;
     private LocationProvider mLocationProvider;
     private StatusMapFragment mStatusMapFragment;
-    private ActionBarManager mActionBarManager;
+    private TabListener<StatusListFragment> mListTabListener;
+    private TabListener<StatusMapFragment> mMapTabListener;
+    private ActionBar mActionBar;
     private Amazon mAmazon;
 
     @Override
@@ -67,8 +73,7 @@ public class MainActivity extends Activity implements
         setContentView(R.layout.activity_main);
 
         //Initialize the ActionBar
-        mActionBarManager = new ActionBarManager(this);
-        mActionBarManager.initActionBar();
+        initActionBar();
         mLocationProvider = new LocationProvider(this);
         mAmazon = new Amazon();
         //TODO Check Wifi or GPS and prompt user to turn on if off.
@@ -139,6 +144,7 @@ public class MainActivity extends Activity implements
 
             double[][] mapRegion = mStatusMapFragment.getMapRegion();
             if (mapRegion != null) {
+                Log.d(TAG, "Amazon.addDevice - onNewLocation");
                 mAmazon.addDevice(mDeviceId, mapRegion);
             }
         }
@@ -147,11 +153,18 @@ public class MainActivity extends Activity implements
     @Override
     public void onResume() {
         super.onResume();
-        mActionBarManager.restoreTabState();
+        View fragmentContainer = findViewById(R.id.fragment_container);
+        boolean tabletLayout = fragmentContainer == null;
+        if (!tabletLayout) {
+            SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
+            int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
+            getActionBar().setSelectedNavigationItem(actionBarIndex);
+        }
         setStatusMapFragment();
         if (mStatusMapFragment != null) {
             double[][] mapRegion = mStatusMapFragment.getMapRegion();
             if (mapRegion != null) {
+                Log.d(TAG, "Amazon.addDevice - onResume");
                 mAmazon.addDevice(mDeviceId,mapRegion);
             }
         }
@@ -182,6 +195,7 @@ public class MainActivity extends Activity implements
                 if (mStatusMapFragment != null) {
                     double[][] mapRegion = mStatusMapFragment.getMapRegion();
                     if (mapRegion != null) {
+                        Log.d(TAG, "Amazon.addDevice - ActionReload");
                         mAmazon.addDevice(mDeviceId,mapRegion);
                     }
                     else {
@@ -196,12 +210,6 @@ public class MainActivity extends Activity implements
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        Log.d(TAG, "onRestoreInstanceState");
-        mActionBarManager.restoreTabState();
-    }
-
-    @Override
     protected void onPause() {
         if (mLocationProvider != null) {
             mLocationProvider.unregisterLocationListeners();
@@ -210,16 +218,17 @@ public class MainActivity extends Activity implements
     }
 
     /**
-    Callback used to move the map camera to the last known location once
-    the map is loaded.
+     * Callback used to move the map camera to the last known location once
+     * the map is loaded.
      */
     @Override
     public void onMapFragmentCreated() {
-
+        Log.d(TAG, "on map fragment created");
         Location location = mLocationProvider.getLocation();
         if (mStatusMapFragment == null) {
             setStatusMapFragment();
         }
+
         if (location != null && mStatusMapFragment != null) {
             mStatusMapFragment.moveMaptoLocation(
                     new LatLng(location.getLatitude(), location.getLongitude()));
@@ -227,9 +236,35 @@ public class MainActivity extends Activity implements
     }
 
     @Override
+    public void onMapRegionChanged() {
+        if (mStatusMapFragment != null) {
+            double[][] mapRegion = mStatusMapFragment.getMapRegion();
+            if (mapRegion != null) {
+                Log.d(TAG, "Amazon.addDevice - onMapRegionChanged");
+                mAmazon.addDevice(mDeviceId,mapRegion);
+            }
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState()");
-        mActionBarManager.saveTabState();
+        View fragmentContainer = findViewById(R.id.fragment_container);
+        boolean tabletLayout = fragmentContainer == null;
+        if (!tabletLayout) {
+            int actionBarIndex = getActionBar().getSelectedTab().getPosition();
+            SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
+            editor.putInt(KEY_ACTION_BAR_INDEX, actionBarIndex);
+            editor.commit();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            if (mListTabListener.fragment != null) {
+                transaction.detach(mListTabListener.fragment);
+            }
+            if (mMapTabListener.fragment != null) {
+                transaction.detach(mMapTabListener.fragment);
+            }
+            transaction.commit();
+        }
         mAmazon.removeDevice(mDeviceId);
         super.onSaveInstanceState(outState);
 
@@ -257,8 +292,8 @@ public class MainActivity extends Activity implements
         }
     }
 
-
     private void setStatusMapFragment() {
+        Log.d(TAG, "setStatusMapFragment()");
         if (mStatusMapFragment == null) {
             View fragmentContainer = findViewById(R.id.fragment_container);
             boolean tabletLayout = fragmentContainer == null;
@@ -341,5 +376,85 @@ public class MainActivity extends Activity implements
         Log.d(TAG, "Radius: " + mRadius);
 
     }
+
+    private void initActionBar() {
+        mActionBar = getActionBar();
+        mActionBar.setDisplayUseLogoEnabled(false);
+        mActionBar.setDisplayShowHomeEnabled(false);
+        mActionBar.setDisplayShowTitleEnabled(false);
+        //TODO: Enable up navigation on icon in actionbar
+        //mActionBar.setDisplayHomeAsUpEnabled(true);
+
+        View fragmentContainer = findViewById(R.id.fragment_container);
+        boolean tabletLayout = fragmentContainer == null;
+
+        if (!tabletLayout) {
+            mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+            Tab listTab = mActionBar.newTab();
+            mListTabListener = new TabListener<StatusListFragment>
+                    (this, StatusListFragment.class, R.id.fragment_container);
+            listTab
+//                    .setText("List")
+                    .setIcon(R.drawable.collections_view_as_list)
+                    .setContentDescription("List of Status Updates")
+                    .setTabListener(mListTabListener);
+
+            mActionBar.addTab(listTab);
+
+            Tab mapTab = mActionBar.newTab();
+            mMapTabListener = new TabListener<StatusMapFragment>
+                    (this, StatusMapFragment.class, R.id.fragment_container);
+            mapTab
+//                    .setText("Map")
+                    .setIcon(R.drawable.location_map)
+                    .setContentDescription("Map of Status Updates")
+                    .setTabListener(mMapTabListener);
+
+            mActionBar.addTab(mapTab);
+        }
+    }
+
+    public class TabListener<T extends Fragment> implements ActionBar.TabListener {
+        private Fragment fragment;
+        private Activity activity;
+        private Class<T> fragmentClass;
+        private int fragmentContainer;
+
+        public TabListener(Activity activity, Class<T> fragmentClass, int fragmentContainer) {
+            this.activity = activity;
+            this.fragmentClass = fragmentClass;
+            this.fragmentContainer = fragmentContainer;
+        }
+
+        public void onTabSelected(Tab tab, FragmentTransaction transaction) {
+
+            if (fragment == null) {
+                String fragmentName = fragmentClass.getName();
+                fragment = Fragment.instantiate(activity, fragmentName);
+                transaction.add(fragmentContainer, fragment, fragmentName);
+            } else {
+                Log.d(TAG, "onTabSelected, Attach Fragment: " + fragmentClass.getSimpleName());
+                transaction.attach(fragment);
+            }
+        }
+
+        public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
+            if (fragment != null) {
+                transaction.detach(fragment);
+            }
+
+        }
+
+        public void onTabReselected(Tab tab, FragmentTransaction transaction) {
+            if (fragment != null) {
+                Log.d(TAG, "onTabReselected, Attach Fragment: " + fragmentClass.getSimpleName());
+                transaction.attach(fragment);
+            }
+
+        }
+    }
+
+
 
 }

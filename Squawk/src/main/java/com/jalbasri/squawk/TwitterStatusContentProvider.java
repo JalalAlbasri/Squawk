@@ -19,7 +19,7 @@ public class TwitterStatusContentProvider extends ContentProvider{
     private static final String TAG = TwitterStatusContentProvider.class.getSimpleName();
 
     public static final Uri CONTENT_URI =
-            Uri.parse("content://com.jalbasri.squawk.twitterstatusprovider");
+            Uri.parse("content://com.jalbasri.squawk.twitterstatusprovider/twitteritems");
     public static final String KEY_STATUS_ID = "_id";
     public static final String KEY_STATUS_TEXT = "_status_text";
     public static final String KEY_CREATED_AT = "_created_at";

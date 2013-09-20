@@ -26,7 +26,7 @@ import java.io.IOException;
 public class CloudEndpointUtils {
 
   /*
-   * TODO: Need to change this to 'true' if you're running your backend locally using
+   * Need to change this to 'true' if you're running your backend locally using
    * the DevAppServer. See
    * http://developers.google.com/eclipse/docs/cloud_endpoints for more
    * information.

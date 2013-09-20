@@ -18,6 +18,10 @@
     <permission
         android:name="com.jalbasri.squawk.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
+    <permission
+        android:name="com.jalbasri.squawk.permission.READ_TWITTER_STATUS_CONTENT_PROVIDER"/>
+    <permission
+        android:name="com.jalbasri.squawk.permission.WRITE_TWITTER_STATUS_CONTENT_PROVIDER"/>
 
     <uses-permission android:name="com.jalbasri.squawk.permission.MAPS_RECEIVE" />
 
@@ -44,7 +48,9 @@
         <provider
             android:name="com.jalbasri.squawk.TwitterStatusContentProvider"
             android:authorities="com.jalbasri.squawk.twitterstatusprovider"
-            android:exported="false" />
+            android:readPermission="com.jalbasri.squawk.permission.READ_TWITTER_STATUS_PROVIDER"
+            android:writePermission="com.jalbasri.squawk.permission.WRITE_TWITTER_STATUS_PROVIDER"
+            android:exported="true"/>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
