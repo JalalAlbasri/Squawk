@@ -5,9 +5,6 @@ import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.view.View;
 import android.widget.SimpleCursorAdapter;
 import android.content.Loader;
 import android.content.CursorLoader;
@@ -17,15 +14,15 @@ public class StatusListFragment extends ListFragment implements LoaderManager.Lo
     private static final String TAG = StatusListFragment.class.getSimpleName();
 
     private static final int TWITTER_STATUS_LOADER = 0;
-    private static final String sortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " DESC";
-    SimpleCursorAdapter cursorAdapter;
-    MainActivity activity;
+    private static final String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " DESC";
+    SimpleCursorAdapter mCursorAdapter;
+    MainActivity mActivity;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         Log.d(TAG, "onAttach()");
-        this.activity = (MainActivity) activity;
+        this.mActivity = (MainActivity) activity;
     }
 
     @Override
@@ -35,11 +32,11 @@ public class StatusListFragment extends ListFragment implements LoaderManager.Lo
         getLoaderManager().initLoader(TWITTER_STATUS_LOADER, null, this);
 
         String fromColumns[] = new String[] {
-                TwitterStatusContentProvider.KEY_STATUS_ID,
+                TwitterStatusContentProvider.KEY_USER_NAME,
                 TwitterStatusContentProvider.KEY_STATUS_TEXT,
+                TwitterStatusContentProvider.KEY_STATUS_ID,
                 TwitterStatusContentProvider.KEY_CREATED_AT,
                 TwitterStatusContentProvider.KEY_USER_ID,
-                TwitterStatusContentProvider.KEY_USER_NAME,
                 TwitterStatusContentProvider.KEY_USER_SCREEN_NAME,
                 TwitterStatusContentProvider.KEY_USER_IMAGE,
                 TwitterStatusContentProvider.KEY_USER_URL,
@@ -52,8 +49,8 @@ public class StatusListFragment extends ListFragment implements LoaderManager.Lo
         };
 
         //TODO: Use custom simplecursoradapter
-//        cursorAdapter = new TwitterStatusListSimpleCursorAdapter(
-        cursorAdapter = new SimpleCursorAdapter (
+//        mCursorAdapter = new TwitterStatusListSimpleCursorAdapter(
+        mCursorAdapter = new SimpleCursorAdapter (
                 getActivity(),
                 layoutId,
                 null,
@@ -61,7 +58,7 @@ public class StatusListFragment extends ListFragment implements LoaderManager.Lo
                 toLayoutIds,
                 0
         );
-        setListAdapter(cursorAdapter);
+        setListAdapter(mCursorAdapter);
     }
 
     @Override
@@ -103,17 +100,19 @@ public class StatusListFragment extends ListFragment implements LoaderManager.Lo
                 TwitterStatusContentProvider.KEY_LATITUDE,
                 TwitterStatusContentProvider.KEY_LONGITUDE,
         };
-        return new CursorLoader(activity,
-                TwitterStatusContentProvider.CONTENT_URI, projection, null, null, sortOrder);
+        //CursorLoader(mActivity, content uri,
+        // columns to return, selection, selection args, sort order)
+        return new CursorLoader(mActivity,
+                TwitterStatusContentProvider.CONTENT_URI, projection, null, null, mSortOrder);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        cursorAdapter.changeCursor(cursor);
+        mCursorAdapter.changeCursor(cursor);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
-        cursorAdapter.changeCursor(null);
+        mCursorAdapter.changeCursor(null);
     }
 }

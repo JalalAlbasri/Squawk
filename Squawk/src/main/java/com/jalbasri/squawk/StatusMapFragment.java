@@ -77,6 +77,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         initGoogleMap();
         mOnMapFragmentCreatedListener.onMapFragmentCreated();
         return v;
+
     }
 
     @Override
@@ -86,6 +87,8 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         if (mGoogleMap == null) {
             initGoogleMap();
         }
+        getLoaderManager().restartLoader(TWITTER_STATUS_LOADER, null, this);
+
         //TODO Set Zoom Level Here.
     }
 
@@ -126,7 +129,6 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     }
 
     private void refreshMapMarkers() {
-//        Log.d(TAG, "cursor size: " + cursor.getCount());
         if (cursor != null && cursor.moveToNext()) {
             do {
                 LatLng latLng = new LatLng(

@@ -92,6 +92,8 @@ public class TwitterStatusContentProvider extends ContentProvider{
         Cursor cursor = queryBuilder.query(db, projection, selection,
                 selectionArgs, groupBy, having, sortOrder);
 
+        cursor.setNotificationUri(getContext().getContentResolver(), CONTENT_URI);
+
         return cursor;
     }
 

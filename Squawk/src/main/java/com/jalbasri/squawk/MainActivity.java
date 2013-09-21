@@ -444,7 +444,6 @@ public class MainActivity extends Activity implements
             String fragmentTag = fragmentClass.getName();
 //            getFragmentManager().executePendingTransactions();
             fragment = getFragmentManager().findFragmentByTag(fragmentTag);
-
             if (fragment == null) {
                 fragment = Fragment.instantiate(activity, fragmentTag);
                 transaction.add(fragmentContainer, fragment, fragmentTag);
