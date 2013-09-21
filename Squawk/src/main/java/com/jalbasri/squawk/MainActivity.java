@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.jalbasri.squawk.amazon.Amazon;
 
@@ -35,6 +36,7 @@ public class MainActivity extends Activity implements
     private String mDeviceId;
     private int mRegisteredVersion;
     private long mDeviceIdExpirationTime;
+    private LatLng mMapTarget;
     private int mRadius = 1;
     private long mTimestamp;
     private String mDeviceInformation;
@@ -95,6 +97,8 @@ public class MainActivity extends Activity implements
         initActionBar();
         mLocationProvider = new LocationProvider(this);
         mAmazon = new Amazon();
+//        mMapTarget = new LatLng(savedInstanceState.getDouble("map_target_latitude", 0),
+//                savedInstanceState.getDouble("map_target_longitude", 0));
         //TODO Check Wifi or GPS and prompt user to turn on if off.
         //TODO Check that Google Play Services exists on device. http://developer.android.com/google/gcm/client.html
         //TODO Remove radius
@@ -262,9 +266,14 @@ public class MainActivity extends Activity implements
             }
         }
 
-        if (location != null && mStatusMapFragment != null) {
-            mStatusMapFragment.moveMaptoLocation(
-                    new LatLng(location.getLatitude(), location.getLongitude()));
+        if(mStatusMapFragment != null) {
+            mMapTarget = mStatusMapFragment.getMapTarget();
+            if (mMapTarget != null && mMapTarget.latitude !=0 && mMapTarget.longitude != 0) {
+                mStatusMapFragment.moveMaptoLocation(mMapTarget);
+            } else if (location != null) {
+                mStatusMapFragment.moveMaptoLocation(
+                        new LatLng(location.getLatitude(), location.getLongitude()));
+            }
         }
     }
 
@@ -276,6 +285,7 @@ public class MainActivity extends Activity implements
                 Log.d(TAG, "Amazon.addDevice - onMapRegionChanged");
                 mAmazon.addDevice(mDeviceId,mapRegion);
             }
+            mMapTarget = mStatusMapFragment.getMapTarget();
         }
     }
 
@@ -299,6 +309,8 @@ public class MainActivity extends Activity implements
             transaction.commit();
         }
         mAmazon.removeDevice(mDeviceId);
+//        outState.putDouble("map_target_latitude", mMapTarget.latitude);
+//        outState.putDouble("map_target_longitude", mMapTarget.longitude);
         super.onSaveInstanceState(outState);
     }
 

@@ -112,6 +112,12 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
+    public void moveMaptoLocation(CameraPosition cameraPosition) {
+        Log.d(TAG, "move map to location " + (mGoogleMap != null));
+        if (mGoogleMap != null)
+            mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
     public void clearMarkers() {
         if (mGoogleMap != null) {
             mGoogleMap.clear();
@@ -124,6 +130,20 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             VisibleRegion visibleRegion = mGoogleMap.getProjection().getVisibleRegion();
             return new double[][] {{visibleRegion.nearLeft.latitude, visibleRegion.nearLeft.longitude},
                     {visibleRegion.farRight.latitude, visibleRegion.farRight.longitude}};
+        }
+        return null;
+    }
+
+    public CameraPosition getCameraPostion() {
+        if (mGoogleMap != null) {
+            return mGoogleMap.getCameraPosition();
+        }
+        return null;
+    }
+
+    public LatLng getMapTarget() {
+        if (mGoogleMap != null) {
+            return mGoogleMap.getCameraPosition().target;
         }
         return null;
     }
