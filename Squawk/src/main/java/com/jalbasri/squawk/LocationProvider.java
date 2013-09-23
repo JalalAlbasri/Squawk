@@ -28,7 +28,7 @@ public class LocationProvider {
 
     public LocationProvider(Activity activity) {
         mActivity = (MainActivity) activity;
-        mOnNewLocationListener = mActivity;
+//        mOnNewLocationListener = mActivity;
         mLocationManager = (LocationManager)mActivity.getSystemService(Context.LOCATION_SERVICE);
         mCriteria.setAccuracy(Criteria.ACCURACY_FINE);
         mCriteria.setPowerRequirement(Criteria.POWER_LOW);

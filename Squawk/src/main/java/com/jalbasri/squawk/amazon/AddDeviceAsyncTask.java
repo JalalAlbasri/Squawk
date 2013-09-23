@@ -37,6 +37,7 @@ public class AddDeviceAsyncTask extends AsyncTask<String, Void, HttpResponse> {
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(Amazon.AMAZON_HOST + Amazon.ADD_PATH);
         HttpResponse response = null;
+        Log.d(TAG, "Add Device to Amazon: " + deviceInfo.toString());
         try {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(5);
             nameValuePairs.add(new BasicNameValuePair("DeviceId", deviceInfo[0]));

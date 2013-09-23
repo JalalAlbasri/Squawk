@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 //TODO set a default map zoom
 //TODO move the camera to last location when switching tabs and changing orientation
-
+//TODO add map marker limit.
 
 /*
     Warning, com.google.android.gms.maps.model.LatLng is used
@@ -64,20 +64,20 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceBundle) {
-        Log.d(TAG, "map onActivityCreated() " + (mGoogleMap != null));
-        super.onActivityCreated(savedInstanceBundle);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView()");
         View v = super.onCreateView(inflater, container, savedInstanceState);
         initGoogleMap();
-        mOnMapFragmentCreatedListener.onMapFragmentCreated();
         return v;
 
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceBundle) {
+        Log.d(TAG, "map onActivityCreated() " + (mGoogleMap != null));
+        mOnMapFragmentCreatedListener.onMapFragmentCreated();
+        super.onActivityCreated(savedInstanceBundle);
     }
 
     @Override
@@ -87,9 +87,9 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         if (mGoogleMap == null) {
             initGoogleMap();
         }
+
         getLoaderManager().restartLoader(TWITTER_STATUS_LOADER, null, this);
 
-        //TODO Set Zoom Level Here.
     }
 
     private void initGoogleMap() {
@@ -104,18 +104,13 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             }
         });
         Log.d(TAG, "initGoogleMap finished " + (mGoogleMap != null));
+
     }
 
     public void moveMaptoLocation(LatLng latLng) {
         Log.d(TAG, "move map to location " + (mGoogleMap != null));
         if (mGoogleMap != null)
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-    }
-
-    public void moveMaptoLocation(CameraPosition cameraPosition) {
-        Log.d(TAG, "move map to location " + (mGoogleMap != null));
-        if (mGoogleMap != null)
-            mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     public void clearMarkers() {
@@ -130,13 +125,6 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             VisibleRegion visibleRegion = mGoogleMap.getProjection().getVisibleRegion();
             return new double[][] {{visibleRegion.nearLeft.latitude, visibleRegion.nearLeft.longitude},
                     {visibleRegion.farRight.latitude, visibleRegion.farRight.longitude}};
-        }
-        return null;
-    }
-
-    public CameraPosition getCameraPostion() {
-        if (mGoogleMap != null) {
-            return mGoogleMap.getCameraPosition();
         }
         return null;
     }

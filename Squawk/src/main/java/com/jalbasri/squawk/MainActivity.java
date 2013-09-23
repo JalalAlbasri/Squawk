@@ -3,12 +3,15 @@ package com.jalbasri.squawk;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,16 +23,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
-import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.jalbasri.squawk.amazon.Amazon;
 
 import java.util.Date;
 
 public class MainActivity extends Activity implements
+        LocationListener,
         StatusMapFragment.OnMapFragmentCreatedListener,
-        LocationProvider.OnNewLocationListener {
+        GooglePlayServicesClient.ConnectionCallbacks,
+        GooglePlayServicesClient.OnConnectionFailedListener
+
+//        LocationProvider.OnNewLocationListener
+{
 
     private static final String TAG = MainActivity.class.getName();
 
@@ -38,6 +52,7 @@ public class MainActivity extends Activity implements
     private long mDeviceIdExpirationTime;
     private LatLng mMapTarget;
     private int mRadius = 1;
+
     private long mTimestamp;
     private String mDeviceInformation;
 
@@ -57,10 +72,16 @@ public class MainActivity extends Activity implements
     public static final int DEFAULT_APP_VERSION = -1;
     //Default Device Id expiration time set to one week.
     private static final long DEVICE_ID_EXPIRATION_TIME = 1000 * 3600 * 24 * 7;
+    private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private static final int LOCATION_UPDATE_INTERVAL = 20000;
+    private static final int LOCATION_FASTEST_UPDATE_INTERVAL = 20000;
 //    private static final String MAP_FRAGMENT_TAG = "map_fragment_tag";
 
     ContentResolver mContentResolver;
-    private LocationProvider mLocationProvider;
+//    private LocationProvider mLocationProvider;
+    private Location mLocation;
+    private LocationClient mLocationClient;
+    private LocationRequest mLocationRequest;
     private StatusMapFragment mStatusMapFragment;
     private TabListener<StatusListFragment> mListTabListener;
     private TabListener<StatusMapFragment> mMapTabListener;
@@ -91,16 +112,42 @@ public class MainActivity extends Activity implements
             Log.d(TAG, "[Registration] Device Already Registered with Id: " + mDeviceId + ". " +
                     "Registration will expire on " + expirationDate);
         }
-        setContentView(R.layout.activity_main);
-
-        //Initialize the ActionBar
-        initActionBar();
-        mLocationProvider = new LocationProvider(this);
         mAmazon = new Amazon();
+
+
+        /*
+        Check for GooglePlayServices and define Location Client
+         */
+        if(servicesConnected()) {
+            // Create the LocationRequest object
+            mLocationRequest = LocationRequest.create();
+            // Use high accuracy
+            mLocationRequest.setPriority(
+                    LocationRequest.PRIORITY_HIGH_ACCURACY);
+            // Set the update interval to 5 seconds
+            mLocationRequest.setInterval(LOCATION_UPDATE_INTERVAL);
+            // Set the fastest update interval to 1 second
+            mLocationRequest.setFastestInterval(LOCATION_FASTEST_UPDATE_INTERVAL);
+        /*
+         * Create a new location client, using the enclosing class to
+         * handle callbacks.
+         */
+            mLocationClient = new LocationClient(this, this, this);
+
+        }
+
+        /*
+        Initialize the UI
+         */
+        setContentView(R.layout.activity_main);
+        initActionBar();
+
+
 //        mMapTarget = new LatLng(savedInstanceState.getDouble("map_target_latitude", 0),
 //                savedInstanceState.getDouble("map_target_longitude", 0));
         //TODO Check Wifi or GPS and prompt user to turn on if off.
-        //TODO Check that Google Play Services exists on device. http://developer.android.com/google/gcm/client.html
+        //TODO Check that Google Play Services exists on device.
+        // http://developer.android.com/google/gcm/client.html
         //TODO Remove radius
         //TODO Update Amazon when the map view changes not just the location
         /*
@@ -112,17 +159,27 @@ public class MainActivity extends Activity implements
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if(servicesConnected())
+            mLocationClient.connect();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
             case REGISTER_SUBACTIVITY:
                 if (resultCode == RESULT_OK) {
-                    Bundle deviceInfoBundle = data.getBundleExtra("deviceInfoBundle");
-                    Log.d(TAG, "[Registration] onActivityResult OK, " + (deviceInfoBundle != null) );
+                    Bundle deviceInfoBundle =
+                            data.getBundleExtra("deviceInfoBundle");
+                    Log.d(TAG, "[Registration] onActivityResult OK, " +
+                            (deviceInfoBundle != null) );
                     if (deviceInfoBundle != null) {
                             saveDeviceInfo(deviceInfoBundle);
-                            Log.d(TAG, "[Registration] onActivityResult: RegisterActivity Successful");
+                            Log.d(TAG, "[Registration] onActivityResult:" +
+                                    " RegisterActivity Successful");
                     }
 
                 } else {
@@ -134,6 +191,11 @@ public class MainActivity extends Activity implements
                 if (resultCode == RESULT_OK)
                     updateFromPreferences();
                 break;
+            case CONNECTION_FAILURE_RESOLUTION_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    //TODO Try the request again, ie Check for google play services again
+                    Log.d(TAG, "CONNECTION_FAILURE_RESOLUTION_REQUEST, Result Ok");
+                }
             default: break;
         }
     }
@@ -143,33 +205,58 @@ public class MainActivity extends Activity implements
      * Moves the map to the new location.
      * Updates the Amazon Server with the new location.
      */
-
+    // Define the callback method that receives location updates
     @Override
-    public void onNewLocation(Location location) {
-        //set mStatusMapFragment
-        if (mStatusMapFragment == null) {
-            View fragmentContainer = findViewById(R.id.fragment_container);
-            boolean tabletLayout = fragmentContainer == null;
-
-            if (!tabletLayout) {
-                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
-                        .findFragmentByTag(StatusMapFragment.class.getName());
-            } else {
-                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
-                        .findFragmentById(R.id.map_fragment));
-            }
-        }
-        if (location != null && mStatusMapFragment != null && mDeviceId != null) {
-            mStatusMapFragment.moveMaptoLocation(
-                    new LatLng(location.getLatitude(), location.getLongitude()));
-
-            double[][] mapRegion = mStatusMapFragment.getMapRegion();
-            if (mapRegion != null) {
-                Log.d(TAG, "Amazon.addDevice - onNewLocation");
-                mAmazon.addDevice(mDeviceId, mapRegion);
-            }
-        }
+    public void onLocationChanged(Location location) {
+        // Report to the UI that the location was updated
+        String msg = "Updated Location: " +
+                Double.toString(location.getLatitude()) + "," +
+                Double.toString(location.getLongitude());
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
+
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    public void onProviderEnabled(String provider) {
+        Log.d(TAG, "onProviderEnabled: " + provider);
+        if(servicesConnected())
+            mLocationClient.requestLocationUpdates(mLocationRequest, this);
+    }
+
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+//
+//    @Override
+//    public void onNewLocation(Location location) {
+//        //set mStatusMapFragment
+//        if (mStatusMapFragment == null) {
+//            View fragmentContainer = findViewById(R.id.fragment_container);
+//            boolean tabletLayout = fragmentContainer == null;
+//
+//            if (!tabletLayout) {
+//                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+//                        .findFragmentByTag(StatusMapFragment.class.getName());
+//            } else {
+//                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+//                        .findFragmentById(R.id.map_fragment));
+//            }
+//        }
+//
+//        if (location != null && mStatusMapFragment != null && mDeviceId != null) {
+//            mStatusMapFragment.moveMaptoLocation(
+//                    new LatLng(location.getLatitude(), location.getLongitude()));
+//
+//            double[][] mapRegion = mStatusMapFragment.getMapRegion();
+//            if (mapRegion != null) {
+//                Log.d(TAG, "Amazon.addDevice - onNewLocation");
+//                mAmazon.addDevice(mDeviceId, mapRegion);
+//            }
+//        }
+//    }
 
     @Override
     public void onResume() {
@@ -237,9 +324,9 @@ public class MainActivity extends Activity implements
 
     @Override
     protected void onPause() {
-        if (mLocationProvider != null) {
-            mLocationProvider.unregisterLocationListeners();
-        }
+//        if (mLocationProvider != null) {
+//            mLocationProvider.unregisterLocationListeners();
+//        }
         super.onPause();
     }
 
@@ -249,15 +336,13 @@ public class MainActivity extends Activity implements
      */
     @Override
     public void onMapFragmentCreated() {
-        Log.d(TAG, "on map fragment created");
-        Location location = mLocationProvider.getLocation();
+        Log.d(TAG, "onMapFragmentCreated()");
         //set mStatusMapFragment
         if (mStatusMapFragment == null) {
             View fragmentContainer = findViewById(R.id.fragment_container);
             boolean tabletLayout = fragmentContainer == null;
 
             if (!tabletLayout) {
-
                 mStatusMapFragment = (StatusMapFragment) getFragmentManager()
                         .findFragmentByTag(StatusMapFragment.class.getName());
             } else {
@@ -268,11 +353,12 @@ public class MainActivity extends Activity implements
 
         if(mStatusMapFragment != null) {
             mMapTarget = mStatusMapFragment.getMapTarget();
+            Log.d(TAG, "mMapTarget, location: " + (mLocation != null));
             if (mMapTarget != null && mMapTarget.latitude !=0 && mMapTarget.longitude != 0) {
                 mStatusMapFragment.moveMaptoLocation(mMapTarget);
-            } else if (location != null) {
+            } else if (mLocation != null) {
                 mStatusMapFragment.moveMaptoLocation(
-                        new LatLng(location.getLatitude(), location.getLongitude()));
+                        new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
             }
         }
     }
@@ -282,15 +368,16 @@ public class MainActivity extends Activity implements
         if (mStatusMapFragment != null) {
             double[][] mapRegion = mStatusMapFragment.getMapRegion();
             if (mapRegion != null) {
-                Log.d(TAG, "Amazon.addDevice - onMapRegionChanged");
-                mAmazon.addDevice(mDeviceId,mapRegion);
+                Log.d(TAG, "Amazon.addDevice - onMapRegionChanged, : " +
+                mDeviceId + " MapRegion: " + mapRegion.toString());
+                mAmazon.addDevice(mDeviceId, mapRegion);
             }
             mMapTarget = mStatusMapFragment.getMapTarget();
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState()");
         View fragmentContainer = findViewById(R.id.fragment_container);
         boolean tabletLayout = fragmentContainer == null;
@@ -315,16 +402,111 @@ public class MainActivity extends Activity implements
     }
 
     @Override
-    public void onDestroy() {
+    protected void onStop() {
+        if(servicesConnected()) {
+            mLocationClient.disconnect();
+        }
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
         Log.d(TAG, "onDestroy()");
         mAmazon.removeDevice(mDeviceId);
         super.onDestroy();
     }
 
     /*
+     * Called by Location Services when the request to connect the
+     * client finishes successfully. At this point, you can
+     * request the current location or start periodic updates
+     */
+    @Override
+    public void onConnected(Bundle dataBundle) {
+        // Display the connection status
+        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+        mLocation = mLocationClient.getLastLocation();
+        mLocationClient.requestLocationUpdates(mLocationRequest, this);
+    }
+
+    /*
+     * Called by Location Services if the connection to the
+     * location client drops because of an error.
+     */
+    @Override
+    public void onDisconnected() {
+        // Display the connection status
+        Toast.makeText(this, "Disconnected. Please re-connect.",
+                Toast.LENGTH_SHORT).show();
+    }
+
+
+    /*
+         * Called by Location Services if the attempt to
+         * Location Services fails.
+         */
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        /*
+         * Google Play services can resolve some errors it detects.
+         * If the error has a resolution, try sending an Intent to
+         * start a Google Play services activity that can resolve
+         * error.
+         */
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(
+                        this,
+                        CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                /*
+                 * Thrown if Google Play services canceled the original
+                 * PendingIntent
+                 */
+            } catch (IntentSender.SendIntentException e) {
+                // Log the error
+                e.printStackTrace();
+            }
+        } else {
+            /*
+             * If no resolution is available, display a dialog to the
+             * user with the error.
+             */
+            showErrorDialog(connectionResult.getErrorCode());
+        }
+    }
+
+
+
+
+
+    /*
      * Helper Functions
      *
      */
+
+
+    private boolean servicesConnected() {
+        // Check that Google Play services is available
+        int resultCode =
+                GooglePlayServicesUtil.
+                        isGooglePlayServicesAvailable(this);
+        // If Google Play services is available
+        if (ConnectionResult.SUCCESS == resultCode) {
+            // In debug mode, log the status
+            Log.d("Location Updates",
+                    "Google Play services is available.");
+            // Continue
+            return true;
+            // Google Play services was not available for some reason
+        } else {
+            // Get the error code
+            int errorCode = resultCode;
+            // Get the error dialog from Google Play services
+            showErrorDialog(errorCode);
+            return false;
+        }
+    }
 
     private int getAppVersion() {
         try {
@@ -371,6 +553,46 @@ public class MainActivity extends Activity implements
                             }
                         }).show();
     }
+
+    private void showErrorDialog(int errorCode) {
+        Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
+                errorCode,
+                this,
+                CONNECTION_FAILURE_RESOLUTION_REQUEST);
+        // If Google Play services can provide an error dialog
+        if (errorDialog != null) {
+            // Create a new DialogFragment for the error dialog
+            ErrorDialogFragment errorFragment =
+                    new ErrorDialogFragment();
+            // Set the dialog in the DialogFragment
+            errorFragment.setDialog(errorDialog);
+            // Show the error dialog in the DialogFragment
+            errorFragment.show(
+                    getFragmentManager(),
+                    "Location Updates");
+        }
+    }
+
+    // Define a DialogFragment that displays the error dialog
+    public static class ErrorDialogFragment extends DialogFragment {
+        // Global field to contain the error dialog
+        private Dialog mDialog;
+        // Default constructor. Sets the dialog field to null
+        public ErrorDialogFragment() {
+            super();
+            mDialog = null;
+        }
+        // Set the dialog to display
+        public void setDialog(Dialog dialog) {
+            mDialog = dialog;
+        }
+        // Return a Dialog to the DialogFragment.
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return mDialog;
+        }
+    }
+
 
 
     private void updateFromPreferences() {
