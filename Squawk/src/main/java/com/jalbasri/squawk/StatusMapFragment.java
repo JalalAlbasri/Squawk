@@ -23,6 +23,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPositionCreator;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
@@ -44,6 +45,9 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     private MainActivity activity;
     private Cursor cursor;
     private GoogleMap mGoogleMap;
+    private Marker mLastMarker;
+    private String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " ASC";
+    private int mLimit = 100;
 
     public interface OnMapFragmentCreatedListener {
         public void onMapFragmentCreated();
@@ -105,6 +109,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 mOnMapFragmentCreatedListener.onMapRegionChanged();
             }
         });
+        mGoogleMap.setOnMarkerClickListener(onMapMarkerClickListener);
         Log.d(TAG, "initGoogleMap finished " + (mGoogleMap != null));
 
     }
@@ -126,6 +131,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
         }
+
     }
 
     public void clearMarkers() {
@@ -181,10 +187,30 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         }
     }
 
+    GoogleMap.OnMarkerClickListener onMapMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            if (mLastMarker != null) {
+                mLastMarker.hideInfoWindow();
+                if (mLastMarker.equals(marker)) {
+                    mLastMarker = null;
+                    return true;
+                }
+            }
+
+            marker.showInfoWindow();
+            mLastMarker = marker;
+
+            return true;
+        }
+    };
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(activity,
-                TwitterStatusContentProvider.CONTENT_URI, null, null, null, null);
+                TwitterStatusContentProvider.CONTENT_URI, null, null, null,
+//                    mSortOrder + " limit " + mLimit);
+                null);
     }
 
     @Override

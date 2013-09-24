@@ -52,6 +52,7 @@ public class MainActivity extends Activity implements
     private long mDeviceIdExpirationTime;
     private LatLng mMapTarget;
     private int mRadius = 1;
+    private boolean mFirstLaunch = true;
 
     private long mTimestamp;
     private String mDeviceInformation;
@@ -78,7 +79,7 @@ public class MainActivity extends Activity implements
 //    private static final String MAP_FRAGMENT_TAG = "map_fragment_tag";
 
     ContentResolver mContentResolver;
-//    private LocationProvider mLocationProvider;
+    //    private LocationProvider mLocationProvider;
     private Location mLocation;
     private LocationClient mLocationClient;
     private LocationRequest mLocationRequest;
@@ -134,7 +135,13 @@ public class MainActivity extends Activity implements
          */
             mLocationClient = new LocationClient(this, this, this);
 
+        /*
+        Initialize the UI
+         */
+            setContentView(R.layout.activity_main);
+            initActionBar();
         }
+
 
 
 
@@ -193,11 +200,6 @@ public class MainActivity extends Activity implements
         mLocation = mLocationClient.getLastLocation();
         mLocationClient.requestLocationUpdates(mLocationRequest, this);
 
-        /*
-        Initialize the UI
-         */
-        setContentView(R.layout.activity_main);
-        initActionBar();
     }
 
     /*
@@ -303,28 +305,33 @@ public class MainActivity extends Activity implements
                 Double.toString(location.getLongitude());
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
-//        set mStatusMapFragment
-        if (mStatusMapFragment == null) {
-            View fragmentContainer = findViewById(R.id.fragment_container);
-            boolean tabletLayout = fragmentContainer == null;
+        /*
+        //TODO Move the map to the new location: Only do if track location enabled.
+         */
+        if (mFirstLaunch) {
+            mFirstLaunch = false;
+            if (mStatusMapFragment == null) {
+                View fragmentContainer = findViewById(R.id.fragment_container);
+                boolean tabletLayout = fragmentContainer == null;
 
-            if (!tabletLayout) {
-                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
-                        .findFragmentByTag(StatusMapFragment.class.getName());
-            } else {
-                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
-                        .findFragmentById(R.id.map_fragment));
+                if (!tabletLayout) {
+                    mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+                            .findFragmentByTag(StatusMapFragment.class.getName());
+                } else {
+                    mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+                            .findFragmentById(R.id.map_fragment));
+                }
             }
-        }
 
-        if (location != null && mStatusMapFragment != null && mDeviceId != null) {
-            mStatusMapFragment.moveMaptoLocation(
-                    new LatLng(location.getLatitude(), location.getLongitude()));
+            if (location != null && mStatusMapFragment != null && mDeviceId != null) {
+                mStatusMapFragment.moveMaptoLocation(
+                        new LatLng(location.getLatitude(), location.getLongitude()), 10);
 
-            double[][] mapRegion = mStatusMapFragment.getMapRegion();
-            if (mapRegion != null) {
-                Log.d(TAG, "Amazon.addDevice - onNewLocation");
-                mAmazon.addDevice(mDeviceId, mapRegion);
+//                double[][] mapRegion = mStatusMapFragment.getMapRegion();
+//                if (mapRegion != null) {
+//                    Log.d(TAG, "Amazon.addDevice - onNewLocation");
+//                    mAmazon.addDevice(mDeviceId, mapRegion);
+//                }
             }
         }
     }
@@ -342,8 +349,6 @@ public class MainActivity extends Activity implements
     public void onStatusChanged(String provider, int status, Bundle extras) {
 
     }
-
-//    }
 
     @Override
     public void onResume() {
@@ -456,7 +461,7 @@ public class MainActivity extends Activity implements
             double[][] mapRegion = mStatusMapFragment.getMapRegion();
             if (mapRegion != null) {
                 Log.d(TAG, "Amazon.addDevice - onMapRegionChanged, : " +
-                mDeviceId + " MapRegion: " + mapRegion.toString());
+                        mDeviceId + " MapRegion: " + mapRegion.toString());
                 mAmazon.addDevice(mDeviceId, mapRegion);
             }
             mMapTarget = mStatusMapFragment.getMapTarget();
@@ -502,10 +507,6 @@ public class MainActivity extends Activity implements
         mAmazon.removeDevice(mDeviceId);
         super.onDestroy();
     }
-
-
-
-
 
     /*
      * Helper Functions
