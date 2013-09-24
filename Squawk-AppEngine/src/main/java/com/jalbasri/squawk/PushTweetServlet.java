@@ -79,6 +79,8 @@ public class PushTweetServlet extends HttpServlet {
      */
     private static MulticastResult doSendTweetViaGcm(TweetBean tweet, Sender sender, List<String> devices) throws IOException {
 
+        System.out.println(devices.toString());
+
         Message msg = new Message.Builder()
                 .addData("tweet", "true")
                 .addData("id", tweet.getId())

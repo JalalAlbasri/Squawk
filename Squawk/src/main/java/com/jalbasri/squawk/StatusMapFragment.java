@@ -16,10 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CameraPositionCreator;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
@@ -107,10 +109,23 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
     }
 
+    public void moveMaptoLocation(LatLng latLng, float zoom) {
+        Log.d(TAG, "move map to location " + (mGoogleMap != null));
+        if (mGoogleMap != null) {
+            CameraPosition cameraPosition = new CameraPosition(latLng, zoom, 0, 0);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+            mGoogleMap.moveCamera(cameraUpdate);
+
+        }
+
+    }
+
     public void moveMaptoLocation(LatLng latLng) {
         Log.d(TAG, "move map to location " + (mGoogleMap != null));
-        if (mGoogleMap != null)
+        if (mGoogleMap != null) {
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+        }
     }
 
     public void clearMarkers() {

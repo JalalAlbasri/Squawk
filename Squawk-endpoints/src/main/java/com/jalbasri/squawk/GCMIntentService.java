@@ -147,6 +147,7 @@ public class GCMIntentService extends GCMBaseIntentService {
      * This is some special exception-handling code that we're using to work around a problem
      * with the DevAppServer and methods that return null in App Engine 1.7.5.
      */
+        Log.d(TAG, "[Registration] GCM registration id: " + registration);
         boolean alreadyRegisteredWithEndpointServer = false;
         DeviceInfo deviceInfo = null;
 
@@ -160,7 +161,7 @@ public class GCMIntentService extends GCMBaseIntentService {
                     .execute();
 
             if (existingInfo != null && registration.equals(existingInfo.getDeviceRegistrationID())) {
-                Log.d(TAG, "Already registered with endpoint server, existingIfo: " + existingInfo.getDeviceRegistrationID());
+                Log.d(TAG, "[Registration] Already registered with endpoint server, existingIfo: " + existingInfo.getDeviceRegistrationID());
                 alreadyRegisteredWithEndpointServer = true;
             }
         } catch (IOException e) {
@@ -175,6 +176,7 @@ public class GCMIntentService extends GCMBaseIntentService {
          * product information over to the backend. Then, we'll be
          * registered.
          */
+                Log.d(TAG, "[Registration] Try to insert registration id in endpoint, " + registration);
                 deviceInfo = new DeviceInfo();
                 endpoint.insertDeviceInfo(
                         deviceInfo
@@ -203,7 +205,7 @@ public class GCMIntentService extends GCMBaseIntentService {
                             + "your settings need to be changed to run against a local instance "
                             + "by setting LOCAL_ANDROID_RUN to 'true' in CloudEndpointUtils.java.",
                     true, true, null);
-            Log.d(TAG, "1) Registration with Google Cloud Messaging...SUCCEEDED!\n\n"
+            Log.d(TAG, "[Registration] 1) Registration with Google Cloud Messaging...SUCCEEDED!\n\n"
                     + "2) Registration with Endpoints Server...FAILED!\n\n"
                     + "Unable to register your device with your Cloud Endpoints server running at "
                     + endpoint.getRootUrl()
@@ -215,7 +217,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
         sendNotificationIntent(
                 context,
-                "1) Registration with Google Cloud Messaging...SUCCEEDED!\n\n"
+                "[Registration] 1) Registration with Google Cloud Messaging...SUCCEEDED!\n\n"
                         + "2) Registration with Endpoints Server...SUCCEEDED!\n\n"
                         + "Device registration with Cloud Endpoints Server running at  "
                         + endpoint.getRootUrl()
@@ -291,6 +293,10 @@ public class GCMIntentService extends GCMBaseIntentService {
      */
     private void sendNotificationIntent(Context context, String message,
                                         boolean isError, boolean isRegistrationMessage, DeviceInfo deviceInfo) {
+        if (deviceInfo != null)
+            Log.d(TAG, "[Registration] Send registration notification intent, DeviceInfo: [" +
+                deviceInfo.getDeviceRegistrationID() + ", " + deviceInfo.getDeviceInformation() + ", " +
+                    deviceInfo.getTimestamp() +"]");
         Intent notificationIntent = new Intent(context, RegisterActivity.class);
         notificationIntent.putExtra("gcmIntentServiceMessage", true);
         notificationIntent.putExtra("registrationMessage",

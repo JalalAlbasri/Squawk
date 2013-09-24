@@ -136,11 +136,7 @@ public class MainActivity extends Activity implements
 
         }
 
-        /*
-        Initialize the UI
-         */
-        setContentView(R.layout.activity_main);
-        initActionBar();
+
 
 
 //        mMapTarget = new LatLng(savedInstanceState.getDouble("map_target_latitude", 0),
@@ -158,78 +154,7 @@ public class MainActivity extends Activity implements
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(servicesConnected())
-            mLocationClient.connect();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult");
-        super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
-            case REGISTER_SUBACTIVITY:
-                if (resultCode == RESULT_OK) {
-                    Bundle deviceInfoBundle =
-                            data.getBundleExtra("deviceInfoBundle");
-                    Log.d(TAG, "[Registration] onActivityResult OK, " +
-                            (deviceInfoBundle != null) );
-                    if (deviceInfoBundle != null) {
-                            saveDeviceInfo(deviceInfoBundle);
-                            Log.d(TAG, "[Registration] onActivityResult:" +
-                                    " RegisterActivity Successful");
-                    }
-
-                } else {
-                    Log.d(TAG, "onActivityResult: RegisterActivity Failed");
-                    showDialog("Error occurred registering with endpoint server.");
-                }
-            break;
-            case SHOW_PREFERENCES:
-                if (resultCode == RESULT_OK)
-                    updateFromPreferences();
-                break;
-            case CONNECTION_FAILURE_RESOLUTION_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    //TODO Try the request again, ie Check for google play services again
-                    Log.d(TAG, "CONNECTION_FAILURE_RESOLUTION_REQUEST, Result Ok");
-                }
-            default: break;
-        }
-    }
-
-    /**
-     * Callback called when a new location is acquired in the Location Provider
-     * Moves the map to the new location.
-     * Updates the Amazon Server with the new location.
-     */
-    // Define the callback method that receives location updates
-    @Override
-    public void onLocationChanged(Location location) {
-        // Report to the UI that the location was updated
-        String msg = "Updated Location: " +
-                Double.toString(location.getLatitude()) + "," +
-                Double.toString(location.getLongitude());
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
-
-    public void onProviderDisabled(String provider) {
-
-    }
-
-    public void onProviderEnabled(String provider) {
-        Log.d(TAG, "onProviderEnabled: " + provider);
-        if(servicesConnected())
-            mLocationClient.requestLocationUpdates(mLocationRequest, this);
-    }
-
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-//
+    //
 //    @Override
 //    public void onNewLocation(Location location) {
 //        //set mStatusMapFragment
@@ -256,6 +181,168 @@ public class MainActivity extends Activity implements
 //                mAmazon.addDevice(mDeviceId, mapRegion);
 //            }
 //        }
+    /*
+     * Called by Location Services when the request to connect the
+     * client finishes successfully. At this point, you can
+     * request the current location or start periodic updates
+     */
+    @Override
+    public void onConnected(Bundle dataBundle) {
+        // Display the connection status
+        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+        mLocation = mLocationClient.getLastLocation();
+        mLocationClient.requestLocationUpdates(mLocationRequest, this);
+
+        /*
+        Initialize the UI
+         */
+        setContentView(R.layout.activity_main);
+        initActionBar();
+    }
+
+    /*
+     * Called by Location Services if the connection to the
+     * location client drops because of an error.
+     */
+    @Override
+    public void onDisconnected() {
+        // Display the connection status
+        Toast.makeText(this, "Disconnected. Please re-connect.",
+                Toast.LENGTH_SHORT).show();
+    }
+
+
+    /*
+         * Called by Location Services if the attempt to
+         * Location Services fails.
+         */
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        /*
+         * Google Play services can resolve some errors it detects.
+         * If the error has a resolution, try sending an Intent to
+         * start a Google Play services activity that can resolve
+         * error.
+         */
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(
+                        this,
+                        CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                /*
+                 * Thrown if Google Play services canceled the original
+                 * PendingIntent
+                 */
+            } catch (IntentSender.SendIntentException e) {
+                // Log the error
+                e.printStackTrace();
+            }
+        } else {
+            /*
+             * If no resolution is available, display a dialog to the
+             * user with the error.
+             */
+            showErrorDialog(connectionResult.getErrorCode());
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(servicesConnected())
+            mLocationClient.connect();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case REGISTER_SUBACTIVITY:
+                if (resultCode == RESULT_OK) {
+                    Bundle deviceInfoBundle =
+                            data.getBundleExtra("deviceInfoBundle");
+                    Log.d(TAG, "[Registration] onActivityResult OK, " +
+                            (deviceInfoBundle != null) );
+                    if (deviceInfoBundle != null) {
+                        saveDeviceInfo(deviceInfoBundle);
+                        Log.d(TAG, "[Registration] onActivityResult:" +
+                                " RegisterActivity Successful");
+                    }
+
+                } else {
+                    Log.d(TAG, "[Registration] onActivityResult: RegisterActivity Failed");
+                    showDialog("Error occurred registering with endpoint server.");
+                }
+                break;
+            case SHOW_PREFERENCES:
+                if (resultCode == RESULT_OK)
+                    updateFromPreferences();
+                break;
+            case CONNECTION_FAILURE_RESOLUTION_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    //TODO Try the request again, ie Check for google play services again
+                    Log.d(TAG, "CONNECTION_FAILURE_RESOLUTION_REQUEST, Result Ok");
+                }
+            default: break;
+        }
+    }
+
+    /**
+     * Callback called when a new location is acquired in the Location Provider
+     * Moves the map to the new location.
+     * Updates the Amazon Server with the new location.
+     */
+    // Define the callback method that receives location updates
+    @Override
+    public void onLocationChanged(Location location) {
+        // Report to the UI that the location was updated
+        String msg = "Updated Location: " +
+                Double.toString(location.getLatitude()) + "," +
+                Double.toString(location.getLongitude());
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+
+//        set mStatusMapFragment
+        if (mStatusMapFragment == null) {
+            View fragmentContainer = findViewById(R.id.fragment_container);
+            boolean tabletLayout = fragmentContainer == null;
+
+            if (!tabletLayout) {
+                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
+                        .findFragmentByTag(StatusMapFragment.class.getName());
+            } else {
+                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
+                        .findFragmentById(R.id.map_fragment));
+            }
+        }
+
+        if (location != null && mStatusMapFragment != null && mDeviceId != null) {
+            mStatusMapFragment.moveMaptoLocation(
+                    new LatLng(location.getLatitude(), location.getLongitude()));
+
+            double[][] mapRegion = mStatusMapFragment.getMapRegion();
+            if (mapRegion != null) {
+                Log.d(TAG, "Amazon.addDevice - onNewLocation");
+                mAmazon.addDevice(mDeviceId, mapRegion);
+            }
+        }
+    }
+
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    public void onProviderEnabled(String provider) {
+        Log.d(TAG, "onProviderEnabled: " + provider);
+        if(servicesConnected())
+            mLocationClient.requestLocationUpdates(mLocationRequest, this);
+    }
+
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
 //    }
 
     @Override
@@ -358,7 +445,7 @@ public class MainActivity extends Activity implements
                 mStatusMapFragment.moveMaptoLocation(mMapTarget);
             } else if (mLocation != null) {
                 mStatusMapFragment.moveMaptoLocation(
-                        new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
+                        new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 10);
             }
         }
     }
@@ -414,66 +501,6 @@ public class MainActivity extends Activity implements
         Log.d(TAG, "onDestroy()");
         mAmazon.removeDevice(mDeviceId);
         super.onDestroy();
-    }
-
-    /*
-     * Called by Location Services when the request to connect the
-     * client finishes successfully. At this point, you can
-     * request the current location or start periodic updates
-     */
-    @Override
-    public void onConnected(Bundle dataBundle) {
-        // Display the connection status
-        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
-        mLocation = mLocationClient.getLastLocation();
-        mLocationClient.requestLocationUpdates(mLocationRequest, this);
-    }
-
-    /*
-     * Called by Location Services if the connection to the
-     * location client drops because of an error.
-     */
-    @Override
-    public void onDisconnected() {
-        // Display the connection status
-        Toast.makeText(this, "Disconnected. Please re-connect.",
-                Toast.LENGTH_SHORT).show();
-    }
-
-
-    /*
-         * Called by Location Services if the attempt to
-         * Location Services fails.
-         */
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        /*
-         * Google Play services can resolve some errors it detects.
-         * If the error has a resolution, try sending an Intent to
-         * start a Google Play services activity that can resolve
-         * error.
-         */
-        if (connectionResult.hasResolution()) {
-            try {
-                // Start an Activity that tries to resolve the error
-                connectionResult.startResolutionForResult(
-                        this,
-                        CONNECTION_FAILURE_RESOLUTION_REQUEST);
-                /*
-                 * Thrown if Google Play services canceled the original
-                 * PendingIntent
-                 */
-            } catch (IntentSender.SendIntentException e) {
-                // Log the error
-                e.printStackTrace();
-            }
-        } else {
-            /*
-             * If no resolution is available, display a dialog to the
-             * user with the error.
-             */
-            showErrorDialog(connectionResult.getErrorCode());
-        }
     }
 
 
@@ -537,6 +564,10 @@ public class MainActivity extends Activity implements
         editor.putLong(KEY_DEVICE_ID_EXPIRATION_TIME, expirationTime);
 
         editor.commit();
+
+        mDeviceId = deviceId;
+        mTimestamp = deviceTimestamp;
+        mDeviceInformation = deviceInformation;
 
         showDialog("Successfully registered with endpoint server." +
                 " Registration Id: " + deviceId);
