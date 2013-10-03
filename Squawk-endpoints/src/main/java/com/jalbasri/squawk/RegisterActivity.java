@@ -157,7 +157,6 @@ public class RegisterActivity extends Activity {
                         "Exception received when attempting to register for Google Cloud ", e);
                 setResult(RESULT_CANCELED);
             }
-
         }
 
     /*

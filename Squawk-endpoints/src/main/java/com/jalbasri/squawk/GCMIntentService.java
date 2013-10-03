@@ -63,6 +63,7 @@ public class GCMIntentService extends GCMBaseIntentService {
      *            the activity's context.
      */
     public static void register(Context mContext) {
+        Log.d(TAG, "[Registration] GCMIntentService.Register()");
         GCMRegistrar.checkDevice(mContext);
         GCMRegistrar.checkManifest(mContext);
         GCMRegistrar.register(mContext, PROJECT_NUMBER);
@@ -160,8 +161,10 @@ public class GCMIntentService extends GCMBaseIntentService {
             DeviceInfo existingInfo = endpoint.getDeviceInfo(registration)
                     .execute();
 
-            if (existingInfo != null && registration.equals(existingInfo.getDeviceRegistrationID())) {
-                Log.d(TAG, "[Registration] Already registered with endpoint server, existingIfo: " + existingInfo.getDeviceRegistrationID());
+            if (existingInfo != null
+                    && registration.equals(existingInfo.getDeviceRegistrationID())) {
+                Log.d(TAG, "[Registration] Already registered with endpoint server, existingIfo: "
+                        + existingInfo.getDeviceRegistrationID());
                 alreadyRegisteredWithEndpointServer = true;
             }
         } catch (IOException e) {
@@ -176,7 +179,8 @@ public class GCMIntentService extends GCMBaseIntentService {
          * product information over to the backend. Then, we'll be
          * registered.
          */
-                Log.d(TAG, "[Registration] Try to insert registration id in endpoint, " + registration);
+                Log.d(TAG, "[Registration] Try to insert registration id in endpoint, "
+                        + registration);
                 deviceInfo = new DeviceInfo();
                 endpoint.insertDeviceInfo(
                         deviceInfo

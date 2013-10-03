@@ -102,22 +102,16 @@ public class MainActivity extends Activity implements
                 ", Current Time = " + System.currentTimeMillis()
         );
 
-        if (mDeviceId.equals("") || appVersion != mRegisteredVersion) {
-
-            Log.d(TAG, "[Registration] Device Id not found in Preferences.");
-            Intent registerIntent = new Intent(this, RegisterActivity.class);
-            startActivityForResult(registerIntent, REGISTER_SUBACTIVITY);
-
-        } else {
-            Date expirationDate = new Date(mDeviceIdExpirationTime);
-            Log.d(TAG, "[Registration] Device Already Registered with Id: " + mDeviceId + ". " +
-                    "Registration will expire on " + expirationDate);
-        }
-        mAmazon = new Amazon();
-
+        Intent registerIntent = new Intent(this, RegisterActivity.class);
+        startActivityForResult(registerIntent, REGISTER_SUBACTIVITY);
 
         /*
-        Check for GooglePlayServices and define Location Client
+            Initialize Amazon server object
+         */
+        mAmazon = new Amazon();
+
+        /*
+            Check for GooglePlayServices and define Location Client
          */
         if(servicesConnected()) {
             // Create the LocationRequest object

@@ -20,6 +20,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPositionCreator;
 import com.google.android.gms.maps.model.LatLng;
@@ -47,7 +48,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     private GoogleMap mGoogleMap;
     private Marker mLastMarker;
     private String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " ASC";
-    private int mLimit = 100;
+    private final int MARKER_LIMIT = 20;
 
     public interface OnMapFragmentCreatedListener {
         public void onMapFragmentCreated();
@@ -159,7 +160,9 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
     private void refreshMapMarkers() {
         if (cursor != null && cursor.moveToNext()) {
+            int i = 0;
             do {
+                i++;
                 LatLng latLng = new LatLng(
                         cursor.getDouble(cursor
                                 .getColumnIndex(TwitterStatusContentProvider.KEY_LATITUDE)),
@@ -171,7 +174,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                         .getString(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_TEXT));
                 drawMarker(latLng, title, snippet);
                 cursor.moveToNext();
-            } while (cursor.moveToNext());
+            } while (i < MARKER_LIMIT && cursor.moveToNext());
         }
     }
 
@@ -180,7 +183,8 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 .position(latLng)
                 .title(title)
                 .draggable(false)
-//        .icon(BitmapDescriptorFactory.fromResource(R.drawable.twitter_bird))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.tweet_light))
+//                .anchor(24, 2)
                 .snippet(snippet);
         if (mGoogleMap != null && latLng != null) {
             mGoogleMap.addMarker(markerOptions);
@@ -210,7 +214,8 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         return new CursorLoader(activity,
                 TwitterStatusContentProvider.CONTENT_URI, null, null, null,
 //                    mSortOrder + " limit " + mLimit);
-                null);
+                mSortOrder);
+//                null);
     }
 
     @Override
