@@ -72,7 +72,7 @@ public class MainActivity extends Activity implements
     public static final long DEFAULT_DEVICE_ID_EXPIRATION_TIME = -1;
     public static final int DEFAULT_APP_VERSION = -1;
     //Default Device Id expiration time set to one week.
-    private static final long DEVICE_ID_EXPIRATION_TIME = 1000 * 3600 * 24 * 7;
+    private static final long DEVICE_ID_EXPIRATION_TIME = 1000 * 3600 * 24;
     private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private static final int LOCATION_UPDATE_INTERVAL = 20000;
     private static final int LOCATION_FASTEST_UPDATE_INTERVAL = 20000;
@@ -91,6 +91,7 @@ public class MainActivity extends Activity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "ONCREATE()");
         super.onCreate(savedInstanceState);
         mContentResolver = getContentResolver();
         int appVersion = getAppVersion();
@@ -102,9 +103,15 @@ public class MainActivity extends Activity implements
                 ", Current Time = " + System.currentTimeMillis()
         );
 
-        Intent registerIntent = new Intent(this, RegisterActivity.class);
-        startActivityForResult(registerIntent, REGISTER_SUBACTIVITY);
-
+        /*
+        Initialize the UI
+         */
+        setContentView(R.layout.activity_main);
+        initActionBar();
+        if (System.currentTimeMillis() > mDeviceIdExpirationTime) {
+            Intent registerIntent = new Intent(this, RegisterActivity.class);
+            startActivityForResult(registerIntent, REGISTER_SUBACTIVITY);
+        }
         /*
             Initialize Amazon server object
          */
@@ -129,11 +136,7 @@ public class MainActivity extends Activity implements
          */
             mLocationClient = new LocationClient(this, this, this);
 
-        /*
-        Initialize the UI
-         */
-            setContentView(R.layout.activity_main);
-            initActionBar();
+
         }
 
 
@@ -259,7 +262,7 @@ public class MainActivity extends Activity implements
                 if (resultCode == RESULT_OK) {
                     Bundle deviceInfoBundle =
                             data.getBundleExtra("deviceInfoBundle");
-                    Log.d(TAG, "[Registration] onActivityResult OK, " +
+                    Log.d(TAG, "[Registration] onActivityResult OK, deviceInfoBundle != null" +
                             (deviceInfoBundle != null) );
                     if (deviceInfoBundle != null) {
                         saveDeviceInfo(deviceInfoBundle);
@@ -439,10 +442,13 @@ public class MainActivity extends Activity implements
 
         if(mStatusMapFragment != null) {
             mMapTarget = mStatusMapFragment.getMapTarget();
-            Log.d(TAG, "mMapTarget, location: " + (mLocation != null));
+            Log.d(TAG, "mMapTarget, location != null: " + (mLocation != null));
+            Log.d(TAG, "mMapTarget, target != null: " + (mMapTarget != null));
             if (mMapTarget != null && mMapTarget.latitude !=0 && mMapTarget.longitude != 0) {
+                Log.d(TAG, "Move Map to Target");
                 mStatusMapFragment.moveMaptoLocation(mMapTarget);
             } else if (mLocation != null) {
+                Log.d(TAG, "Move Map to Location");
                 mStatusMapFragment.moveMaptoLocation(
                         new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 10);
             }
@@ -564,8 +570,8 @@ public class MainActivity extends Activity implements
         mTimestamp = deviceTimestamp;
         mDeviceInformation = deviceInformation;
 
-        showDialog("Successfully registered with endpoint server." +
-                " Registration Id: " + deviceId);
+//        showDialog("Successfully registered with endpoint server." +
+//                " Registration Id: " + deviceId);
     }
 
 

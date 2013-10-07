@@ -148,7 +148,7 @@ public class GCMIntentService extends GCMBaseIntentService {
      * This is some special exception-handling code that we're using to work around a problem
      * with the DevAppServer and methods that return null in App Engine 1.7.5.
      */
-        Log.d(TAG, "[Registration] GCM registration id: " + registration);
+        Log.d(TAG, "[Registration] onRegistered, Returned GCM Registration Id: " + registration);
         boolean alreadyRegisteredWithEndpointServer = false;
         DeviceInfo deviceInfo = null;
 
@@ -158,13 +158,13 @@ public class GCMIntentService extends GCMBaseIntentService {
        * Using cloud endpoints, see if the device has already been
        * registered with the backend
        */
-            DeviceInfo existingInfo = endpoint.getDeviceInfo(registration)
+            deviceInfo = endpoint.getDeviceInfo(registration)
                     .execute();
 
-            if (existingInfo != null
-                    && registration.equals(existingInfo.getDeviceRegistrationID())) {
-                Log.d(TAG, "[Registration] Already registered with endpoint server, existingIfo: "
-                        + existingInfo.getDeviceRegistrationID());
+            if (deviceInfo != null
+                    && registration.equals(deviceInfo.getDeviceRegistrationID())) {
+                Log.d(TAG, "[Registration] GCM Registration matches server device - Already registered with endpoint server, existingIfo: "
+                        + deviceInfo.getDeviceRegistrationID());
                 alreadyRegisteredWithEndpointServer = true;
             }
         } catch (IOException e) {
@@ -229,8 +229,8 @@ public class GCMIntentService extends GCMBaseIntentService {
                         + "To send a message to this device, "
                         + "open your browser and navigate to the sample application at "
                         + getWebSampleUrl(endpoint.getRootUrl()), false, true, deviceInfo);
-        Log.d(TAG, "1) Registration with Google Cloud Messaging...SUCCEEDED!\n\n"
-                + "2) Registration with Endpoints Server...SUCCEEDED!\n\n"
+        Log.d(TAG, "1) [Registration] with Google Cloud Messaging...SUCCEEDED!\n\n"
+                + "2) [Registration] with Endpoints Server...SUCCEEDED!\n\n"
                 + "Device registration with Cloud Endpoints Server running at  "
                 + endpoint.getRootUrl()
                 + " succeeded!\n\n"

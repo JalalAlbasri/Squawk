@@ -96,6 +96,7 @@ public class PushTweetServlet extends HttpServlet {
                 .build();
 
         MulticastResult result = sender.send(msg, devices, 5);
+        System.out.println("Result: " + result);
 
         return result;
     }

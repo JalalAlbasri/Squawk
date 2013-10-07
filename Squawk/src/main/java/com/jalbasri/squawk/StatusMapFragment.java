@@ -47,8 +47,8 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     private Cursor cursor;
     private GoogleMap mGoogleMap;
     private Marker mLastMarker;
-    private String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " ASC";
-    private final int MARKER_LIMIT = 20;
+    private String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " DESC";
+    private final int MARKER_LIMIT = 10;
 
     public interface OnMapFragmentCreatedListener {
         public void onMapFragmentCreated();
@@ -66,7 +66,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             Log.d(TAG, e.getMessage());
         }
         getLoaderManager().initLoader(TWITTER_STATUS_LOADER, null, this);
-//        setRetainInstance(true);
+        setRetainInstance(true);
 
     }
 
@@ -74,6 +74,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView()");
+        LatLng lastMapTarget = null;
         View v = super.onCreateView(inflater, container, savedInstanceState);
         initGoogleMap();
         return v;
@@ -159,10 +160,9 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     }
 
     private void refreshMapMarkers() {
-        if (cursor != null && cursor.moveToNext()) {
-            int i = 0;
-            do {
-                i++;
+        if (cursor != null) {
+            clearMarkers();
+            for (int i = 0; i < MARKER_LIMIT && cursor.moveToNext(); i++) {
                 LatLng latLng = new LatLng(
                         cursor.getDouble(cursor
                                 .getColumnIndex(TwitterStatusContentProvider.KEY_LATITUDE)),
@@ -173,9 +173,30 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 String snippet = cursor
                         .getString(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_TEXT));
                 drawMarker(latLng, title, snippet);
-                cursor.moveToNext();
-            } while (i < MARKER_LIMIT && cursor.moveToNext());
+
+            }
+            if(mLastMarker != null) {
+                mLastMarker.showInfoWindow();
+            }
         }
+
+//        if (cursor != null && cursor.moveToNext()) {
+//            int i = 0;
+//            do {
+//                i++;
+//                LatLng latLng = new LatLng(
+//                        cursor.getDouble(cursor
+//                                .getColumnIndex(TwitterStatusContentProvider.KEY_LATITUDE)),
+//                        cursor.getDouble(cursor
+//                                .getColumnIndex(TwitterStatusContentProvider.KEY_LONGITUDE)));
+//                String title = cursor.getString(cursor
+//                        .getColumnIndex(TwitterStatusContentProvider.KEY_USER_SCREEN_NAME));
+//                String snippet = cursor
+//                        .getString(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_TEXT));
+//                drawMarker(latLng, title, snippet);
+//                cursor.moveToNext();
+//            } while (i < MARKER_LIMIT && cursor.moveToNext());
+//        }
     }
 
     private void drawMarker(LatLng latLng, String title, String snippet) {
