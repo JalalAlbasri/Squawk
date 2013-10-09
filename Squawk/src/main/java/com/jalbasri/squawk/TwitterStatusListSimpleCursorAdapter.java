@@ -2,50 +2,105 @@ package com.jalbasri.squawk;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.LinearLayout;
 import android.view.View;
 import android.widget.TextView;
 
+import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
+
 public class TwitterStatusListSimpleCursorAdapter extends SimpleCursorAdapter {
+    private static final String TAG = TwitterStatusListSimpleCursorAdapter.class.getSimpleName();
 
-    Context context;
-    int layout;
 
-    public TwitterStatusListSimpleCursorAdapter(Context context, int layout, Cursor c,
+    Context mContext;
+    int mLayout;
+
+    public TwitterStatusListSimpleCursorAdapter(Context context, int layout, Cursor cursor,
                                         String[] from, int[] to) {
-        super(context, layout, c, from, to);
-        this.context = context;
-        this.layout = layout;
+        super(context, layout, cursor, from, to);
+        this.mContext = context;
+        this.mLayout = layout;
+
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-   /*     LinearLayout twitterStatusItemView;
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+//        LayoutInflater inflater = LayoutInflater.from(context);
+//        View view = inflater.inflate(R.layout.status_list_item, parent, false);
 
-        Cursor cursor = getCursor();
+//        View itemView =
+//        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        inflater.inflate(viewGroup, viewGroup, true);
 
-        String twitterUser = cursor.getString(cursor.getColumnIndex(TwitterStatusProvider.KEY_USER));
-        String twitterStatus = cursor.getString(cursor.getColumnIndex(TwitterStatusProvider.KEY_STATUS));
+        LinearLayout statusListItemView = new LinearLayout(mContext);
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(mLayout, statusListItemView, true);
 
-        if (convertView == null) {
-            twitterStatusItemView = new LinearLayout(context);
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            inflater.inflate(layout, twitterStatusItemView, true);
-        } else {
-            twitterStatusItemView = (LinearLayout) convertView;
-        }
-
-        TextView twitterUserTextView = (TextView) twitterStatusItemView.findViewById(R.id.twitter_user);
-        TextView twitterStatusTextView = (TextView) twitterStatusItemView.findViewById(R.id.twitter_status);
-
-        twitterUserTextView.setText(twitterUser);
-        twitterStatusTextView.setText(twitterStatus);
-
-        return twitterStatusItemView;
-    */
-        return null;
+        bindView(view, context, cursor);
+        return view;
     }
+
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+        String userName = getCursor().getString(getCursor().getColumnIndex(TwitterStatusContentProvider.KEY_USER_NAME));
+        String statusText = getCursor().getString(getCursor().getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_TEXT));
+        String userImageUrl = getCursor().getString(getCursor().getColumnIndex(TwitterStatusContentProvider.KEY_USER_IMAGE));
+        String screenName = getCursor().getString(getCursor().getColumnIndex(TwitterStatusContentProvider.KEY_USER_SCREEN_NAME));
+        Log.d(TAG, "bindView(): " + userName);
+
+        TextView userNameTextView = (TextView) view.findViewById(R.id.user_name);
+        TextView statusTextView = (TextView) view.findViewById(R.id.status_text);
+        TextView screenNameTextView = (TextView) view.findViewById(R.id.screen_name);
+        ImageView userImageView = (ImageView) view.findViewById(R.id.user_image);
+
+        userNameTextView.setText(userName);
+        screenNameTextView.setText("@"+screenName);
+        statusTextView.setText(statusText);
+        UrlImageViewHelper.setUrlDrawable(userImageView, userImageUrl);
+
+    }
+//
+//    @Override
+//    public View getView(int position, View convertView, ViewGroup parent) {
+//        LinearLayout statusListItemView;
+//
+//
+//        if (getCursor().isBeforeFirst()) {
+//            Log.d(TAG, "cursor before first- move to next");
+//            getCursor().moveToNext();
+//        }
+//
+//        String userName = getCursor().getString(getCursor().getColumnIndex(TwitterStatusContentProvider.KEY_USER_NAME));
+//        String statusText = getCursor().getString(getCursor().getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_TEXT));
+//        String userImageUrl = getCursor().getString(getCursor().getColumnIndex(TwitterStatusContentProvider.KEY_USER_IMAGE));
+//        String screenName = getCursor().getString(getCursor().getColumnIndex(TwitterStatusContentProvider.KEY_USER_SCREEN_NAME));
+//        Log.d(TAG, "getView(): " + userName);
+//
+//        if (convertView == null) {
+//
+//            statusListItemView = new LinearLayout(mContext);
+//            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//            inflater.inflate(mLayout, statusListItemView, true);
+//        } else {
+//            statusListItemView = (LinearLayout) convertView;
+//        }
+//
+//        TextView userNameTextView = (TextView) statusListItemView.findViewById(R.id.user_name);
+//        TextView statusTextView = (TextView) statusListItemView.findViewById(R.id.status_text);
+//        TextView screenNameTextView = (TextView) statusListItemView.findViewById(R.id.screen_name);
+//        ImageView userImageView = (ImageView) statusListItemView.findViewById(R.id.user_image);
+//
+//        userNameTextView.setText(userName);
+//        screenNameTextView.setText("@"+screenName);
+//        statusTextView.setText(statusText);
+//        UrlImageViewHelper.setUrlDrawable(userImageView, userImageUrl);
+//
+//        return statusListItemView;
+//
+//    }
 }

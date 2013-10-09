@@ -488,8 +488,6 @@ public class MainActivity extends Activity implements
             transaction.commit();
         }
         mAmazon.removeDevice(mDeviceId);
-//        outState.putDouble("map_target_latitude", mMapTarget.latitude);
-//        outState.putDouble("map_target_longitude", mMapTarget.longitude);
         super.onSaveInstanceState(outState);
     }
 

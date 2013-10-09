@@ -2,19 +2,14 @@ package com.jalbasri.squawk;
 
 import android.app.Activity;
 import android.app.LoaderManager;
-import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SimpleCursorAdapter;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,13 +17,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.CameraPositionCreator;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
-
-import java.util.ArrayList;
 
 //TODO set a default map zoom
 //TODO move the camera to last location when switching tabs and changing orientation
@@ -43,8 +35,8 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
     private OnMapFragmentCreatedListener mOnMapFragmentCreatedListener;
     private static final int TWITTER_STATUS_LOADER = 0;
-    private MainActivity activity;
-    private Cursor cursor;
+    private MainActivity mActivity;
+    private Cursor mCursor;
     private GoogleMap mGoogleMap;
     private Marker mLastMarker;
     private String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " DESC";
@@ -59,7 +51,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     public void onAttach(Activity activity){
         Log.d(TAG, "map onAttach()");
         super.onAttach(activity);
-        this.activity = (MainActivity) activity;
+        this.mActivity = (MainActivity) activity;
         try {
             mOnMapFragmentCreatedListener = (OnMapFragmentCreatedListener) activity;
         } catch (ClassCastException e){
@@ -160,18 +152,18 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     }
 
     private void refreshMapMarkers() {
-        if (cursor != null) {
+        if (mCursor != null) {
             clearMarkers();
-            for (int i = 0; i < MARKER_LIMIT && cursor.moveToNext(); i++) {
+            for (int i = 0; i < MARKER_LIMIT && mCursor.moveToNext(); i++) {
                 LatLng latLng = new LatLng(
-                        cursor.getDouble(cursor
+                        mCursor.getDouble(mCursor
                                 .getColumnIndex(TwitterStatusContentProvider.KEY_LATITUDE)),
-                        cursor.getDouble(cursor
+                        mCursor.getDouble(mCursor
                                 .getColumnIndex(TwitterStatusContentProvider.KEY_LONGITUDE)));
-                String title = cursor.getString(cursor
+                String title = mCursor.getString(mCursor
                         .getColumnIndex(TwitterStatusContentProvider.KEY_USER_SCREEN_NAME));
-                String snippet = cursor
-                        .getString(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_TEXT));
+                String snippet = mCursor
+                        .getString(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_TEXT));
                 drawMarker(latLng, title, snippet);
 
             }
@@ -207,6 +199,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.tweet_light))
 //                .anchor(24, 2)
                 .snippet(snippet);
+
         if (mGoogleMap != null && latLng != null) {
             mGoogleMap.addMarker(markerOptions);
         }
@@ -232,7 +225,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(activity,
+        return new CursorLoader(mActivity,
                 TwitterStatusContentProvider.CONTENT_URI, null, null, null,
 //                    mSortOrder + " limit " + mLimit);
                 mSortOrder);
@@ -250,7 +243,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     }
 
     private void swapCursor(Cursor cursor) {
-        this.cursor = cursor;
+        this.mCursor = cursor;
         refreshMapMarkers();
     }
 

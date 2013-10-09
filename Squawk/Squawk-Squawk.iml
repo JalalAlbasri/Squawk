@@ -73,6 +73,7 @@
     <orderEntry type="library" exported="" name="google-http-client-1.15.0-rc" level="project" />
     <orderEntry type="library" exported="" name="gcm" level="project" />
     <orderEntry type="library" exported="" name="google-api-client-android-1.15.0-rc" level="project" />
+    <orderEntry type="library" exported="" name="urlimageviewhelper-1.0.4" level="project" />
     <orderEntry type="library" exported="" name="twitter4j-core-3.0.3" level="project" />
     <orderEntry type="library" exported="" name="google-http-client-jackson-1.15.0-rc" level="project" />
     <orderEntry type="library" exported="" name="jcoord-1.0" level="project" />
