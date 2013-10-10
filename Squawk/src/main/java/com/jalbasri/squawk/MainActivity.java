@@ -72,7 +72,7 @@ public class MainActivity extends Activity implements
     public static final long DEFAULT_DEVICE_ID_EXPIRATION_TIME = -1;
     public static final int DEFAULT_APP_VERSION = -1;
     //Default Device Id expiration time set to one week.
-    private static final long DEVICE_ID_EXPIRATION_TIME = 1000 * 3600 * 24;
+    private static final long DEVICE_ID_EXPIRATION_TIME = 1000 * 3600 * 3;
     private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private static final int LOCATION_UPDATE_INTERVAL = 20000;
     private static final int LOCATION_FASTEST_UPDATE_INTERVAL = 20000;

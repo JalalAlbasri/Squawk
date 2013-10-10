@@ -41,6 +41,8 @@
     <color name="common_signin_btn_light_text_disabled">#FFAAAAAA</color>
     <color name="common_signin_btn_light_text_focused">#FF737373</color>
     <color name="common_signin_btn_light_text_pressed">@android:color/white</color>
+    <!-- From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values/colors.xml -->
+    <color name="status_list_item_divider">#e3e3e3</color>
     <!-- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values/maps_attrs.xml -->
     <declare-styleable name="MapAttrs">
         <attr name="mapType" format="enum">

@@ -12,23 +12,32 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:background="@drawable/card_background">
-
         <ImageView
             android:id="@+id/user_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
             android:padding="2dp"
             android:layout_alignParentLeft="true"
             />
 
         <TextView
             android:id="@+id/user_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/user_image"
             android:textStyle="bold"
             android:paddingLeft="4dp"
             />
+
+        <TextView
+            android:id="@+id/created_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/darker_gray"
+            android:layout_alignParentRight="true"
+            android:paddingRight="2dp"
+            />
+
         <TextView
             android:id="@+id/screen_name"
             android:layout_width="match_parent"
@@ -37,15 +46,63 @@
             android:textColor="@android:color/darker_gray"
             android:layout_toRightOf="@id/user_image"
             android:layout_below="@id/user_name"
-        />
-
+            />
         <TextView
             android:id="@+id/status_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="4dp"
             android:layout_below="@id/user_image"
-             />
+            />
+        <View
+            android:id="@+id/divider"
+            android:layout_width="fill_parent"
+            android:layout_below="@id/status_text"
+            android:layout_height="1dp"
+            android:layout_margin="5dp"
+            android:background="@color/status_list_item_divider"/>
 
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/divider"
+            android:gravity="right"
+            >
+            <ImageButton
+                android:id="@+id/favorite"
+                android:src="@drawable/ic_action_important"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="5dp"
+                android:scaleType="fitCenter"
+                android:padding="5dp"
+                android:background="@drawable/button_background"
+
+                />
+            <ImageButton
+                android:id="@+id/reply"
+                android:src="@drawable/ic_action_reply"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="5dp"
+                android:scaleType="fitCenter"
+                android:padding="3dp"
+                android:background="@drawable/button_background"
+                android:layout_toRightOf="@id/favorite"
+                />
+            <ImageButton
+                android:id="@+id/retweet"
+                android:src="@drawable/ic_action_repeat"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:scaleType="fitCenter"
+                android:padding="3dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/button_background"
+                android:layout_toRightOf="@id/reply"
+                />
+
+        </RelativeLayout>
     </RelativeLayout>
 </LinearLayout>
