@@ -18,6 +18,7 @@
             android:layout_height="55dp"
             android:padding="2dp"
             android:layout_alignParentLeft="true"
+            android:radius="2dp"
             />
 
         <TextView
@@ -27,6 +28,8 @@
             android:layout_toRightOf="@id/user_image"
             android:textStyle="bold"
             android:paddingLeft="4dp"
+            android:typeface="sans"
+            android:textSize="16sp"
             />
 
         <TextView
@@ -67,14 +70,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_below="@id/divider"
-            android:gravity="right"
             >
             <ImageButton
                 android:id="@+id/favorite"
                 android:src="@drawable/ic_action_important"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_margin="5dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_margin="7dp"
                 android:scaleType="fitCenter"
                 android:padding="5dp"
                 android:background="@drawable/button_background"
@@ -83,9 +85,9 @@
             <ImageButton
                 android:id="@+id/reply"
                 android:src="@drawable/ic_action_reply"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_margin="5dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_margin="7dp"
                 android:scaleType="fitCenter"
                 android:padding="3dp"
                 android:background="@drawable/button_background"
@@ -94,11 +96,11 @@
             <ImageButton
                 android:id="@+id/retweet"
                 android:src="@drawable/ic_action_repeat"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_margin="7dp"
                 android:scaleType="fitCenter"
                 android:padding="3dp"
-                android:layout_margin="5dp"
                 android:background="@drawable/button_background"
                 android:layout_toRightOf="@id/reply"
                 />
