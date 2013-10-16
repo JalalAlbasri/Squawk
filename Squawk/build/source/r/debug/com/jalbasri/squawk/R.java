@@ -9,7 +9,7 @@ package com.jalbasri.squawk;
 
 public final class R {
     public static final class array {
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values/strings_activity_settings.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values/strings_activity_settings.xml 
          */
         public static final int pref_radius_titles=0x7f050000;
         public static final int pref_radius_values=0x7f050001;
@@ -137,7 +137,7 @@ containing a value of this type.
         public static final int zOrderOnTop=0x7f01000d;
     }
     public static final class color {
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values/colors.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values/colors.xml 
          */
         public static final int common_action_bar_splitter=0x7f060000;
         public static final int common_signin_btn_dark_text_default=0x7f060001;
@@ -149,15 +149,16 @@ containing a value of this type.
         public static final int common_signin_btn_light_text_disabled=0x7f060007;
         public static final int common_signin_btn_light_text_focused=0x7f060008;
         public static final int common_signin_btn_light_text_pressed=0x7f060009;
-        public static final int common_signin_btn_text_dark=0x7f06000b;
-        public static final int common_signin_btn_text_light=0x7f06000c;
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values/colors.xml 
+        public static final int common_signin_btn_text_dark=0x7f06000c;
+        public static final int common_signin_btn_text_light=0x7f06000d;
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values/colors.xml 
          */
         public static final int status_list_item_divider=0x7f06000a;
+        public static final int white=0x7f06000b;
     }
     public static final class dimen {
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values/dimens.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values-sw720dp-land/dimens.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values/dimens.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values-sw720dp-land/dimens.xml 
          */
         public static final int activity_horizontal_margin=0x7f080000;
         public static final int activity_vertical_margin=0x7f080001;
@@ -165,63 +166,59 @@ containing a value of this type.
     public static final class drawable {
         public static final int bird_blue_32=0x7f020000;
         public static final int button_background=0x7f020001;
-        public static final int card_background=0x7f020002;
-        public static final int collections_view_as_list=0x7f020003;
-        public static final int common_signin_btn_icon_dark=0x7f020004;
-        public static final int common_signin_btn_icon_disabled_dark=0x7f020005;
-        public static final int common_signin_btn_icon_disabled_focus_dark=0x7f020006;
-        public static final int common_signin_btn_icon_disabled_focus_light=0x7f020007;
-        public static final int common_signin_btn_icon_disabled_light=0x7f020008;
-        public static final int common_signin_btn_icon_focus_dark=0x7f020009;
-        public static final int common_signin_btn_icon_focus_light=0x7f02000a;
-        public static final int common_signin_btn_icon_light=0x7f02000b;
-        public static final int common_signin_btn_icon_normal_dark=0x7f02000c;
-        public static final int common_signin_btn_icon_normal_light=0x7f02000d;
-        public static final int common_signin_btn_icon_pressed_dark=0x7f02000e;
-        public static final int common_signin_btn_icon_pressed_light=0x7f02000f;
-        public static final int common_signin_btn_text_dark=0x7f020010;
-        public static final int common_signin_btn_text_disabled_dark=0x7f020011;
-        public static final int common_signin_btn_text_disabled_focus_dark=0x7f020012;
-        public static final int common_signin_btn_text_disabled_focus_light=0x7f020013;
-        public static final int common_signin_btn_text_disabled_light=0x7f020014;
-        public static final int common_signin_btn_text_focus_dark=0x7f020015;
-        public static final int common_signin_btn_text_focus_light=0x7f020016;
-        public static final int common_signin_btn_text_light=0x7f020017;
-        public static final int common_signin_btn_text_normal_dark=0x7f020018;
-        public static final int common_signin_btn_text_normal_light=0x7f020019;
-        public static final int common_signin_btn_text_pressed_dark=0x7f02001a;
-        public static final int common_signin_btn_text_pressed_light=0x7f02001b;
-        public static final int favorite=0x7f02001c;
+        public static final int button_background_pressed=0x7f020002;
+        public static final int card_background=0x7f020003;
+        public static final int card_background_pressed=0x7f020004;
+        public static final int common_signin_btn_icon_dark=0x7f020005;
+        public static final int common_signin_btn_icon_disabled_dark=0x7f020006;
+        public static final int common_signin_btn_icon_disabled_focus_dark=0x7f020007;
+        public static final int common_signin_btn_icon_disabled_focus_light=0x7f020008;
+        public static final int common_signin_btn_icon_disabled_light=0x7f020009;
+        public static final int common_signin_btn_icon_focus_dark=0x7f02000a;
+        public static final int common_signin_btn_icon_focus_light=0x7f02000b;
+        public static final int common_signin_btn_icon_light=0x7f02000c;
+        public static final int common_signin_btn_icon_normal_dark=0x7f02000d;
+        public static final int common_signin_btn_icon_normal_light=0x7f02000e;
+        public static final int common_signin_btn_icon_pressed_dark=0x7f02000f;
+        public static final int common_signin_btn_icon_pressed_light=0x7f020010;
+        public static final int common_signin_btn_text_dark=0x7f020011;
+        public static final int common_signin_btn_text_disabled_dark=0x7f020012;
+        public static final int common_signin_btn_text_disabled_focus_dark=0x7f020013;
+        public static final int common_signin_btn_text_disabled_focus_light=0x7f020014;
+        public static final int common_signin_btn_text_disabled_light=0x7f020015;
+        public static final int common_signin_btn_text_focus_dark=0x7f020016;
+        public static final int common_signin_btn_text_focus_light=0x7f020017;
+        public static final int common_signin_btn_text_light=0x7f020018;
+        public static final int common_signin_btn_text_normal_dark=0x7f020019;
+        public static final int common_signin_btn_text_normal_light=0x7f02001a;
+        public static final int common_signin_btn_text_pressed_dark=0x7f02001b;
+        public static final int common_signin_btn_text_pressed_light=0x7f02001c;
         public static final int ic_action_important=0x7f02001d;
-        public static final int ic_action_repeat=0x7f02001e;
-        public static final int ic_action_reply=0x7f02001f;
-        public static final int ic_launcher=0x7f020020;
-        public static final int location_map=0x7f020021;
-        public static final int navigation_refresh=0x7f020022;
-        public static final int reply=0x7f020023;
-        public static final int reply2=0x7f020024;
-        public static final int reply_retina=0x7f020025;
-        public static final int reply_sprite=0x7f020026;
-        public static final int retweet=0x7f020027;
-        public static final int retweet2=0x7f020028;
-        public static final int retweet_retina=0x7f020029;
-        public static final int tweet=0x7f02002a;
-        public static final int tweet_black=0x7f02002b;
-        public static final int tweet_blue=0x7f02002c;
-        public static final int tweet_ios=0x7f02002d;
-        public static final int tweet_light=0x7f02002e;
-        public static final int tweet_light_gradient=0x7f02002f;
-        public static final int tweet_white=0x7f020030;
-        public static final int tweet_win=0x7f020031;
-        public static final int twitter_bird=0x7f020032;
+        public static final int ic_action_important_dark=0x7f02001e;
+        public static final int ic_action_map=0x7f02001f;
+        public static final int ic_action_repeat=0x7f020020;
+        public static final int ic_action_repeat_dark=0x7f020021;
+        public static final int ic_action_reply=0x7f020022;
+        public static final int ic_action_reply_dark=0x7f020023;
+        public static final int ic_action_view_as_list=0x7f020024;
+        public static final int ic_launcher=0x7f020025;
+        public static final int tweet=0x7f020026;
+        public static final int tweet_black=0x7f020027;
+        public static final int tweet_blue=0x7f020028;
+        public static final int tweet_ios=0x7f020029;
+        public static final int tweet_light=0x7f02002a;
+        public static final int tweet_light_gradient=0x7f02002b;
+        public static final int tweet_white=0x7f02002c;
+        public static final int tweet_win=0x7f02002d;
+        public static final int twitter_bird=0x7f02002e;
     }
     public static final class id {
-        public static final int action_clear=0x7f070015;
-        public static final int action_reload=0x7f070013;
-        public static final int action_settings=0x7f070014;
-        public static final int created_at=0x7f07000c;
-        public static final int divider=0x7f07000f;
-        public static final int favorite=0x7f070010;
+        public static final int action_clear=0x7f07001a;
+        public static final int action_settings=0x7f070019;
+        public static final int button_divider=0x7f070013;
+        public static final int created_at=0x7f070011;
+        public static final int divider=0x7f07000d;
+        public static final int favorite=0x7f070014;
         public static final int fragment_container=0x7f070005;
         public static final int hybrid=0x7f070004;
         public static final int map_fragment=0x7f070007;
@@ -229,86 +226,92 @@ containing a value of this type.
         public static final int none=0x7f070000;
         public static final int normal=0x7f070001;
         public static final int regButton=0x7f070009;
-        public static final int reply=0x7f070011;
-        public static final int retweet=0x7f070012;
+        public static final int reply=0x7f070015;
+        public static final int retweet=0x7f070016;
         public static final int satellite=0x7f070002;
-        public static final int screen_name=0x7f07000d;
+        public static final int screen_name=0x7f070012;
+        public static final int status_id=0x7f07000b;
         public static final int status_list_fragment=0x7f070006;
-        public static final int status_text=0x7f07000e;
+        public static final int status_text=0x7f07000c;
         public static final int terrain=0x7f070003;
-        public static final int user_image=0x7f07000a;
-        public static final int user_name=0x7f07000b;
+        public static final int tweet_item=0x7f07000a;
+        public static final int user_image=0x7f07000f;
+        public static final int user_info_relative_layout=0x7f07000e;
+        public static final int user_name=0x7f070010;
+        public static final int web_view=0x7f070018;
+        public static final int web_view_progress_bar=0x7f070017;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
         public static final int activity_register=0x7f030001;
         public static final int status_list_item=0x7f030002;
         public static final int status_list_listview=0x7f030003;
+        public static final int web_view=0x7f030004;
     }
     public static final class menu {
         public static final int main=0x7f0b0000;
     }
     public static final class string {
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values/strings.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values/strings.xml 
          */
         public static final int action_clear=0x7f090000;
         public static final int action_reload=0x7f090001;
         public static final int action_settings=0x7f090002;
         public static final int app_name=0x7f090003;
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values/strings.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values/strings.xml 
          */
         public static final int auth_client_availability_notification_title=0x7f090004;
         public static final int auth_client_play_services_err_notification_msg=0x7f090005;
         public static final int auth_client_requested_by_msg=0x7f090006;
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-af/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-am/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ar/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-be/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-bg/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ca/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-cs/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-da/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-de/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-el/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-en-rGB/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-es/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-es-rUS/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-et/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-fa/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-fi/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-fr/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-hi/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-hr/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-hu/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-in/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-it/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-iw/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ja/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ko/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-lt/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-lv/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ms/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-nb/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-nl/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-pl/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-pt/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-pt-rBR/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-pt-rPT/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ro/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ru/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-sk/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-sl/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-sr/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-sv/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-sw/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-th/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-tl/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-tr/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-uk/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-vi/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-zh-rCN/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-zh-rTW/strings.xml 
- From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-zu/strings.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-af/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-am/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ar/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-be/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-bg/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ca/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-cs/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-da/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-de/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-el/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-en-rGB/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-es/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-es-rUS/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-et/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-fa/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-fi/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-fr/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-hi/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-hr/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-hu/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-in/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-it/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-iw/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ja/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ko/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-lt/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-lv/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ms/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-nb/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-nl/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-pl/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-pt/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-pt-rBR/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-pt-rPT/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ro/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-ru/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-sk/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-sl/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-sr/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-sv/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-sw/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-th/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-tl/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-tr/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-uk/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-vi/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-zh-rCN/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-zh-rTW/strings.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-zu/strings.xml 
          */
         public static final int common_google_play_services_enable_button=0x7f090007;
         public static final int common_google_play_services_enable_text=0x7f090008;
@@ -325,22 +328,22 @@ containing a value of this type.
         public static final int common_google_play_services_update_title=0x7f090013;
         public static final int common_signin_button_text=0x7f090014;
         public static final int common_signin_button_text_long=0x7f090015;
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values/strings.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values/strings.xml 
          */
         public static final int hello_world=0x7f090016;
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values/strings.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values/strings.xml 
          */
         public static final int location_client_ulr_inactive_age_under_13=0x7f090017;
         public static final int location_client_ulr_inactive_age_unknown=0x7f090018;
         public static final int location_client_ulr_inactive_unknown_restriction=0x7f090019;
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values/strings_activity_settings.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values/strings_activity_settings.xml 
          */
         public static final int pref_header_general=0x7f09001a;
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values/strings.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values/strings.xml 
          */
         public static final int pref_radius_summary=0x7f09001b;
         public static final int pref_radius_title=0x7f09001c;
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values/strings_activity_settings.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values/strings_activity_settings.xml 
          */
         public static final int pref_summary_radius=0x7f09001d;
         public static final int pref_summary_update_frequency=0x7f09001e;
@@ -350,15 +353,15 @@ containing a value of this type.
         public static final int title_activity_settings=0x7f090022;
     }
     public static final class style {
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values/styles.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values/styles.xml 
 
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         
- From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values-v11/styles.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values-v11/styles.xml 
  API 11 theme customizations can go here. 
- From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/values-v14/styles.xml 
+ From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/values-v14/styles.xml 
  API 14 theme customizations can go here. 
          */
         public static final int AppBaseTheme=0x7f0a0000;
@@ -371,7 +374,7 @@ containing a value of this type.
         public static final int pref_headers=0x7f040001;
     }
     public static final class styleable {
-        /**  From: file:/home/jalal/workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values/maps_attrs.xml 
+        /**  From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values/maps_attrs.xml 
            <p>Includes the following attributes:</p>
            <table>
            <colgroup align="left" />

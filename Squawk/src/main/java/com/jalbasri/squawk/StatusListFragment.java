@@ -14,24 +14,34 @@ import android.content.Loader;
 import android.content.CursorLoader;
 import android.database.Cursor;
 
-public class StatusListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class StatusListFragment extends ListFragment
+        implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = StatusListFragment.class.getSimpleName();
+
+    public interface OnListFragmentCreatedListener {
+        public void onListFragmentCreated();
+    };
 
     private static final int TWITTER_STATUS_LOADER = 0;
     private static final String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " DESC";
 //    SimpleCursorAdapter mCursorAdapter;
     CursorAdapter mCursorAdapter;
-    MainActivity mActivity;
+    private OnListFragmentCreatedListener mOnListFragmentCreatedListener;
+    private MainActivity mActivity;
+
+
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         Log.d(TAG, "onAttach()");
+        this.mOnListFragmentCreatedListener = (OnListFragmentCreatedListener) activity;
         this.mActivity = (MainActivity) activity;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.status_list_listview, null);
     }
 
@@ -39,7 +49,7 @@ public class StatusListFragment extends ListFragment implements LoaderManager.Lo
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(TWITTER_STATUS_LOADER, null, this);
-
+        mOnListFragmentCreatedListener.onListFragmentCreated();
     }
 
     @Override
@@ -48,6 +58,7 @@ public class StatusListFragment extends ListFragment implements LoaderManager.Lo
         super.onResume();
         getLoaderManager().restartLoader(TWITTER_STATUS_LOADER, null, this);
     }
+
 
     @Override
     public void onPause() {
@@ -102,7 +113,6 @@ public class StatusListFragment extends ListFragment implements LoaderManager.Lo
         setListAdapter(mCursorAdapter);
 
     }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

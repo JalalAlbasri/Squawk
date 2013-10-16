@@ -1,9 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/action_reload"
-          android:title="@string/action_reload"
-          android:orderInCategory="100"
-          android:showAsAction="ifRoom"
-          android:icon="@drawable/navigation_refresh"/>
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"
@@ -13,4 +8,4 @@
           android:orderInCategory="100"
           android:showAsAction="never" />
 </menu>
-<!-- From: file:/home/jalal/workspace/Squawk/Squawk/src/main/res/menu/main.xml -->
+<!-- From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/menu/main.xml -->

@@ -26,10 +26,11 @@
     <uses-permission android:name="com.jalbasri.squawk.permission.MAPS_RECEIVE" />
 
     <uses-sdk
-        android:minSdkVersion="13"
+        android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 
     <application
+
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -37,7 +38,6 @@
 
         <activity
             android:name="com.jalbasri.squawk.MainActivity"
-            android:uiOptions="splitActionBarWhenNarrow"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,6 +45,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.jalbasri.squawk.WebViewActivity"
+            android:parentActivityName="com.jalbasri.squawk.MainActivity"
+            />
+
 
         <provider
             android:name="com.jalbasri.squawk.TwitterStatusContentProvider"
@@ -64,3 +70,5 @@
     </application>
 
 </manifest>
+
+    <!--android:uiOptions="splitActionBarWhenNarrow"-->

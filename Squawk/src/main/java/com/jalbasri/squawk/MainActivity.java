@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ListFragment;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,14 +16,18 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Activity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,6 +36,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.jalbasri.squawk.amazon.Amazon;
 
@@ -39,6 +45,7 @@ import java.util.Date;
 public class MainActivity extends Activity implements
         LocationListener,
         StatusMapFragment.OnMapFragmentCreatedListener,
+        StatusListFragment.OnListFragmentCreatedListener,
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener
 
@@ -53,6 +60,9 @@ public class MainActivity extends Activity implements
     private LatLng mMapTarget;
     private int mRadius = 1;
     private boolean mFirstLaunch = true;
+//    private int mActionBarIndex;
+    private boolean mMapView;
+    private Menu mActionBarMenu;
 
     private long mTimestamp;
     private String mDeviceInformation;
@@ -65,6 +75,7 @@ public class MainActivity extends Activity implements
     public static final String KEY_SERVER_DEVICE_INFORMATION = "server_device_information";
     public static final String KEY_SERVER_DEVICE_TIMESTAMP = "server_device_timestamp";
     public static final String KEY_APP_VERSION = "app_version";
+    public static final String KEY_MAP_VIEW = "map_view";
     public static final String DEFAULT_DEVICE_ID = "";
     public static final String DEFAULT_PREF_RADIUS = "1";
     public static final String DEFAULT_DEVICE_INFORMATION = "";
@@ -84,8 +95,8 @@ public class MainActivity extends Activity implements
     private LocationClient mLocationClient;
     private LocationRequest mLocationRequest;
     private StatusMapFragment mStatusMapFragment;
-    private TabListener<StatusListFragment> mListTabListener;
-    private TabListener<StatusMapFragment> mMapTabListener;
+//    private TabListener<StatusListFragment> mListTabListener;
+//    private TabListener<StatusMapFragment> mMapTabListener;
     private ActionBar mActionBar;
     private Amazon mAmazon;
 
@@ -354,9 +365,21 @@ public class MainActivity extends Activity implements
         View fragmentContainer = findViewById(R.id.fragment_container);
         boolean tabletLayout = fragmentContainer == null;
         if (!tabletLayout) {
+
             SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
-            int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 0);
-            mActionBar.setSelectedNavigationItem(actionBarIndex);
+/*
+    Enable for tabbed browsing
+    int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 1);
+    mActionBar.setSelectedNavigationItem(actionBarIndex);
+ */
+
+            mMapView = pref.getBoolean(KEY_MAP_VIEW, true); //defaults to map view
+            if (mMapView) {
+                attachNavigationFragment(StatusMapFragment.class, false);
+            } else {
+                attachNavigationFragment(StatusListFragment.class, false);
+            }
+
             mStatusMapFragment = (StatusMapFragment) getFragmentManager()
                     .findFragmentByTag(StatusMapFragment.class.getName());
         } else {
@@ -374,10 +397,52 @@ public class MainActivity extends Activity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu()");
+        mActionBarMenu = menu;
+        SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
+
+        View fragmentContainer = findViewById(R.id.fragment_container);
+        boolean tabletLayout = fragmentContainer == null;
+        if (!tabletLayout) {
+
+            mMapView = pref.getBoolean(KEY_MAP_VIEW, true);
+            if (mMapView) { //List fragment selected, or start new
+                menu.add(Menu.NONE, 0, Menu.NONE, "navigation")
+                        .setIcon(R.drawable.ic_action_view_as_list)
+                        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+//                attachMapOrListFragment();
+                attachNavigationFragment(StatusMapFragment.class, false);
+            } else {
+                menu.add(Menu.NONE, 0, Menu.NONE, "navigation")
+                        .setIcon(R.drawable.ic_action_map)
+                        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+//                attachMapOrListFragment();
+                attachNavigationFragment(StatusListFragment.class, false);
+            }
+        }
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        Log.d(TAG, "opPrepareOPtionsMenu()");
+//        View fragmentContainer = findViewById(R.id.fragment_container);
+//        boolean tabletLayout = fragmentContainer == null;
+//        if (!tabletLayout) {
+//            SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
+//            mMapView = pref.getBoolean(KEY_MAP_VIEW, true);
+//            if (mMapView) {
+//                menu.getItem(0).setIcon(R.drawable.ic_action_view_as_list);
+//            } else {
+//
+//            }
+//        }
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -393,22 +458,101 @@ public class MainActivity extends Activity implements
                     mStatusMapFragment.clearMarkers();
                 }
                 return true;
-            case R.id.action_reload:
-                if (mStatusMapFragment != null) {
-                    double[][] mapRegion = mStatusMapFragment.getMapRegion();
-                    if (mapRegion != null) {
-                        Log.d(TAG, "Amazon.addDevice - ActionReload");
-                        mAmazon.addDevice(mDeviceId,mapRegion);
-                    }
-                    else {
-                        Log.d(TAG, "action_reload cancelled, could not obtain mapRegion");
-                    }
 
+            case android.R.id.home:
+                if(getFragmentManager().getBackStackEntryCount() > 0)
+                    getFragmentManager().popBackStack();
+                return true;
+            case 0:
+                Log.d(TAG, "onOptionsItemSelected(), Navigation Selected.");
+                if (mMapView) {
+                    detachNavigationFragment(StatusMapFragment.class, false);
+                    attachNavigationFragment(StatusListFragment.class, false);
+                    mMapView = false;
+//                    attachMapOrListFragment();
+                    mActionBarMenu.getItem(0).setIcon(R.drawable.ic_action_map);
+                } else {
+                    detachNavigationFragment(StatusListFragment.class, false);
+                    attachNavigationFragment(StatusMapFragment.class, false);
+                    mMapView = true;
+//                    attachMapOrListFragment();
+                    mActionBarMenu.getItem(0).setIcon(R.drawable.ic_action_view_as_list);
                 }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void attachNavigationFragment(Class fragmentClass, boolean addToBackStack) {
+        String fragmentTag = fragmentClass.getName();
+        Fragment fragment = getFragmentManager().findFragmentByTag(fragmentTag);
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
+        if (fragment == null) {
+            fragment = Fragment.instantiate(this, fragmentTag);
+            fragmentTransaction.add(R.id.fragment_container, fragment, fragmentTag);
+        } else {
+            Log.d(TAG, "onTabSelected, Attach Fragment: " + fragmentClass.getSimpleName());
+            fragmentTransaction.attach(fragment);
+        }
+        if (addToBackStack)
+            fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private void detachNavigationFragment(Class fragmentClass, boolean addToBackStack) {
+        String fragmentTag = fragmentClass.getName();
+        Fragment fragment = getFragmentManager().findFragmentByTag(fragmentTag);
+        if (fragment != null) {
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.detach(fragment);
+            if (addToBackStack)
+                fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+    }
+
+    public void onItemClicked(View v) {
+        Log.d(TAG, "onItemClicked");
+        TextView statusIdTextView = (TextView) v.findViewById(R.id.status_id);
+        Long statusId = Long.parseLong(statusIdTextView.getText().toString());
+
+        TextView userNameTextView = (TextView) v.findViewById(R.id.user_name);
+        TextView screenNameTextView = (TextView) v.findViewById(R.id.screen_name);
+        TextView createdAtTextView = (TextView) v.findViewById(R.id.created_at);
+        TextView statusTextView = (TextView) v.findViewById(R.id.status_text);
+        ImageButton replyImageButton = (ImageButton) v.findViewById(R.id.reply);
+        ImageButton retweetImageButton = (ImageButton) v.findViewById(R.id.retweet);
+        ImageButton favoriteImageButton = (ImageButton) v.findViewById(R.id.favorite);
+
+
+        v.setBackgroundResource(R.drawable.card_background);
+        retweetImageButton.setBackgroundResource(R.drawable.button_background);
+        replyImageButton.setBackgroundResource(R.drawable.button_background);
+        favoriteImageButton.setBackgroundResource(R.drawable.button_background);
+
+        screenNameTextView.setTextColor(getResources().getColor(android.R.color.darker_gray));
+        statusTextView.setLinkTextColor(userNameTextView.getLinkTextColors().getDefaultColor());
+        createdAtTextView.setTextColor(getResources().getColor(android.R.color.darker_gray));
+        userNameTextView.setTextColor(Color.BLACK);
+        statusTextView.setTextColor(Color.BLACK);
+
+        replyImageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_reply));
+        retweetImageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_repeat));
+        favoriteImageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_important));
+
+        detachNavigationFragment(StatusListFragment.class, false);
+        attachNavigationFragment(StatusMapFragment.class, false);
+        mMapView = true;
+//        attachMapOrListFragment();
+        mActionBarMenu.getItem(0).setIcon(R.drawable.ic_action_view_as_list);
+
+        if (mStatusMapFragment != null) {
+            Log.d(TAG, "ready to call selectmarker, " + statusId);
+            mStatusMapFragment.selectMarker(statusId);
+        }
+
     }
 
     @Override
@@ -419,6 +563,21 @@ public class MainActivity extends Activity implements
         super.onPause();
     }
 
+    private void setUpNavigation() {
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
+            mActionBar.setDisplayHomeAsUpEnabled(true);
+        } else {
+            mActionBar.setDisplayHomeAsUpEnabled(false);
+        }
+    }
+
+    @Override
+    public void onListFragmentCreated() {
+        if (mActionBarMenu != null)
+            mActionBarMenu.getItem(0).setIcon(R.drawable.ic_action_map);
+        setUpNavigation();
+    }
+
     /**
      * Callback used to move the map camera to the last known location once
      * the map is loaded.
@@ -426,6 +585,9 @@ public class MainActivity extends Activity implements
     @Override
     public void onMapFragmentCreated() {
         Log.d(TAG, "onMapFragmentCreated()");
+        if (mActionBarMenu != null)
+            mActionBarMenu.getItem(0).setIcon(R.drawable.ic_action_view_as_list);
+        setUpNavigation();
         //set mStatusMapFragment
         if (mStatusMapFragment == null) {
             View fragmentContainer = findViewById(R.id.fragment_container);
@@ -474,18 +636,30 @@ public class MainActivity extends Activity implements
         View fragmentContainer = findViewById(R.id.fragment_container);
         boolean tabletLayout = fragmentContainer == null;
         if (!tabletLayout) {
-            int actionBarIndex = mActionBar.getSelectedTab().getPosition();
+//            int actionBarIndex = mActionBar.getSelectedTab().getPosition();
             SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
-            editor.putInt(KEY_ACTION_BAR_INDEX, actionBarIndex);
+//            editor.putInt(KEY_ACTION_BAR_INDEX, mActionBarIndex);
+            editor.putBoolean(KEY_MAP_VIEW, mMapView);
             editor.commit();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            if (mListTabListener.fragment != null) {
-                transaction.detach(mListTabListener.fragment);
-            }
-            if (mMapTabListener.fragment != null) {
-                transaction.detach(mMapTabListener.fragment);
-            }
-            transaction.commit();
+
+            /*
+            Detach both fragments
+             */
+            detachNavigationFragment(StatusMapFragment.class, false);
+            detachNavigationFragment(StatusListFragment.class, false);
+
+            /*
+            Enable for tab navigation.
+             */
+
+//            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//            if (mListTabListener.fragment != null) {
+//                transaction.detach(mListTabListener.fragment);
+//            }
+//            if (mMapTabListener.fragment != null) {
+//                transaction.detach(mMapTabListener.fragment);
+//            }
+//            transaction.commit();
         }
         mAmazon.removeDevice(mDeviceId);
         super.onSaveInstanceState(outState);
@@ -572,7 +746,6 @@ public class MainActivity extends Activity implements
 //                " Registration Id: " + deviceId);
     }
 
-
     private void showDialog(String message) {
         new AlertDialog.Builder(this)
                 .setMessage(message)
@@ -602,6 +775,8 @@ public class MainActivity extends Activity implements
                     "Location Updates");
         }
     }
+
+
 
     // Define a DialogFragment that displays the error dialog
     public static class ErrorDialogFragment extends DialogFragment {
@@ -656,80 +831,91 @@ public class MainActivity extends Activity implements
 
     private void initActionBar() {
         mActionBar = getActionBar();
-        mActionBar.setDisplayUseLogoEnabled(false);
-        mActionBar.setDisplayShowHomeEnabled(false);
-        mActionBar.setDisplayShowTitleEnabled(false);
+//        mActionBar.setDisplayUseLogoEnabled(true);
+//        mActionBar.setDisplayShowHomeEnabled(false);
+//        mActionBar.setDisplayShowTitleEnabled(true);
         //TODO: Enable up navigation on icon in actionbar
-        //mActionBar.setDisplayHomeAsUpEnabled(true);
 
-        View fragmentContainer = findViewById(R.id.fragment_container);
-        boolean tabletLayout = fragmentContainer == null;
+//        mActionBar.setDisplayHomeAsUpEnabled(true);
 
-        if (!tabletLayout) {
-            mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-            Tab listTab = mActionBar.newTab();
-            mListTabListener = new TabListener<StatusListFragment>
-                    (this, StatusListFragment.class, R.id.fragment_container);
-            listTab
-//                    .setText("List")
-                    .setIcon(R.drawable.collections_view_as_list)
-                    .setContentDescription("List of Status Updates")
-                    .setTabListener(mListTabListener);
-
-            mActionBar.addTab(listTab);
-
-            Tab mapTab = mActionBar.newTab();
-            mMapTabListener = new TabListener<StatusMapFragment>
-                    (this, StatusMapFragment.class, R.id.fragment_container);
-            mapTab
-//                    .setText("Map")
-                    .setIcon(R.drawable.location_map)
-                    .setContentDescription("Map of Status Updates")
-                    .setTabListener(mMapTabListener);
-
-            mActionBar.addTab(mapTab);
-        }
+//        /*
+//        Initiate Tab Listeners.
+//         */
+//
+//        View fragmentContainer = findViewById(R.id.fragment_container);
+//        boolean tabletLayout = fragmentContainer == null;
+//        if (!tabletLayout) {
+//
+//            mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//
+//            Tab listTab = mActionBar.newTab();
+//            mListTabListener = new TabListener<StatusListFragment>
+//                    (this, StatusListFragment.class, R.id.fragment_container);
+//            listTab
+////                    .setText("List")
+//                    .setIcon(R.drawable.ic_action_view_as_list)
+//                    .setContentDescription("List of Status Updates")
+//                    .setTabListener(mListTabListener);
+//
+//            mActionBar.addTab(listTab);
+//
+//            Tab mapTab = mActionBar.newTab();
+//            mMapTabListener = new TabListener<StatusMapFragment>
+//                    (this, StatusMapFragment.class, R.id.fragment_container);
+//            mapTab
+////                    .setText("Map")
+//                    .setIcon(R.drawable.ic_action_map)
+//                    .setContentDescription("Map of Status Updates")
+//                    .setTabListener(mMapTabListener);
+//
+//            mActionBar.addTab(mapTab);
+//        }
     }
 
-    public class TabListener<T extends Fragment> implements ActionBar.TabListener {
-        private Fragment fragment;
-        private Activity activity;
-        private Class<T> fragmentClass;
-        private int fragmentContainer;
 
-        public TabListener(Activity activity, Class<T> fragmentClass, int fragmentContainer) {
-            this.activity = activity;
-            this.fragmentClass = fragmentClass;
-            this.fragmentContainer = fragmentContainer;
-        }
 
-        public void onTabSelected(Tab tab, FragmentTransaction transaction) {
-            String fragmentTag = fragmentClass.getName();
-//            getFragmentManager().executePendingTransactions();
-            fragment = getFragmentManager().findFragmentByTag(fragmentTag);
-            if (fragment == null) {
-                fragment = Fragment.instantiate(activity, fragmentTag);
-                transaction.add(fragmentContainer, fragment, fragmentTag);
-            } else {
-                Log.d(TAG, "onTabSelected, Attach Fragment: " + fragmentClass.getSimpleName());
-                transaction.attach(fragment);
-            }
-        }
+//    public class TabListener<T extends Fragment> implements ActionBar.TabListener {
+//        private Fragment fragment;
+//        private Activity activity;
+//        private Class<T> fragmentClass;
+//        private int fragmentContainer;
+//
+//        public TabListener(Activity activity, Class<T> fragmentClass, int fragmentContainer) {
+//            this.activity = activity;
+//            this.fragmentClass = fragmentClass;
+//            this.fragmentContainer = fragmentContainer;
+//        }
+//
+//        public void onTabSelected(Tab tab, FragmentTransaction transaction) {
+//            String fragmentTag = fragmentClass.getName();
+////            getFragmentManager().executePendingTransactions();
+//            fragment = getFragmentManager().findFragmentByTag(fragmentTag);
+//            if (fragment == null) {
+//                fragment = Fragment.instantiate(activity, fragmentTag);
+//                transaction.add(fragmentContainer, fragment, fragmentTag);
+//            } else {
+//                Log.d(TAG, "onTabSelected, Attach Fragment: " + fragmentClass.getSimpleName());
+//                transaction.attach(fragment);
+//            }
+//            mActionBarIndex = mActionBar.getSelectedTab().getPosition();
+//            mActionBar.removeTab(tab);
+//        }
+//
+//        public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
+//            if (fragment != null) {
+//                Log.d(TAG, "onTabUnselected, Detach Fragment: " + fragmentClass.getSimpleName());
+//                transaction.detach(fragment);
+//            }
+//            mActionBar.addTab(tab);
+//        }
+//
+//        public void onTabReselected(Tab tab, FragmentTransaction transaction) {
+//            if (fragment != null) {
+//                Log.d(TAG, "onTabReselected, Attach Fragment: " + fragmentClass.getSimpleName());
+//                transaction.attach(fragment);
+//            }
+//        }
+//    }
 
-        public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
-            if (fragment != null) {
-                Log.d(TAG, "onTabUnselected, Detach Fragment: " + fragmentClass.getSimpleName());
-                transaction.detach(fragment);
-            }
 
-        }
-
-        public void onTabReselected(Tab tab, FragmentTransaction transaction) {
-            if (fragment != null) {
-                Log.d(TAG, "onTabReselected, Attach Fragment: " + fragmentClass.getSimpleName());
-                transaction.attach(fragment);
-            }
-        }
-    }
 }

@@ -22,6 +22,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import twitter4j.Twitter;
+
 //TODO set a default map zoom
 //TODO move the camera to last location when switching tabs and changing orientation
 //TODO add map marker limit.
@@ -41,6 +47,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     private Marker mLastMarker;
     private String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " DESC";
     private final int MARKER_LIMIT = 10;
+    private Map<Long, Marker> mMarkers;
 
     public interface OnMapFragmentCreatedListener {
         public void onMapFragmentCreated();
@@ -57,9 +64,10 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         } catch (ClassCastException e){
             Log.d(TAG, e.getMessage());
         }
+
         getLoaderManager().initLoader(TWITTER_STATUS_LOADER, null, this);
         setRetainInstance(true);
-
+        mMarkers = new HashMap<Long, Marker>();
     }
 
     @Override
@@ -132,6 +140,9 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         if (mGoogleMap != null) {
             mGoogleMap.clear();
         }
+        if (mMarkers != null) {
+            mMarkers.clear();
+        }
     }
 
     public double[][] getMapRegion() {
@@ -151,6 +162,37 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         return null;
     }
 
+    public void selectMarker(long statusId) {
+        Log.d(TAG, "selectMarker()");
+
+        for (Map.Entry<Long, Marker> marker: mMarkers.entrySet()) {
+            if (marker.getKey() == statusId) {
+                clickMarker(marker.getValue(), true);
+                break;
+            }
+        }
+
+
+        while (mCursor.moveToNext()) {
+            if (statusId ==
+                    (mCursor.getLong(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID)))) {
+                LatLng latLng = new LatLng(
+                        mCursor.getDouble(mCursor
+                                .getColumnIndex(TwitterStatusContentProvider.KEY_LATITUDE)),
+                        mCursor.getDouble(mCursor
+                                .getColumnIndex(TwitterStatusContentProvider.KEY_LONGITUDE)));
+                String title = mCursor.getString(mCursor
+                        .getColumnIndex(TwitterStatusContentProvider.KEY_USER_SCREEN_NAME));
+                String snippet = mCursor
+                        .getString(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_TEXT));
+                Marker marker = drawMarker(latLng, title, snippet);
+                if (marker != null)
+                    clickMarker(marker, true);
+                break;
+            }
+        }
+    }
+
     private void refreshMapMarkers() {
         if (mCursor != null) {
             clearMarkers();
@@ -164,7 +206,9 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                         .getColumnIndex(TwitterStatusContentProvider.KEY_USER_SCREEN_NAME));
                 String snippet = mCursor
                         .getString(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_TEXT));
-                drawMarker(latLng, title, snippet);
+                Long statusId = mCursor.getLong(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
+                mMarkers.put(statusId, drawMarker(latLng, title, snippet));
+
 
             }
             if(mLastMarker != null) {
@@ -191,7 +235,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 //        }
     }
 
-    private void drawMarker(LatLng latLng, String title, String snippet) {
+    private Marker drawMarker(LatLng latLng, String title, String snippet) {
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
                 .title(title)
@@ -201,27 +245,35 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 .snippet(snippet);
 
         if (mGoogleMap != null && latLng != null) {
-            mGoogleMap.addMarker(markerOptions);
+            return mGoogleMap.addMarker(markerOptions);
         }
+        return null;
     }
 
     GoogleMap.OnMarkerClickListener onMapMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            if (mLastMarker != null) {
-                mLastMarker.hideInfoWindow();
-                if (mLastMarker.equals(marker)) {
-                    mLastMarker = null;
-                    return true;
-                }
-            }
-
-            marker.showInfoWindow();
-            mLastMarker = marker;
-
-            return true;
+            return clickMarker(marker, false);
         }
     };
+
+    private boolean clickMarker(Marker marker, boolean moveMap) {
+        if (mLastMarker != null) {
+            mLastMarker.hideInfoWindow();
+            if (mLastMarker.equals(marker)) {
+                mLastMarker = null;
+                return true;
+            }
+        }
+
+        if (moveMap) {
+           moveMaptoLocation(marker.getPosition());
+        }
+
+        marker.showInfoWindow();
+        mLastMarker = marker;
+        return false;
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

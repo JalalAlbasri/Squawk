@@ -7,7 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/appengine-endpoints" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/target/Squawk-AppEngine-1.0" />
@@ -34,8 +34,8 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: junit:junit:4.10" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.ganyo:gcm-server:1.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.twitter4j:twitter4j-core:3.0.3" level="project" />
-    <orderEntry type="library" name="Maven: org.twitter4j:twitter4j-stream:3.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.twitter4j:twitter4j-core:3.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.twitter4j:twitter4j-stream:3.0.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.google.appengine:appengine-testing:1.8.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.google.appengine:appengine-api-stubs:1.8.0" level="project" />
   </component>
