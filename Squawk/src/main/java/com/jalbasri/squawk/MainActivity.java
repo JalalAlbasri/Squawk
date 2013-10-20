@@ -150,22 +150,31 @@ public class MainActivity extends Activity implements
 
         }
 
-
-
-
-
-//        mMapTarget = new LatLng(savedInstanceState.getDouble("map_target_latitude", 0),
-//                savedInstanceState.getDouble("map_target_longitude", 0));
         //TODO Check Wifi or GPS and prompt user to turn on if off.
         //TODO Check that Google Play Services exists on device.
         // http://developer.android.com/google/gcm/client.html
         //TODO Remove radius
-        //TODO Update Amazon when the map view changes not just the location
-        /*
-        If we have no device Id, the app version number has changed since registration or
-        the registration Id has expired, acquire and new registration key.
-         */
-
+        //TODO Fix amazon update times
+        //TODO Remove settings from actionbar
+        //TODO Pull down list to reload tweets
+        //TODO Swipe back and forth between list and map
+        //TODO Loading Screen / Message
+        //TODO About
+        //TODO Tweet Icon
+        //TODO Go through warnings
+        //TODO Replace Icon
+        //TODO Change name
+        //TODO Fix Twitter Server
+        //TODO Languages and tweet encoding
+        //TODO Default graphic for unloaded pictures
+        //TODO InfoWindow bug, remains onscreen after clear, reappears if new tweet arrives
+        //TODO InfoWindow click to open in list
+        //TODO List click to show tweet in map crashes on tablet
+        //TODO Remove old location provider implementation
+        //TODO Remove unused layouts and resources
+        //TODO Check theme of twitter WebView
+        //TODO Remove Toasts
+        //TODO Add new toasts
 
     }
 
@@ -196,6 +205,8 @@ public class MainActivity extends Activity implements
 //                mAmazon.addDevice(mDeviceId, mapRegion);
 //            }
 //        }
+
+
     /*
      * Called by Location Services when the request to connect the
      * client finishes successfully. At this point, you can
@@ -313,9 +324,6 @@ public class MainActivity extends Activity implements
                 Double.toString(location.getLongitude());
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
-        /*
-        //TODO Move the map to the new location: Only do if track location enabled.
-         */
         if (mFirstLaunch) {
             mFirstLaunch = false;
             if (mStatusMapFragment == null) {
@@ -426,24 +434,6 @@ public class MainActivity extends Activity implements
         return true;
     }
 
-
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        Log.d(TAG, "opPrepareOPtionsMenu()");
-//        View fragmentContainer = findViewById(R.id.fragment_container);
-//        boolean tabletLayout = fragmentContainer == null;
-//        if (!tabletLayout) {
-//            SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
-//            mMapView = pref.getBoolean(KEY_MAP_VIEW, true);
-//            if (mMapView) {
-//                menu.getItem(0).setIcon(R.drawable.ic_action_view_as_list);
-//            } else {
-//
-//            }
-//        }
-//        return true;
-//    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -512,6 +502,9 @@ public class MainActivity extends Activity implements
             fragmentTransaction.commit();
         }
     }
+    /*
+    Callback called when a Status List Item is clicked
+     */
 
     public void onItemClicked(View v) {
         Log.d(TAG, "onItemClicked");
@@ -542,14 +535,18 @@ public class MainActivity extends Activity implements
         retweetImageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_repeat));
         favoriteImageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_important));
 
-        detachNavigationFragment(StatusListFragment.class, false);
-        attachNavigationFragment(StatusMapFragment.class, false);
-        mMapView = true;
-//        attachMapOrListFragment();
-        mActionBarMenu.getItem(0).setIcon(R.drawable.ic_action_view_as_list);
+        View fragmentContainer = findViewById(R.id.fragment_container);
+        boolean tabletLayout = fragmentContainer == null;
+        if (!tabletLayout) {
+            Log.d(TAG, "onItemClicked2");
+            detachNavigationFragment(StatusListFragment.class, false);
+            attachNavigationFragment(StatusMapFragment.class, false);
+            mMapView = true;
+            mActionBarMenu.getItem(0).setIcon(R.drawable.ic_action_view_as_list);
+        }
 
         if (mStatusMapFragment != null) {
-            Log.d(TAG, "ready to call selectmarker, " + statusId);
+            Log.d(TAG, "ready to call selectMarker, " + statusId);
             mStatusMapFragment.selectMarker(statusId);
         }
 
@@ -834,7 +831,6 @@ public class MainActivity extends Activity implements
 //        mActionBar.setDisplayUseLogoEnabled(true);
 //        mActionBar.setDisplayShowHomeEnabled(false);
 //        mActionBar.setDisplayShowTitleEnabled(true);
-        //TODO: Enable up navigation on icon in actionbar
 
 //        mActionBar.setDisplayHomeAsUpEnabled(true);
 

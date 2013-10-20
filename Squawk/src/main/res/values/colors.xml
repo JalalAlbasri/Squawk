@@ -2,4 +2,5 @@
 <resources>
     <color name="status_list_item_divider">#e3e3e3</color> <!-- help button view background color -->
     <color name="white">#ffffff</color>
+    <color name="no_user_image">#e1e1e1</color>
 </resources>

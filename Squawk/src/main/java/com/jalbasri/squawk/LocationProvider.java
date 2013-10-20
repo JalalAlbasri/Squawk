@@ -56,7 +56,6 @@ public class LocationProvider {
         Log.d(TAG, bestProvider + " / " + bestAvailableProvider);
 
         if (bestProvider == null) {
-            //TODO: Message Could not load location provider
             Log.d(TAG, "No Location Provider on Device");
         } else if (bestProvider.equals(bestAvailableProvider)){
             mLocation = mLocationManager.getLastKnownLocation(bestAvailableProvider);

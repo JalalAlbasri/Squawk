@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Squawk/Squawk.iml" filepath="$PROJECT_DIR$/Squawk/Squawk.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Squawk-AppEngine/Squawk-AppEngine.iml" filepath="$PROJECT_DIR$/Squawk-AppEngine/Squawk-AppEngine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Squawk.iml" filepath="$PROJECT_DIR$/Squawk.iml" />
       <module fileurl="file://$PROJECT_DIR$/Squawk/Squawk-Squawk.iml" filepath="$PROJECT_DIR$/Squawk/Squawk-Squawk.iml" />
       <module fileurl="file://$PROJECT_DIR$/Squawk-endpoints/Squawk-endpoints.iml" filepath="$PROJECT_DIR$/Squawk-endpoints/Squawk-endpoints.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SquawkProject.iml" filepath="$PROJECT_DIR$/SquawkProject.iml" />
     </modules>
   </component>
 </project>

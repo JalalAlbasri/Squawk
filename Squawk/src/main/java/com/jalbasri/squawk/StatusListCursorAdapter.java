@@ -1,6 +1,7 @@
 package com.jalbasri.squawk;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -92,7 +93,7 @@ public class StatusListCursorAdapter extends CursorAdapter {
         userNameTextView.setText(userName);
         screenNameTextView.setText("@"+screenName);
         statusTextView.setText(statusText);
-        UrlImageViewHelper.setUrlDrawable(userImageView, userImageUrl);
+        UrlImageViewHelper.setUrlDrawable(userImageView, userImageUrl, R.drawable.user_image_placeholder);
         createdAtTextView.setText(createdAtString);
 
         /*
@@ -114,6 +115,19 @@ public class StatusListCursorAdapter extends CursorAdapter {
                 return s;
             }
         };
+
+        final Uri userUri = Uri.parse("http://www.twitter.com/" + screenName);
+
+        View.OnClickListener userOnCickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.startActivity(new Intent(Intent.ACTION_VIEW, userUri));
+            }
+        };
+
+        userNameTextView.setOnClickListener(userOnCickListener);
+        screenNameTextView.setOnClickListener(userOnCickListener);
+        userImageView.setOnClickListener(userOnCickListener);
 
         Pattern mentionPattern = Pattern.compile("@([A-Za-z0-9_-]+)");
         String mentionScheme = "http://www.twitter.com/";
@@ -147,6 +161,10 @@ public class StatusListCursorAdapter extends CursorAdapter {
                 retweetImageButton.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_action_repeat_dark));
                 favoriteImageButton.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_action_important_dark));
                 statusTextView.setLinkTextColor(Color.WHITE);
+
+                replyImageButton.setPadding(3, 3, 3, 3);
+                retweetImageButton.setPadding(3, 3, 3, 3);
+                favoriteImageButton.setPadding(5, 5, 5, 5);
             }
         };
 
@@ -154,7 +172,7 @@ public class StatusListCursorAdapter extends CursorAdapter {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    handler.postDelayed(runnable, 200);
+                    handler.postDelayed(runnable, 100);
 
                 }
                 if (event.getAction() == MotionEvent.ACTION_UP ||
@@ -175,6 +193,9 @@ public class StatusListCursorAdapter extends CursorAdapter {
                     favoriteImageButton.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_action_important));
                     statusTextView.setLinkTextColor(userNameTextView.getLinkTextColors().getDefaultColor());
 
+                    replyImageButton.setPadding(3, 3, 3, 3);
+                    retweetImageButton.setPadding(3, 3, 3, 3);
+                    favoriteImageButton.setPadding(5, 5, 5, 5);
                 }
                 return false;
             }

@@ -2,6 +2,8 @@
 <resources>
 
     <!-- From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/values-lv/strings.xml -->
+    <eat-comment />
+
     <string name="common_google_play_services_enable_button" msgid="4181637455539816337">"Iespējot Google Play pakalpojumus"</string>
     <string name="common_google_play_services_enable_text" msgid="7627896071867667758">"Lai šī lietotne darbotos, iespējojiet Google Play pakalpojumus."</string>
     <string name="common_google_play_services_enable_title" msgid="529078775174559253">"Google Play pakalpojumu iespējošana"</string>

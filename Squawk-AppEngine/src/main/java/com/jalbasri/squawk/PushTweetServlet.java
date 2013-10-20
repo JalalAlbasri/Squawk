@@ -47,7 +47,6 @@ public class PushTweetServlet extends HttpServlet {
     }
 
     private void pushTweet(HttpServletRequest req, HttpServletResponse resp) {
-        //TODO extract tweet info from json, push to message queue.
 
         try {
             BufferedReader bufferedReader = req.getReader();

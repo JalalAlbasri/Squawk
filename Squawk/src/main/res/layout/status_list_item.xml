@@ -25,31 +25,14 @@
 
         <!-- Status Text -->
 
-        <TextView
-            android:id="@+id/status_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="4dp"
-            />
+
         <!--android:layout_below="@id/user_image"-->
-
-        <View
-            android:id="@+id/divider"
-            android:layout_width="fill_parent"
-            android:layout_below="@id/status_text"
-            android:layout_height="1dp"
-            android:layout_margin="5dp"
-            android:background="@color/status_list_item_divider"
-            />
-
-
 
         <!-- User Info -->
         <RelativeLayout
             android:id="@+id/user_info_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/divider"
             >
 
 
@@ -93,6 +76,16 @@
                 />
 
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_below="@id/user_info_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            />
+
+
         <!-- Buttons -->
         <View
             android:id="@+id/button_divider"
@@ -100,7 +93,7 @@
             android:layout_height="1dp"
             android:layout_margin="5dp"
             android:background="@color/status_list_item_divider"
-            android:layout_below="@+id/user_info_relative_layout"/>
+            android:layout_below="@+id/status_text"/>
 
         <RelativeLayout
             android:layout_width="fill_parent"

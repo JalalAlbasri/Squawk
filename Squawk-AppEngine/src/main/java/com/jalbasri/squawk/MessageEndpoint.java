@@ -48,7 +48,7 @@ import com.google.appengine.datanucleus.query.JPACursorHelper;
 public class MessageEndpoint {
 
     /*
-     * TODO: Fill this in with the server key that you've obtained from the API
+     * Fill this in with the server key that you've obtained from the API
      * Console (https://code.google.com/apis/console). This is required for using
      * Google Cloud Messaging from your AppEngine application even if you are
      * using a App Engine's local development server.
