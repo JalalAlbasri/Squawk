@@ -52,10 +52,12 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     private String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " DESC";
     private final int MARKER_LIMIT = 50;
     private Map<Long, Marker> mMarkers;
+    private long mPendingInfoWindow = 0;
 
     public interface OnMapFragmentCreatedListener {
         public void onMapFragmentCreated();
         public void onMapRegionChanged();
+        public void onInfoWindowClicked(long statusId);
     }
 
     @Override
@@ -116,6 +118,8 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             }
         });
         mGoogleMap.setOnMarkerClickListener(onMapMarkerClickListener);
+        mGoogleMap.setOnMapClickListener(onMapClickListener);
+        mGoogleMap.setOnInfoWindowClickListener(onInfoWindowClickListener);
 
         /*
         Move Location controls to bottom
@@ -239,26 +243,35 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             }
         }
 
-
-        while (mCursor.moveToNext()) {
-            if (statusId ==
-                    (mCursor.getLong(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID)))) {
-                LatLng latLng = new LatLng(
-                        mCursor.getDouble(mCursor
-                                .getColumnIndex(TwitterStatusContentProvider.KEY_LATITUDE)),
-                        mCursor.getDouble(mCursor
-                                .getColumnIndex(TwitterStatusContentProvider.KEY_LONGITUDE)));
-                String title = mCursor.getString(mCursor
-                        .getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
-                Marker marker = drawMarker(latLng, title);
-                if (marker != null)
-                    clickMarker(marker, true);
-                break;
+        if (mCursor != null) {
+            while (mCursor.moveToNext()) {
+                if (statusId ==
+                        (mCursor.getLong(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID)))) {
+                    LatLng latLng = new LatLng(
+                            mCursor.getDouble(mCursor
+                                    .getColumnIndex(TwitterStatusContentProvider.KEY_LATITUDE)),
+                            mCursor.getDouble(mCursor
+                                    .getColumnIndex(TwitterStatusContentProvider.KEY_LONGITUDE)));
+                    String title = mCursor.getString(mCursor
+                            .getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
+                    Marker marker = drawMarker(latLng, title);
+                    if (marker != null)
+                        clickMarker(marker, true);
+                    break;
+                }
             }
+        }
+        else {
+            mPendingInfoWindow = statusId;
         }
     }
 
     private void refreshMapMarkers() {
+        boolean lastMarkerGone = true;
+        long lastMarkerId = 0;
+        if (mLastMarker != null)
+            lastMarkerId = Long.parseLong(mLastMarker.getTitle());
+
         if (mCursor != null) {
             clearMarkers();
             for (int i = 0; i < MARKER_LIMIT && mCursor.moveToNext(); i++) {
@@ -271,6 +284,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                         .getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
                 Long statusId = mCursor.getLong(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
                 mMarkers.put(statusId, drawMarker(latLng, title));
+
                 /*
                 Preload images for infowindow
 
@@ -278,12 +292,23 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 String imageUrl = mCursor.getString(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_USER_IMAGE));
                 UrlImageViewHelper.loadUrlDrawable(mActivity, imageUrl);
 
+                if (statusId == lastMarkerId) {
+                    lastMarkerGone = false;
+                }
+
             }
-            if(mLastMarker != null) {
+
+            if (mPendingInfoWindow != 0) {
+                selectMarker(mPendingInfoWindow);
+                mPendingInfoWindow = 0;
+            }
+
+            if (!lastMarkerGone && mLastMarker != null) {
                 mLastMarker.showInfoWindow();
+            } else {
+//                mLastMarker = null;
             }
         }
-
     }
 
     private Marker drawMarker(LatLng latLng, String title) {
@@ -305,6 +330,25 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         @Override
         public boolean onMarkerClick(Marker marker) {
             return clickMarker(marker, false);
+        }
+    };
+
+    GoogleMap.OnMapClickListener onMapClickListener = new GoogleMap.OnMapClickListener() {
+        @Override
+        public void onMapClick(LatLng latLng) {
+            Log.d(TAG, "onMapClick");
+            if (mLastMarker != null) {
+                mLastMarker.hideInfoWindow();
+                mLastMarker = null;
+            }
+        }
+    };
+
+    GoogleMap.OnInfoWindowClickListener onInfoWindowClickListener = new GoogleMap.OnInfoWindowClickListener() {
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+            long statusId = Long.parseLong(marker.getTitle());
+            mOnMapFragmentCreatedListener.onInfoWindowClicked(statusId);
         }
     };
 

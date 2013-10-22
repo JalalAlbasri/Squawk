@@ -75,6 +75,7 @@ public class StatusListCursorAdapter extends CursorAdapter {
         /*
         Get references to UI elements
          */
+        final RelativeLayout itemRelativeLayout = (RelativeLayout) view.findViewById(R.id.tweet_item);
         final TextView userNameTextView = (TextView) view.findViewById(R.id.user_name);
         final TextView statusTextView = (TextView) view.findViewById(R.id.status_text);
         final TextView screenNameTextView = (TextView) view.findViewById(R.id.screen_name);
@@ -84,7 +85,6 @@ public class StatusListCursorAdapter extends CursorAdapter {
         final ImageButton replyImageButton = (ImageButton) view.findViewById(R.id.reply);
         final ImageButton retweetImageButton = (ImageButton) view.findViewById(R.id.retweet);
         final ImageButton favoriteImageButton = (ImageButton) view.findViewById(R.id.favorite);
-        final RelativeLayout itemRelativeLayout = (RelativeLayout) view.findViewById(R.id.tweet_item);
 
         /*
         Update Views with tweet data
@@ -277,8 +277,6 @@ public class StatusListCursorAdapter extends CursorAdapter {
         favoriteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Uri uri = Uri.parse("https://www.twitter.com/intent/favorite?tweet_id=" + statusId);
-//                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 Intent intent = new Intent(mContext, WebViewActivity.class);
                 intent.putExtra("action", "Favorite");
                 intent.putExtra("url", "https://www.twitter.com/intent/favorite?tweet_id=" + statusId);

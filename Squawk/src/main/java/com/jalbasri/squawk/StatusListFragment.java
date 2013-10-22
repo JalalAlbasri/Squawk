@@ -9,10 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.content.Loader;
 import android.content.CursorLoader;
 import android.database.Cursor;
+import android.widget.TextView;
+
+import twitter4j.Twitter;
 
 public class StatusListFragment extends ListFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -24,11 +28,10 @@ public class StatusListFragment extends ListFragment
 
     private static final int TWITTER_STATUS_LOADER = 0;
     private static final String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " DESC";
-//    SimpleCursorAdapter mCursorAdapter;
     CursorAdapter mCursorAdapter;
     private OnListFragmentCreatedListener mOnListFragmentCreatedListener;
     private MainActivity mActivity;
-
+    private int mPendingItem;
 
 
     @Override
@@ -42,6 +45,7 @@ public class StatusListFragment extends ListFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.status_list_listview, null);
     }
 
@@ -54,9 +58,28 @@ public class StatusListFragment extends ListFragment
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume()");
+        Log.d(TAG, "[infowindow] onResume()");
         super.onResume();
+        if (mPendingItem != 0) {
+//            ListView listView = getListView();
+//            View listItemView;
+//            TextView statusIdTextView;
+//            for (int i = 0; i < listView.getCount(); i ++) {
+//                listItemView = listView.getChildAt(i);
+//                statusIdTextView = (TextView) listItemView.findViewById(R.id.status_id);
+//                long viewStatusId = Long.parseLong(statusIdTextView.getText().toString());
+//                if (viewStatusId == mPendingItem) {
+//
+//                }
+//
+//            }
+
+            Log.d(TAG, "[infowindow] set selection " + mPendingItem);
+            setSelection(mPendingItem);
+            mPendingItem = 0;
+        }
         getLoaderManager().restartLoader(TWITTER_STATUS_LOADER, null, this);
+
     }
 
 
@@ -79,39 +102,32 @@ public class StatusListFragment extends ListFragment
 
     private void setCursorAdapter(Cursor cursor) {
         Log.d(TAG, "setCursorAdapter()");
-        int layoutId = R.layout.status_list_item;
-        String fromColumns[] = new String[] {
-                TwitterStatusContentProvider.KEY_USER_NAME,
-                TwitterStatusContentProvider.KEY_STATUS_TEXT,
-                TwitterStatusContentProvider.KEY_STATUS_ID,
-                TwitterStatusContentProvider.KEY_CREATED_AT,
-                TwitterStatusContentProvider.KEY_USER_ID,
-                TwitterStatusContentProvider.KEY_USER_SCREEN_NAME,
-                TwitterStatusContentProvider.KEY_USER_IMAGE,
-                TwitterStatusContentProvider.KEY_USER_URL,
-                TwitterStatusContentProvider.KEY_LATITUDE,
-                TwitterStatusContentProvider.KEY_LONGITUDE,
-        };
-
-        int toLayoutIds[] = new int[] {
-                R.id.user_name,
-                R.id.status_text,
-                R.id.screen_name,
-                R.id.user_image
-        };
-//
-//        mCursorAdapter = new TwitterStatusListSimpleCursorAdapter(
-//                getActivity(),
-//                layoutId,
-//                cursor,
-//                fromColumns,
-//                toLayoutIds
-//        );
-
         mCursorAdapter = new StatusListCursorAdapter(getActivity(), cursor);
-
         setListAdapter(mCursorAdapter);
 
+    }
+
+    public void selectListItem(long statusId) {
+        Log.d(TAG, "[infowindow] selectListItem, statusId: " + statusId);
+        Cursor cursor = mCursorAdapter.getCursor();
+        if (cursor != null) {
+            int initialPosition = cursor.getPosition();
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                if (statusId == cursor.getLong(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID))) {
+
+//                View listView = getListView();
+//                if (listView != null)
+//                    setSelection(cursor.getPosition());
+//                else
+                    mPendingItem = cursor.getPosition();
+                    Log.d(TAG, "[infowindow] mPendingItem" + mPendingItem);
+                    break;
+                }
+                cursor.moveToNext();
+            }
+            cursor.move(initialPosition);
+        }
     }
 
     @Override

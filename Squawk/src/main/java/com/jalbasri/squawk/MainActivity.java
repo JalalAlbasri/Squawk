@@ -49,23 +49,8 @@ public class MainActivity extends Activity implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener
 
-//        LocationProvider.OnNewLocationListener
 {
-
     private static final String TAG = MainActivity.class.getName();
-
-    private String mDeviceId;
-    private int mRegisteredVersion;
-    private long mDeviceIdExpirationTime;
-    private LatLng mMapTarget;
-    private int mRadius = 1;
-    private boolean mFirstLaunch = true;
-//    private int mActionBarIndex;
-    private boolean mMapView;
-    private Menu mActionBarMenu;
-
-    private long mTimestamp;
-    private String mDeviceInformation;
 
     private static final int REGISTER_SUBACTIVITY = 1;
     private static final int SHOW_PREFERENCES = 2;
@@ -95,10 +80,25 @@ public class MainActivity extends Activity implements
     private LocationClient mLocationClient;
     private LocationRequest mLocationRequest;
     private StatusMapFragment mStatusMapFragment;
-//    private TabListener<StatusListFragment> mListTabListener;
+    private StatusListFragment mStatusListFragment;
+    //    private TabListener<StatusListFragment> mListTabListener;
 //    private TabListener<StatusMapFragment> mMapTabListener;
     private ActionBar mActionBar;
     private Amazon mAmazon;
+    private String mDeviceId;
+    private int mRegisteredVersion;
+    private long mDeviceIdExpirationTime;
+    private LatLng mMapTarget;
+    private int mRadius = 1;
+    private boolean mFirstLaunch = true;
+    //    private int mActionBarIndex;
+    private boolean mMapView;
+    private Menu mActionBarMenu;
+
+    private long mTimestamp;
+    private String mDeviceInformation;
+    private long mPendingInfoWindow = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +147,6 @@ public class MainActivity extends Activity implements
          */
             mLocationClient = new LocationClient(this, this, this);
 
-
         }
 
         //TODO Check Wifi or GPS and prompt user to turn on if off.
@@ -164,7 +163,7 @@ public class MainActivity extends Activity implements
         //TODO Go through warnings
         //TODO Replace Icon
         //TODO Change name
-        //TODO Fix Twitter Server
+        //DONE Fix Twitter Server
         //TODO Languages and tweet encoding
         //TODO Default graphic for unloaded pictures
         //TODO InfoWindow bug, remains onscreen after clear, reappears if new tweet arrives
@@ -177,35 +176,6 @@ public class MainActivity extends Activity implements
         //TODO Add new toasts
 
     }
-
-    //
-//    @Override
-//    public void onNewLocation(Location location) {
-//        //set mStatusMapFragment
-//        if (mStatusMapFragment == null) {
-//            View fragmentContainer = findViewById(R.id.fragment_container);
-//            boolean tabletLayout = fragmentContainer == null;
-//
-//            if (!tabletLayout) {
-//                mStatusMapFragment = (StatusMapFragment) getFragmentManager()
-//                        .findFragmentByTag(StatusMapFragment.class.getName());
-//            } else {
-//                mStatusMapFragment = ((StatusMapFragment) getFragmentManager()
-//                        .findFragmentById(R.id.map_fragment));
-//            }
-//        }
-//
-//        if (location != null && mStatusMapFragment != null && mDeviceId != null) {
-//            mStatusMapFragment.moveMaptoLocation(
-//                    new LatLng(location.getLatitude(), location.getLongitude()));
-//
-//            double[][] mapRegion = mStatusMapFragment.getMapRegion();
-//            if (mapRegion != null) {
-//                Log.d(TAG, "Amazon.addDevice - onNewLocation");
-//                mAmazon.addDevice(mDeviceId, mapRegion);
-//            }
-//        }
-
 
     /*
      * Called by Location Services when the request to connect the
@@ -398,7 +368,7 @@ public class MainActivity extends Activity implements
             double[][] mapRegion = mStatusMapFragment.getMapRegion();
             if (mapRegion != null) {
                 Log.d(TAG, "Amazon.addDevice - onResume");
-                mAmazon.addDevice(mDeviceId,mapRegion);
+                mAmazon.addDevice(mDeviceId, mapRegion);
             }
         }
     }
@@ -502,28 +472,33 @@ public class MainActivity extends Activity implements
             fragmentTransaction.commit();
         }
     }
+
     /*
     Callback called when a Status List Item is clicked
+    Set in the xml layout status_list_item.xml
      */
-
-    public void onItemClicked(View v) {
+    public void onItemClicked(View statusListItemView) {
         Log.d(TAG, "onItemClicked");
-        TextView statusIdTextView = (TextView) v.findViewById(R.id.status_id);
+        TextView statusIdTextView = (TextView) statusListItemView.findViewById(R.id.status_id);
         Long statusId = Long.parseLong(statusIdTextView.getText().toString());
 
-        TextView userNameTextView = (TextView) v.findViewById(R.id.user_name);
-        TextView screenNameTextView = (TextView) v.findViewById(R.id.screen_name);
-        TextView createdAtTextView = (TextView) v.findViewById(R.id.created_at);
-        TextView statusTextView = (TextView) v.findViewById(R.id.status_text);
-        ImageButton replyImageButton = (ImageButton) v.findViewById(R.id.reply);
-        ImageButton retweetImageButton = (ImageButton) v.findViewById(R.id.retweet);
-        ImageButton favoriteImageButton = (ImageButton) v.findViewById(R.id.favorite);
+        TextView userNameTextView = (TextView) statusListItemView.findViewById(R.id.user_name);
+        TextView screenNameTextView = (TextView) statusListItemView.findViewById(R.id.screen_name);
+        TextView createdAtTextView = (TextView) statusListItemView.findViewById(R.id.created_at);
+        TextView statusTextView = (TextView) statusListItemView.findViewById(R.id.status_text);
+        ImageButton replyImageButton = (ImageButton) statusListItemView.findViewById(R.id.reply);
+        ImageButton retweetImageButton = (ImageButton) statusListItemView.findViewById(R.id.retweet);
+        ImageButton favoriteImageButton = (ImageButton) statusListItemView.findViewById(R.id.favorite);
 
 
-        v.setBackgroundResource(R.drawable.card_background);
+        statusListItemView.setBackgroundResource(R.drawable.card_background);
         retweetImageButton.setBackgroundResource(R.drawable.button_background);
         replyImageButton.setBackgroundResource(R.drawable.button_background);
         favoriteImageButton.setBackgroundResource(R.drawable.button_background);
+
+        replyImageButton.setPadding(3, 3, 3, 3);
+        retweetImageButton.setPadding(3, 3, 3, 3);
+        favoriteImageButton.setPadding(5, 5, 5, 5);
 
         screenNameTextView.setTextColor(getResources().getColor(android.R.color.darker_gray));
         statusTextView.setLinkTextColor(userNameTextView.getLinkTextColors().getDefaultColor());
@@ -545,8 +520,11 @@ public class MainActivity extends Activity implements
             mActionBarMenu.getItem(0).setIcon(R.drawable.ic_action_view_as_list);
         }
 
-        if (mStatusMapFragment != null) {
-            Log.d(TAG, "ready to call selectMarker, " + statusId);
+        if (mStatusMapFragment == null) {
+            Log.d(TAG, "[InfoWindowDebug] Status Map Fragment is null");
+            mPendingInfoWindow = statusId;
+        } else {
+            Log.d(TAG, "[InfoWindowDebug] select marker");
             mStatusMapFragment.selectMarker(statusId);
         }
 
@@ -612,6 +590,11 @@ public class MainActivity extends Activity implements
                         new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 10);
             }
         }
+
+        if (mPendingInfoWindow != 0) {
+            mStatusMapFragment.selectMarker(mPendingInfoWindow);
+            mPendingInfoWindow = 0;
+        }
     }
 
     @Override
@@ -625,6 +608,29 @@ public class MainActivity extends Activity implements
             }
             mMapTarget = mStatusMapFragment.getMapTarget();
         }
+    }
+
+    @Override
+    public void onInfoWindowClicked(long statusId) {
+        Log.d(TAG, "[infowindowclick]");
+        View fragmentContainer = findViewById(R.id.fragment_container);
+        boolean tabletLayout = fragmentContainer == null;
+
+        if (!tabletLayout) {
+            detachNavigationFragment(StatusMapFragment.class, false);
+            attachNavigationFragment(StatusListFragment.class, false);
+            mMapView = false;
+            mActionBarMenu.getItem(0).setIcon(R.drawable.ic_action_map);
+
+            mStatusListFragment = (StatusListFragment) getFragmentManager()
+                    .findFragmentByTag(StatusListFragment.class.getName());
+        } else {
+            mStatusListFragment = ((StatusListFragment) getFragmentManager()
+                    .findFragmentById(R.id.status_list_fragment));
+        }
+
+        if (mStatusListFragment != null)
+            mStatusListFragment.selectListItem(statusId);
     }
 
     @Override
