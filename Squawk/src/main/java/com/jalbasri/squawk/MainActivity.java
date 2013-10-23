@@ -57,8 +57,6 @@ public class MainActivity extends Activity implements
     public static final String KEY_DEVICE_ID = "device_id";
     public static final String KEY_ACTION_BAR_INDEX = "action_bar_index";
     public static final String KEY_DEVICE_ID_EXPIRATION_TIME = "expiration_time";
-    public static final String KEY_SERVER_DEVICE_INFORMATION = "server_device_information";
-    public static final String KEY_SERVER_DEVICE_TIMESTAMP = "server_device_timestamp";
     public static final String KEY_APP_VERSION = "app_version";
     public static final String KEY_MAP_VIEW = "map_view";
     public static final String DEFAULT_DEVICE_ID = "";
@@ -95,8 +93,6 @@ public class MainActivity extends Activity implements
     private boolean mMapView;
     private Menu mActionBarMenu;
 
-    private long mTimestamp;
-    private String mDeviceInformation;
     private long mPendingInfoWindow = 0;
 
 
@@ -254,10 +250,9 @@ public class MainActivity extends Activity implements
                 if (resultCode == RESULT_OK) {
                     Bundle deviceInfoBundle =
                             data.getBundleExtra("deviceInfoBundle");
-                    Log.d(TAG, "[Registration] onActivityResult OK, deviceInfoBundle != null" +
-                            (deviceInfoBundle != null) );
-                    if (deviceInfoBundle != null) {
-                        saveDeviceInfo(deviceInfoBundle);
+                    String deviceRegistrationId = data.getStringExtra("deviceRegistrationId");
+                    if (deviceRegistrationId != null) {
+                        saveDeviceInfo(deviceRegistrationId);
                         Log.d(TAG, "[Registration] onActivityResult:" +
                                 " RegisterActivity Successful");
                     }
@@ -721,11 +716,7 @@ public class MainActivity extends Activity implements
         }
     }
 
-    private void saveDeviceInfo(Bundle deviceInfoBundle) {
-
-        String deviceId = deviceInfoBundle.getString("deviceInfoId");
-        String deviceInformation = deviceInfoBundle.getString("deviceInformation");
-        Long deviceTimestamp =  deviceInfoBundle.getLong("deviceTimestamp");
+    private void saveDeviceInfo(String deviceId) {
 
         Log.d(TAG, "[Registration] saveDeviceId, DeviceId = " + deviceId);
         Context context = getApplicationContext();
@@ -733,8 +724,6 @@ public class MainActivity extends Activity implements
                 .getDefaultSharedPreferences(context).edit();
 
         editor.putString(KEY_DEVICE_ID, deviceId);
-        editor.putString(KEY_SERVER_DEVICE_INFORMATION, deviceInformation);
-        editor.putLong(KEY_SERVER_DEVICE_TIMESTAMP, deviceTimestamp);
         editor.putInt(KEY_APP_VERSION, getAppVersion());
         long expirationTime = System.currentTimeMillis() + DEVICE_ID_EXPIRATION_TIME;
         editor.putLong(KEY_DEVICE_ID_EXPIRATION_TIME, expirationTime);
@@ -742,11 +731,7 @@ public class MainActivity extends Activity implements
         editor.commit();
 
         mDeviceId = deviceId;
-        mTimestamp = deviceTimestamp;
-        mDeviceInformation = deviceInformation;
 
-//        showDialog("Successfully registered with endpoint server." +
-//                " Registration Id: " + deviceId);
     }
 
     private void showDialog(String message) {
@@ -818,12 +803,6 @@ public class MainActivity extends Activity implements
 
         //Update Registered App Version
         mRegisteredVersion = sharedPreferences.getInt(KEY_APP_VERSION, DEFAULT_APP_VERSION);
-
-        //Update Server Registration Information
-        mDeviceInformation = sharedPreferences
-                .getString(KEY_SERVER_DEVICE_INFORMATION, DEFAULT_DEVICE_INFORMATION);
-        mTimestamp = sharedPreferences
-                .getLong(KEY_SERVER_DEVICE_TIMESTAMP, DEFAULT_DEVICE_TIMESTAMP);
 
         //Update Radius
         mRadius = Integer.parseInt(sharedPreferences
