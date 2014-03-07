@@ -40,7 +40,6 @@ public class StatusListCursorAdapter extends CursorAdapter {
     private final long ONE_DAY = 24*ONE_HOUR;
     private Context mContext;
 
-
     public StatusListCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
         mContext = context;

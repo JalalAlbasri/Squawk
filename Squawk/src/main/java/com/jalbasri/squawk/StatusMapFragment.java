@@ -317,7 +317,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 .position(latLng)
                 .title(title)
                 .draggable(false)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.tweet_light));
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
 //                .anchor(24, 2)
 
         if (mGoogleMap != null && latLng != null) {

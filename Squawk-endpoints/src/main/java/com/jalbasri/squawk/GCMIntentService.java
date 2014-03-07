@@ -333,7 +333,8 @@ public class GCMIntentService extends GCMBaseIntentService {
         long id = Long.parseLong(intent.getStringExtra("id"));
         String text = intent.getStringExtra("text");
         String createdAtString = intent.getStringExtra("created_at");
-        int userId = Integer.parseInt(intent.getStringExtra("user_id"));
+        Log.d(TAG, "user_id String = " + intent.getStringExtra("user_id"));
+        long userId = Long.parseLong(intent.getStringExtra("user_id"));
         String userName = intent.getStringExtra("user_name");
         String userUrl = intent.getStringExtra("user_url");
         String screenName = intent.getStringExtra("screen_name");
