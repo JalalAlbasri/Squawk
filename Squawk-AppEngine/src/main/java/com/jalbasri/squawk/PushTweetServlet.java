@@ -64,7 +64,6 @@ public class PushTweetServlet extends HttpServlet {
         } catch (IOException e) {
             logger.log(Level.SEVERE, "IOException de-serializing POST data");
         }
-
     }
 
     /**

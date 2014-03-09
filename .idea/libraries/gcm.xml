@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="gcm">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/Squawk-endpoints/libs/gcm.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Squawk/build/exploded-aar/Squawk/Squawk-endpoints/unspecified/libs/gcm.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

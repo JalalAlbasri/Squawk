@@ -16,7 +16,7 @@ import android.content.CursorLoader;
 import android.database.Cursor;
 import android.widget.TextView;
 
-import twitter4j.Twitter;
+//import twitter4j.Twitter;
 
 public class StatusListFragment extends ListFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {

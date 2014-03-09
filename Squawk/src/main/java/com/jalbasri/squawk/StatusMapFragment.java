@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import twitter4j.Twitter;
+//import twitter4j.Twitter;
 
 /*
     Warning, com.google.android.gms.maps.model.LatLng is used
@@ -84,7 +84,6 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         View v = super.onCreateView(inflater, container, savedInstanceState);
         initGoogleMap();
         return v;
-
     }
 
     @Override
@@ -101,9 +100,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         if (mGoogleMap == null) {
             initGoogleMap();
         }
-
         getLoaderManager().restartLoader(TWITTER_STATUS_LOADER, null, this);
-
     }
 
     private void initGoogleMap() {
@@ -174,14 +171,10 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                     statusTextView.setText(statusText);
 
                 }
-
                 return infoWindowView;
-
             }
         });
-
         Log.d(TAG, "initGoogleMap finished " + (mGoogleMap != null));
-
     }
 
     public void moveMaptoLocation(LatLng latLng, float zoom) {
@@ -190,18 +183,14 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             CameraPosition cameraPosition = new CameraPosition(latLng, zoom, 0, 0);
             CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
             mGoogleMap.moveCamera(cameraUpdate);
-
         }
-
     }
 
     public void moveMaptoLocation(LatLng latLng) {
         Log.d(TAG, "move map to location " + (mGoogleMap != null));
         if (mGoogleMap != null) {
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
         }
-
     }
 
     public void clearMarkers() {
@@ -217,7 +206,6 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     }
 
     public double[][] getMapRegion() {
-
         if (mGoogleMap != null) {
             VisibleRegion visibleRegion = mGoogleMap.getProjection().getVisibleRegion();
             return new double[][] {{visibleRegion.nearLeft.latitude, visibleRegion.nearLeft.longitude},
@@ -235,7 +223,6 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
     public void selectMarker(long statusId) {
         Log.d(TAG, "selectMarker()");
-
         for (Map.Entry<Long, Marker> marker: mMarkers.entrySet()) {
             if (marker.getKey() == statusId) {
                 clickMarker(marker.getValue(), true);
@@ -287,7 +274,6 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
                 /*
                 Preload images for infowindow
-
                  */
                 String imageUrl = mCursor.getString(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_USER_IMAGE));
                 UrlImageViewHelper.loadUrlDrawable(mActivity, imageUrl);

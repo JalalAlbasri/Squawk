@@ -550,7 +550,7 @@ public class MainActivity extends Activity implements
 
     /**
      * Callback used to move the map camera to the last known location once
-     * the map is loaded.
+     * the map is loaded. Called from StatusMapFragment.
      */
     @Override
     public void onMapFragmentCreated() {
@@ -682,8 +682,6 @@ public class MainActivity extends Activity implements
      * Helper Functions
      *
      */
-
-
     private boolean servicesConnected() {
         // Check that Google Play services is available
         int resultCode =
@@ -696,8 +694,7 @@ public class MainActivity extends Activity implements
                     "Google Play services is available.");
             // Continue
             return true;
-            // Google Play services was not available for some reason
-        } else {
+        } else { // Google Play services was not available for some reason
             // Get the error code
             int errorCode = resultCode;
             // Get the error dialog from Google Play services
@@ -727,11 +724,8 @@ public class MainActivity extends Activity implements
         editor.putInt(KEY_APP_VERSION, getAppVersion());
         long expirationTime = System.currentTimeMillis() + DEVICE_ID_EXPIRATION_TIME;
         editor.putLong(KEY_DEVICE_ID_EXPIRATION_TIME, expirationTime);
-
         editor.commit();
-
         mDeviceId = deviceId;
-
     }
 
     private void showDialog(String message) {

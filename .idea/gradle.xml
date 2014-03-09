@@ -5,8 +5,15 @@
       <GradleProjectSettings>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="C:/Program Files (x86)/gradle-1.8-all/gradle-1.8" />
-        <option name="useAutoImport" value="true" />
+        <option name="gradleHome" value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.8-bin/vruqmccc8532n7gr46qavsii8/gradle-1.8" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Squawk" />
+            <option value="$PROJECT_DIR$/Squawk-AppEngine" />
+            <option value="$PROJECT_DIR$/Squawk-endpoints" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>

@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import twitter4j.Twitter;
+//import twitter4j.Twitter;
 
 /**
  * Created by jalal on 9/10/13.
