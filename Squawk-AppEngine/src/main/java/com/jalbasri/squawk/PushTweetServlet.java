@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,6 +18,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.net.URLEncoder;
 
 import com.google.android.gcm.server.Constants;
 import com.google.android.gcm.server.Message;
@@ -50,17 +54,17 @@ public class PushTweetServlet extends HttpServlet {
 
         try {
             BufferedReader bufferedReader = req.getReader();
+//            String s;
+//            while ((s=bufferedReader.readLine())!=null)
+//            {
+//                logger.info(s);
+//            }
             Gson gson = new Gson();
             TweetBean tweetBean = gson.fromJson(bufferedReader, TweetBean.class);
-            System.out.println(tweetBean.toString());
+            logger.info(tweetBean.toString());
             Sender sender = new Sender(API_KEY);
             List<String> devices = Arrays.asList(tweetBean.deviceIds);
             doSendTweetViaGcm(tweetBean, sender, devices);
-
-//            for(String deviceId: tweetBean.deviceIds) {
-//                doSendTweetViaGcm(tweetBean, sender, deviceId);
-//            }
-
         } catch (IOException e) {
             logger.log(Level.SEVERE, "IOException de-serializing POST data");
         }
@@ -77,24 +81,24 @@ public class PushTweetServlet extends HttpServlet {
      */
     private static MulticastResult doSendTweetViaGcm(TweetBean tweet, Sender sender, List<String> devices) throws IOException {
 
-        System.out.println(devices.toString());
+//        logger.info(devices.toString());
 
         Message msg = new Message.Builder()
                 .addData("tweet", "true")
                 .addData("id", tweet.getId())
-                .addData("text", tweet.getText())
+                .addData("text", URLEncoder.encode(tweet.getText(), "UTF-8"))
                 .addData("created_at", tweet.getCreated_at())
                 .addData("user_id", tweet.getUser_id())
-                .addData("user_name", tweet.getUser_name())
+                .addData("user_name", URLEncoder.encode(tweet.getUser_name(), "UTF-8"))
                 .addData("user_url", tweet.getUser_url())
                 .addData("screen_name", tweet.getScreen_name())
                 .addData("user_image", tweet.getUser_image())
                 .addData("latitude", tweet.getLatitude())
                 .addData("longitude", tweet.getLongitude())
                 .build();
-
+        logger.info(msg.toString());
         MulticastResult result = sender.send(msg, devices, 5);
-        System.out.println("Result: " + result);
+//        logger.info("Result: " + result);
 
         return result;
     }

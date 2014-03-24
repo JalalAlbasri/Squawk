@@ -8,5 +8,6 @@
     <string name="action_clear">Clear</string>
     <string name="pref_radius_title">Radius</string>
     <string name="pref_radius_summary">Twitter feed listen radius</string>
+    <string name="pref_move_map">Move map when marker selected</string>
 
 </resources>

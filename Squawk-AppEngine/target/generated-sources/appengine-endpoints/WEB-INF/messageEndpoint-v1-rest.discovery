@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"doS0mIKix6_L3_LoT-sZZjofha4/7XIesBjjICLIn4R9nHtstu7erSw\"",
+ "etag": "\"OqxT57NU1DEATg4yJjzJs2FozZE/7XIesBjjICLIn4R9nHtstu7erSw\"",
  "discoveryVersion": "v1",
  "id": "messageEndpoint:v1",
  "name": "messageEndpoint",

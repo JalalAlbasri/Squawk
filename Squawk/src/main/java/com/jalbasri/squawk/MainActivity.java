@@ -87,12 +87,10 @@ public class MainActivity extends Activity implements
     private int mRegisteredVersion;
     private long mDeviceIdExpirationTime;
     private LatLng mMapTarget;
-    private int mRadius = 1;
     private boolean mFirstLaunch = true;
     //    private int mActionBarIndex;
     private boolean mMapView;
     private Menu mActionBarMenu;
-
     private long mPendingInfoWindow = 0;
 
 
@@ -797,11 +795,6 @@ public class MainActivity extends Activity implements
 
         //Update Registered App Version
         mRegisteredVersion = sharedPreferences.getInt(KEY_APP_VERSION, DEFAULT_APP_VERSION);
-
-        //Update Radius
-        mRadius = Integer.parseInt(sharedPreferences
-                .getString(SettingsActivity.PREF_RADIUS_LIST, DEFAULT_PREF_RADIUS));
-        Log.d(TAG, "Radius: " + mRadius);
 
     }
 

@@ -1,6 +1,8 @@
 package com.jalbasri.squawk;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -331,59 +333,63 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     private void addNewTwitterStatus(Intent intent) {
         long id = Long.parseLong(intent.getStringExtra("id"));
-        String text = intent.getStringExtra("text");
-        String createdAtString = intent.getStringExtra("created_at");
-        Log.d(TAG, "user_id String = " + intent.getStringExtra("user_id"));
-        long userId = Long.parseLong(intent.getStringExtra("user_id"));
-        String userName = intent.getStringExtra("user_name");
-        String userUrl = intent.getStringExtra("user_url");
-        String screenName = intent.getStringExtra("screen_name");
-        String userImage = intent.getStringExtra("user_image");
-        double latitude = Double.parseDouble(intent.getStringExtra("latitude"));
-        double longitude = Double.parseDouble(intent.getStringExtra("longitude"));
-        long createdAtLong = 0;
         try {
-            Date createdAtDate = getTwitterDate(createdAtString);
-            createdAtLong = createdAtDate.getTime();
-        } catch (ParseException e) {
-            Log.e(TAG, "Error parsing Twitter Date, " + e);
+            String text = URLDecoder.decode(intent.getStringExtra("text"), "UTF-8");
+
+            Log.d(TAG, "Intent Status Text: " + text);
+            String createdAtString = intent.getStringExtra("created_at");
+            long userId = Long.parseLong(intent.getStringExtra("user_id"));
+            String userName = URLDecoder.decode(intent.getStringExtra("user_name"), "UTF-8");
+            String userUrl = intent.getStringExtra("user_url");
+            String screenName = intent.getStringExtra("screen_name");
+            String userImage = intent.getStringExtra("user_image");
+            double latitude = Double.parseDouble(intent.getStringExtra("latitude"));
+            double longitude = Double.parseDouble(intent.getStringExtra("longitude"));
+            long createdAtLong = 0;
+            try {
+                Date createdAtDate = getTwitterDate(createdAtString);
+                createdAtLong = createdAtDate.getTime();
+            } catch (ParseException e) {
+                Log.e(TAG, "Error parsing Twitter Date, " + e);
+            }
+
+            Log.d(TAG, "Tweet Received");
+            Log.d(TAG, "id: " + id);
+            Log.d(TAG, "text: " + text);
+            Log.d(TAG, "userId: " + userId);
+            Log.d(TAG, "created at: " + createdAtString + " long: " + createdAtLong);
+            Log.d(TAG, "user name: " + userName);
+            Log.d(TAG, "screen name: " + screenName);
+            Log.d(TAG, "user image: " + userImage);
+            Log.d(TAG, "latitude: " + latitude);
+            Log.d(TAG, "longitude: " + longitude);
+
+
+            ContentResolver resolver = getContentResolver();
+            String contentUri = "content://com.jalbasri.squawk.twitterstatusprovider/twitteritems";
+            Uri twitterStatusProviderUri = Uri.parse(contentUri);
+            //Make sure status doesn't alraedy exist
+
+            String where = "_id" + " = " + id;
+            Cursor query = resolver.query(twitterStatusProviderUri, null, where, null, null);
+            if (query.getCount() == 0) {
+                ContentValues values = new ContentValues();
+                values.put("_id", id);
+                values.put("_created_at", createdAtLong);
+                values.put("_status_text", text);
+                values.put("_user_id", userId);
+                values.put("_user_name", userName);
+                values.put("_user_screen_name", screenName);
+                values.put("_user_image", userImage);
+                values.put("_user_url", userUrl);
+                values.put("_latitude", latitude);
+                values.put("_longitude", longitude);
+                resolver.insert(twitterStatusProviderUri, values);
+            }
+            query.close();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
-
-        Log.d(TAG, "Tweet Received");
-        Log.d(TAG, "id: " + id);
-        Log.d(TAG, "text: " + text);
-        Log.d(TAG, "userId: " + userId);
-        Log.d(TAG, "created at: " + createdAtString + " long: " + createdAtLong);
-        Log.d(TAG, "user name: " + userName);
-        Log.d(TAG, "screen name: " + screenName);
-        Log.d(TAG, "user image: " + userImage);
-        Log.d(TAG, "latitude: " + latitude);
-        Log.d(TAG, "longitude: " + longitude);
-
-
-        ContentResolver resolver = getContentResolver();
-        String contentUri = "content://com.jalbasri.squawk.twitterstatusprovider/twitteritems";
-        Uri twitterStatusProviderUri = Uri.parse(contentUri);
-        //Make sure status doesn't alraedy exist
-
-        String where = "_id" + " = " + id;
-        Cursor query = resolver.query(twitterStatusProviderUri, null, where, null, null);
-        if (query.getCount() == 0) {
-            ContentValues values = new ContentValues();
-            values.put("_id", id);
-            values.put("_created_at", createdAtLong);
-            values.put("_status_text", text);
-            values.put("_user_id", userId);
-            values.put("_user_name", userName);
-            values.put("_user_screen_name", screenName);
-            values.put("_user_image", userImage);
-            values.put("_user_url", userUrl);
-            values.put("_latitude", latitude);
-            values.put("_longitude", longitude);
-            resolver.insert(twitterStatusProviderUri, values);
-        }
-        query.close();
-
     }
 
      private Date getTwitterDate(String date) throws ParseException {

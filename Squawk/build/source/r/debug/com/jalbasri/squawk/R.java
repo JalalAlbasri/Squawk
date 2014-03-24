@@ -277,14 +277,15 @@ containing a value of this type.
         public static final int location_client_ulr_inactive_age_unknown=0x7f090018;
         public static final int location_client_ulr_inactive_unknown_restriction=0x7f090019;
         public static final int pref_header_general=0x7f09001a;
-        public static final int pref_radius_summary=0x7f09001b;
-        public static final int pref_radius_title=0x7f09001c;
-        public static final int pref_summary_radius=0x7f09001d;
-        public static final int pref_summary_update_frequency=0x7f09001e;
-        public static final int pref_title_auto_update=0x7f09001f;
-        public static final int pref_title_radius=0x7f090020;
-        public static final int pref_title_update_frequency=0x7f090021;
-        public static final int title_activity_settings=0x7f090022;
+        public static final int pref_move_map=0x7f09001b;
+        public static final int pref_radius_summary=0x7f09001c;
+        public static final int pref_radius_title=0x7f09001d;
+        public static final int pref_summary_radius=0x7f09001e;
+        public static final int pref_summary_update_frequency=0x7f09001f;
+        public static final int pref_title_auto_update=0x7f090020;
+        public static final int pref_title_radius=0x7f090021;
+        public static final int pref_title_update_frequency=0x7f090022;
+        public static final int title_activity_settings=0x7f090023;
     }
     public static final class style {
         /** 

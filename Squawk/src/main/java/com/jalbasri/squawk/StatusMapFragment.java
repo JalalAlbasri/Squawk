@@ -3,11 +3,14 @@ package com.jalbasri.squawk;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -45,6 +48,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
     private OnMapFragmentCreatedListener mOnMapFragmentCreatedListener;
     private static final int TWITTER_STATUS_LOADER = 0;
+    private static final String PREF_MOVE_MAP = "pref_move_map_checkbox";
     private MainActivity mActivity;
     private Cursor mCursor;
     private GoogleMap mGoogleMap;
@@ -53,6 +57,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     private final int MARKER_LIMIT = 50;
     private Map<Long, Marker> mMarkers;
     private long mPendingInfoWindow = 0;
+    private boolean mMoveMapOnMarkerClick;
 
     public interface OnMapFragmentCreatedListener {
         public void onMapFragmentCreated();
@@ -97,6 +102,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     public void onResume() {
         Log.d(TAG, "map onResume()");
         super.onResume();
+        updateFromPreferences();
         if (mGoogleMap == null) {
             initGoogleMap();
         }
@@ -225,7 +231,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         Log.d(TAG, "selectMarker()");
         for (Map.Entry<Long, Marker> marker: mMarkers.entrySet()) {
             if (marker.getKey() == statusId) {
-                clickMarker(marker.getValue(), true);
+                clickMarker(marker.getValue());
                 break;
             }
         }
@@ -243,7 +249,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                             .getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
                     Marker marker = drawMarker(latLng, title);
                     if (marker != null)
-                        clickMarker(marker, true);
+                        clickMarker(marker);
                     break;
                 }
             }
@@ -315,7 +321,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     GoogleMap.OnMarkerClickListener onMapMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            return clickMarker(marker, false);
+            return clickMarker(marker);
         }
     };
 
@@ -338,7 +344,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         }
     };
 
-    private boolean clickMarker(Marker marker, boolean moveMap) {
+    private boolean clickMarker(Marker marker) {
         if (mLastMarker != null) {
             mLastMarker.hideInfoWindow();
             if (mLastMarker.equals(marker)) {
@@ -347,13 +353,22 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             }
         }
 
-        if (moveMap) {
+        //TODO add movemap to settings
+        if (mMoveMapOnMarkerClick) {
             moveMaptoLocation(marker.getPosition());
         }
 
         marker.showInfoWindow();
         mLastMarker = marker;
-        return false;
+        return true; //returning true disables default onMarkerClick behaviour
+    }
+
+    private void updateFromPreferences() {
+        Context context = mActivity;
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+
+        mMoveMapOnMarkerClick = sharedPreferences.getBoolean(PREF_MOVE_MAP, true);
     }
 
     @Override
