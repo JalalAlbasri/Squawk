@@ -27,6 +27,25 @@ android {
         minSdkVersion 14
         targetSdkVersion 19
     }
+
+    signingConfigs {
+
+        release {
+
+            storeFile file('/home/jalal/Documents/Android-Key/jalbasri-keystore')
+            storePassword "vua7wj6m"
+            keyAlias "jalbasri-keystore"
+            keyPassword "vua7wj6m"
+        }
+    }
+
+    buildTypes {
+
+        release {
+
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 repositories {
