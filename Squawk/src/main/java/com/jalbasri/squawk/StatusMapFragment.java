@@ -33,9 +33,9 @@ import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.gms.plus.model.people.Person;
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+
 
 //import twitter4j.Twitter;
 
@@ -55,7 +55,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     private Marker mLastMarker;
     private String mSortOrder = TwitterStatusContentProvider.KEY_CREATED_AT + " DESC";
     private final int MARKER_LIMIT = 50;
-    private Map<Long, Marker> mMarkers;
+    private LinkedHashMap<Long, Marker> mMarkers;
     private long mPendingInfoWindow = 0;
     private boolean mCenterSelectedMarker;
 
@@ -78,7 +78,17 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
         getLoaderManager().initLoader(TWITTER_STATUS_LOADER, null, this);
         setRetainInstance(true);
-        mMarkers = new HashMap<Long, Marker>();
+        mMarkers = new LinkedHashMap<Long, Marker>() {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry eldest) {
+                if (size() > MARKER_LIMIT) {
+                    Marker eldestMarker = (Marker) eldest.getValue();
+                    eldestMarker.remove();
+                    return true;
+                }
+                return false;
+            }
+        };
     }
 
     @Override
@@ -228,6 +238,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     }
 
     public void selectMarker(long statusId) {
+
         Log.d(TAG, "selectMarker()");
         for (Map.Entry<Long, Marker> marker: mMarkers.entrySet()) {
             if (marker.getKey() == statusId) {
@@ -257,16 +268,18 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         else {
             mPendingInfoWindow = statusId;
         }
+
     }
 
     private void refreshMapMarkers() {
+        Log.d(TAG, "Refresh Map Markers");
         boolean lastMarkerGone = true;
         long lastMarkerId = 0;
         if (mLastMarker != null)
             lastMarkerId = Long.parseLong(mLastMarker.getTitle());
 
         if (mCursor != null) {
-            clearMarkers();
+            //clearMarkers();
             for (int i = 0; i < MARKER_LIMIT && mCursor.moveToNext(); i++) {
                 LatLng latLng = new LatLng(
                         mCursor.getDouble(mCursor
@@ -276,7 +289,12 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 String title = mCursor.getString(mCursor
                         .getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
                 Long statusId = mCursor.getLong(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
-                mMarkers.put(statusId, drawMarker(latLng, title));
+
+                if(!mMarkers.containsKey(statusId)) {
+                    Log.d(TAG, "Refresh Map Markers: Add new Marker");
+                    mMarkers.put(statusId, drawMarker(latLng, title));
+                }
+
 
                 /*
                 Preload images for infowindow
@@ -353,14 +371,13 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
             }
         }
 
-        //TODO add movemap to settings
-
         marker.showInfoWindow();
         mLastMarker = marker;
         if (mCenterSelectedMarker) {
             return false;
         }
-        return true; //returning true disables default onMarkerClick behaviour
+        //returning true disables default onMarkerClick behaviour which centers the marker
+        return true;
     }
 
     private void updateFromPreferences() {

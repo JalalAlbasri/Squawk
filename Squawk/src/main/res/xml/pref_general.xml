@@ -30,5 +30,6 @@
             android:title="@string/pref_title_center_marker"
             android:defaultValue="true" />
 
+
     </PreferenceCategory>
 </PreferenceScreen>

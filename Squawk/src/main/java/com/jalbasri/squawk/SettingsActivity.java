@@ -1,5 +1,6 @@
 package com.jalbasri.squawk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.List;
 
@@ -23,7 +25,10 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 //TODO Remove these settings.
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends Activity {
+
+    private static final String TAG = SettingsActivity.class.getName();
+
 
 //    public static final String PREF_UPDATE_FREQUENCY = "pref_update_frequency_list";
 
@@ -37,9 +42,17 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     /** {@inheritDoc} */
-    @Override
+//    @Override
     public boolean onIsMultiPane() {
         return isXLargeTablet(this) && !isSimplePreferences(this);
+    }
+
+//    @Override
+    protected boolean isValidFragment(String fragmentName) {
+        Log.d(TAG, fragmentName);
+        if ("com.jalbasri.squawk.SettingsActivity$GeneralPreferenceFragment".equals(fragmentName))
+            return true;
+        return false;
     }
 
     /**
@@ -56,13 +69,13 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     /** {@inheritDoc} */
-    @Override
+/*    @Override
     public void onBuildHeaders(List<Header> target) {
         if (!isSimplePreferences(this)) {
             loadHeadersFromResource(R.xml.pref_headers, target);
         }
     }
-
+*/
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
