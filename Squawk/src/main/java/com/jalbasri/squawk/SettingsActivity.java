@@ -1,21 +1,13 @@
 package com.jalbasri.squawk;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
-import android.text.TextUtils;
 
 import java.util.List;
 
@@ -33,9 +25,7 @@ import java.util.List;
 //TODO Remove these settings.
 public class SettingsActivity extends PreferenceActivity {
 
-    public static final String PREF_RADIUS_LIST = "pref_radius_list";
-    public static final String PREF_UPDATE_FREQUENCY = "pref_update_frequency_list";
-    public static final String PREF_AUTO_UPDATE = "pref_auto_update";
+//    public static final String PREF_UPDATE_FREQUENCY = "pref_update_frequency_list";
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -138,8 +128,7 @@ public class SettingsActivity extends PreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference(PREF_RADIUS_LIST));
-            bindPreferenceSummaryToValue(findPreference(PREF_UPDATE_FREQUENCY));
+//            bindPreferenceSummaryToValue(findPreference(PREF_UPDATE_FREQUENCY));
         }
     }
 

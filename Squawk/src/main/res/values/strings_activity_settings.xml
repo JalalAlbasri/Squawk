@@ -4,40 +4,28 @@
     <!-- Strings related to Settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_radius">Radius</string>
-    <string name="pref_summary_radius">Load tweets in given radius</string>
-    <string-array name="pref_radius_titles">
-        <item>1km</item>
-        <item>3km</item>
-        <item>10km</item>
-        <item>50km</item>
-        <item>100km</item>
-    </string-array>
-    <string-array name="pref_radius_values">
-        <item>1</item>
-        <item>3</item>
-        <item>10</item>
-        <item>50</item>
-        <item>100</item>
-    </string-array>
+    <!--<string name="pref_update_settings_title">Tweet Update Settings</string>-->
 
-    <string name="pref_title_auto_update">Auto Update</string>
+    <string name="pref_map_settings_title">Map Settings</string>
+    <string name="pref_title_center_marker">Center Selected Tweet</string>
 
-    <string name="pref_title_update_frequency">Update Frequency</string>
-    <string name="pref_summary_update_frequency">How often to update the Twitter feed</string>
-    <string-array name="pref_update_frequency_titles">
-        <item>5s</item>
-        <item>10s</item>
-        <item>30s</item>
-        <item>1m</item>
-        <item>5m</item>
-    </string-array>
-    <string-array name="pref_update_frequency_values">
-        <item>5000</item>
-        <item>10000</item>
-        <item>30000</item>
-        <item>60000</item>
-        <item>300000</item>
-    </string-array>
+    <!--<string name="pref_title_auto_update">Auto Update</string>-->
+
+    <!--<string name="pref_title_update_frequency">Update Frequency</string>-->
+    <!--<string name="pref_summary_update_frequency">How often to update the Twitter feed</string>-->
+    <!--<string-array name="pref_update_frequency_titles">-->
+        <!--<item>5s</item>-->
+        <!--<item>10s</item>-->
+        <!--<item>30s</item>-->
+        <!--<item>1m</item>-->
+        <!--<item>5m</item>-->
+    <!--</string-array>-->
+    <!--<string-array name="pref_update_frequency_values">-->
+        <!--<item>5000</item>-->
+        <!--<item>10000</item>-->
+        <!--<item>30000</item>-->
+        <!--<item>60000</item>-->
+        <!--<item>300000</item>-->
+    <!--</string-array>-->
 
 </resources>

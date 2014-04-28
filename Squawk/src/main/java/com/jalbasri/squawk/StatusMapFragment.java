@@ -48,7 +48,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
 
     private OnMapFragmentCreatedListener mOnMapFragmentCreatedListener;
     private static final int TWITTER_STATUS_LOADER = 0;
-    private static final String PREF_MOVE_MAP = "pref_move_map_checkbox";
+    private static final String PREF_MOVE_MAP = "pref_center_marker_checkbox";
     private MainActivity mActivity;
     private Cursor mCursor;
     private GoogleMap mGoogleMap;
@@ -57,7 +57,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
     private final int MARKER_LIMIT = 50;
     private Map<Long, Marker> mMarkers;
     private long mPendingInfoWindow = 0;
-    private boolean mMoveMapOnMarkerClick;
+    private boolean mCenterSelectedMarker;
 
     public interface OnMapFragmentCreatedListener {
         public void onMapFragmentCreated();
@@ -183,7 +183,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         Log.d(TAG, "initGoogleMap finished " + (mGoogleMap != null));
     }
 
-    public void moveMaptoLocation(LatLng latLng, float zoom) {
+    public void snapMaptoLocation(LatLng latLng, float zoom) {
         Log.d(TAG, "move map to location " + (mGoogleMap != null));
         if (mGoogleMap != null) {
             CameraPosition cameraPosition = new CameraPosition(latLng, zoom, 0, 0);
@@ -192,7 +192,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         }
     }
 
-    public void moveMaptoLocation(LatLng latLng) {
+    public void snapMaptoLocation(LatLng latLng) {
         Log.d(TAG, "move map to location " + (mGoogleMap != null));
         if (mGoogleMap != null) {
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -354,12 +354,12 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         }
 
         //TODO add movemap to settings
-        if (mMoveMapOnMarkerClick) {
-            moveMaptoLocation(marker.getPosition());
-        }
 
         marker.showInfoWindow();
         mLastMarker = marker;
+        if (mCenterSelectedMarker) {
+            return false;
+        }
         return true; //returning true disables default onMarkerClick behaviour
     }
 
@@ -368,7 +368,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
 
-        mMoveMapOnMarkerClick = sharedPreferences.getBoolean(PREF_MOVE_MAP, true);
+        mCenterSelectedMarker = sharedPreferences.getBoolean(PREF_MOVE_MAP, true);
     }
 
     @Override

@@ -10,11 +10,25 @@
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         -->
+
+
     </style>
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light">
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+    </style>
+
+    <style name="MyActionBar" parent="android:style/Widget.Holo.ActionBar">
+        <item name="android:background">#1871d7</item>
+        <item name="android:titleTextStyle">@style/MyActionBarTextStyle</item>
+
+    </style>
+
+    <style name="MyActionBarTextStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16dp</item>
     </style>
 
 </resources>

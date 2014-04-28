@@ -109,24 +109,26 @@ public class StatusListFragment extends ListFragment
 
     public void selectListItem(long statusId) {
         Log.d(TAG, "[infowindow] selectListItem, statusId: " + statusId);
-        Cursor cursor = mCursorAdapter.getCursor();
-        if (cursor != null) {
-            int initialPosition = cursor.getPosition();
-            cursor.moveToFirst();
-            for (int i = 0; i < cursor.getCount(); i++) {
-                if (statusId == cursor.getLong(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID))) {
+        if (mCursorAdapter != null) {
+            Cursor cursor = mCursorAdapter.getCursor();
+            if (cursor != null) {
+                int initialPosition = cursor.getPosition();
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    if (statusId == cursor.getLong(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID))) {
 
 //                View listView = getListView();
 //                if (listView != null)
 //                    setSelection(cursor.getPosition());
 //                else
-                    mPendingItem = cursor.getPosition();
-                    Log.d(TAG, "[infowindow] mPendingItem" + mPendingItem);
-                    break;
+                        mPendingItem = cursor.getPosition();
+                        Log.d(TAG, "[infowindow] mPendingItem" + mPendingItem);
+                        break;
+                    }
+                    cursor.moveToNext();
                 }
-                cursor.moveToNext();
+                cursor.move(initialPosition);
             }
-            cursor.move(initialPosition);
         }
     }
 

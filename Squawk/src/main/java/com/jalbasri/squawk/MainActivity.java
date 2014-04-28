@@ -1,13 +1,11 @@
 package com.jalbasri.squawk;
 
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.app.ListFragment;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,7 +21,6 @@ import android.app.Activity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -36,11 +33,8 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.jalbasri.squawk.amazon.Amazon;
-
-import java.util.Date;
 
 public class MainActivity extends Activity implements
         LocationListener,
@@ -60,7 +54,6 @@ public class MainActivity extends Activity implements
     public static final String KEY_APP_VERSION = "app_version";
     public static final String KEY_MAP_VIEW = "map_view";
     public static final String DEFAULT_DEVICE_ID = "";
-    public static final String DEFAULT_PREF_RADIUS = "1";
     public static final String DEFAULT_DEVICE_INFORMATION = "";
     public static final long DEFAULT_DEVICE_TIMESTAMP = -1;
     public static final long DEFAULT_DEVICE_ID_EXPIRATION_TIME = -1;
@@ -146,7 +139,6 @@ public class MainActivity extends Activity implements
         //TODO Check Wifi or GPS and prompt user to turn on if off.
         //TODO Check that Google Play Services exists on device.
         // http://developer.android.com/google/gcm/client.html
-        //TODO Remove radius
         //TODO Fix amazon update times
         //TODO Remove settings from actionbar
         //TODO Pull down list to reload tweets
@@ -179,7 +171,7 @@ public class MainActivity extends Activity implements
     @Override
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
-        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
         mLocation = mLocationClient.getLastLocation();
         mLocationClient.requestLocationUpdates(mLocationRequest, this);
 
@@ -192,7 +184,7 @@ public class MainActivity extends Activity implements
     @Override
     public void onDisconnected() {
         // Display the connection status
-        Toast.makeText(this, "Disconnected. Please re-connect.",
+        Toast.makeText(this, "Disconnected from location services. Please re-connect.",
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -282,11 +274,12 @@ public class MainActivity extends Activity implements
     @Override
     public void onLocationChanged(Location location) {
         // Report to the UI that the location was updated
+        /*
         String msg = "Updated Location: " +
                 Double.toString(location.getLatitude()) + "," +
                 Double.toString(location.getLongitude());
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-
+        */
         if (mFirstLaunch) {
             mFirstLaunch = false;
             if (mStatusMapFragment == null) {
@@ -303,7 +296,7 @@ public class MainActivity extends Activity implements
             }
 
             if (location != null && mStatusMapFragment != null && mDeviceId != null) {
-                mStatusMapFragment.moveMaptoLocation(
+                mStatusMapFragment.snapMaptoLocation(
                         new LatLng(location.getLatitude(), location.getLongitude()), 10);
 
 //                double[][] mapRegion = mStatusMapFragment.getMapRegion();
@@ -374,21 +367,24 @@ public class MainActivity extends Activity implements
 
         View fragmentContainer = findViewById(R.id.fragment_container);
         boolean tabletLayout = fragmentContainer == null;
+
+    //IllegalStateException from this code. Should not attach fragments in this callback.
+
         if (!tabletLayout) {
 
             mMapView = pref.getBoolean(KEY_MAP_VIEW, true);
             if (mMapView) { //List fragment selected, or start new
                 menu.add(Menu.NONE, 0, Menu.NONE, "navigation")
                         .setIcon(R.drawable.ic_action_view_as_list)
+                        .setTitle("List")
                         .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-//                attachMapOrListFragment();
-                attachNavigationFragment(StatusMapFragment.class, false);
+//                attachNavigationFragment(StatusMapFragment.class, false);
             } else {
                 menu.add(Menu.NONE, 0, Menu.NONE, "navigation")
                         .setIcon(R.drawable.ic_action_map)
+                        .setTitle("Map")
                         .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-//                attachMapOrListFragment();
-                attachNavigationFragment(StatusListFragment.class, false);
+//                attachNavigationFragment(StatusListFragment.class, false);
             }
         }
 
@@ -576,10 +572,10 @@ public class MainActivity extends Activity implements
             Log.d(TAG, "mMapTarget, target != null: " + (mMapTarget != null));
             if (mMapTarget != null && mMapTarget.latitude !=0 && mMapTarget.longitude != 0) {
                 Log.d(TAG, "Move Map to Target");
-                mStatusMapFragment.moveMaptoLocation(mMapTarget);
+                mStatusMapFragment.snapMaptoLocation(mMapTarget);
             } else if (mLocation != null) {
                 Log.d(TAG, "Move Map to Location");
-                mStatusMapFragment.moveMaptoLocation(
+                mStatusMapFragment.snapMaptoLocation(
                         new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 10);
             }
         }
@@ -782,6 +778,8 @@ public class MainActivity extends Activity implements
 
     private void updateFromPreferences() {
         Context context = getApplicationContext();
+        //Set Preferences to default value, only executes on first run.
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
 
