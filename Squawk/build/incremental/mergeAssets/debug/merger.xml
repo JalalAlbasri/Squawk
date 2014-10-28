@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merger>
 
+    <dataSet config="unspecified" >
+        <source path="C:\Users\Jalal\workspace\Squawk\Squawk\build\exploded-aar\Squawk\Squawk-endpoints\unspecified\assets" />
+    </dataSet>
     <dataSet config="main" >
-        <source path="/home/jalal/workspace/SquawkProject/Squawk/src/main/assets" />
+        <source path="C:\Users\Jalal\workspace\Squawk\Squawk\src\main\assets" />
     </dataSet>
     <dataSet config="debug" >
-        <source path="/home/jalal/workspace/SquawkProject/Squawk/src/debug/assets" />
+        <source path="C:\Users\Jalal\workspace\Squawk\Squawk\src\debug\assets" />
     </dataSet>
 
 </merger>

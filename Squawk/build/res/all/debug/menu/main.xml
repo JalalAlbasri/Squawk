@@ -7,5 +7,4 @@
           android:title="@string/action_clear"
           android:orderInCategory="100"
           android:showAsAction="never" />
-</menu>
-<!-- From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/src/main/res/menu/main.xml -->
+</menu><!-- From: file:/C:/Users/Jalal/workspace/Squawk/Squawk/src/main/res/menu/main.xml -->

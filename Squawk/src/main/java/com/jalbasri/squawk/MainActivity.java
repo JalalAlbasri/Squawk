@@ -35,6 +35,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.jalbasri.squawk.amazon.Amazon;
+import com.jalbasri.squawk.RegisterActivity;
 
 public class MainActivity extends Activity implements
         LocationListener,
@@ -331,11 +332,11 @@ public class MainActivity extends Activity implements
         if (!tabletLayout) {
 
             SharedPreferences pref = getPreferences(Activity.MODE_PRIVATE);
-/*
-    Enable for tabbed browsing
-    int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 1);
-    mActionBar.setSelectedNavigationItem(actionBarIndex);
- */
+            /*
+                Enable for tabbed browsing
+                int actionBarIndex = pref.getInt(KEY_ACTION_BAR_INDEX, 1);
+                mActionBar.setSelectedNavigationItem(actionBarIndex);
+             */
 
             mMapView = pref.getBoolean(KEY_MAP_VIEW, true); //defaults to map view
             if (mMapView) {

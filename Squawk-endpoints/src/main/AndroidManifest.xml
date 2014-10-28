@@ -3,7 +3,7 @@
     android:versionCode="1"
     android:versionName="1.0">
 
-    <uses-sdk android:minSdkVersion="13" android:targetSdkVersion="17" />
+    <uses-sdk android:minSdkVersion="13" android:targetSdkVersion="19" />
 
    	<permission android:name="com.jalbasri.squawk.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
 
@@ -18,7 +18,7 @@
     <uses-permission android:name="com.jalbasri.squawk.permission.WRITE_TWITTER_STATUS_CONTENT_PROVIDER"/>
 
     <application>
-    	<service android:name="com.jalbasri.squawk.GCMIntentService"/>
+    	<service android:name=".GCMIntentService"/>
       	<receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
           <intent-filter>
               <action android:name="com.google.android.c2dm.intent.RECEIVE"/>

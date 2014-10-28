@@ -11,16 +11,11 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.jackson.JacksonFactory;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -145,6 +140,7 @@ public class RegisterActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "REGISTER ACTIVITY ONCREATE");
         super.onCreate(savedInstanceState);
         if (GCMIntentService.PROJECT_NUMBER == null
                 || GCMIntentService.PROJECT_NUMBER.length() == 0) {
@@ -262,7 +258,7 @@ public class RegisterActivity extends Activity {
 //                        ", check log for details");
             }
             else {
-                TextView messageView = (TextView) findViewById(R.id.msgView);
+                TextView messageView = (TextView) findViewById(com.jalbasri.squawk.R.id.msgView);
                 messageView.setText("Last 5 Messages read from " +
                         messageEndpoint.getBaseUrl() + ":\n");
                 for(MessageData message : messages.getItems()) {

@@ -7,7 +7,8 @@ public class Amazon {
     private static final String TAG = Amazon.class.getSimpleName();
 
 
-    public final static String AMAZON_HOST = "http://ec2-user@ec2-54-200-2-207.us-west-2.compute.amazonaws.com";
+//    public final static String AMAZON_HOST = "http://ec2-user@ec2-54-187-108-184.us-west-2.compute.amazonaws.com";
+    public final static String AMAZON_HOST = "http://secure-ravine-8788.herokuapp.com";
     public final static String ADD_PATH = "/addDevice";
     public final static String REMOVE_PATH = "/removeDevice";
 

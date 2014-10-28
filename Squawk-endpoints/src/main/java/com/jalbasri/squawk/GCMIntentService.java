@@ -3,20 +3,17 @@ package com.jalbasri.squawk;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
@@ -27,7 +24,6 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.jackson.JacksonFactory;
 
 import com.jalbasri.squawk.deviceinfoendpoint.Deviceinfoendpoint;
-import com.jalbasri.squawk.deviceinfoendpoint.model.DeviceInfo;
 
 /**
  * This class is started up as a service of the Android application. It listens
@@ -64,7 +60,7 @@ public class GCMIntentService extends GCMBaseIntentService {
      *            the activity's context.
      */
     public static void register(Context mContext) {
-        Log.d(TAG, "[Registration] GCMIntentService.Register()");
+        Log.d(TAG, "[Registration] GCMIntentService.Register() X");
         GCMRegistrar.checkDevice(mContext);
         GCMRegistrar.checkManifest(mContext);
         GCMRegistrar.register(mContext, PROJECT_NUMBER);

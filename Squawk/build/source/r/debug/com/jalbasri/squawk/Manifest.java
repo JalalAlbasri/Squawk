@@ -9,7 +9,7 @@ package com.jalbasri.squawk;
 
 public final class Manifest {
     public static final class permission {
-        /**  From: file:/home/jalal/projects/Squawk/Squawk/build/exploded-aar/Squawk/Squawk-endpoints/unspecified/AndroidManifest.xml 
+        /**  From: file:/C:/Users/Jalal/workspace/Squawk/Squawk/build/exploded-aar/Squawk/Squawk-endpoints/unspecified/AndroidManifest.xml 
          */
         public static final String C2D_MESSAGE="com.jalbasri.squawk.permission.C2D_MESSAGE";
         public static final String MAPS_RECEIVE="com.jalbasri.squawk.permission.MAPS_RECEIVE";

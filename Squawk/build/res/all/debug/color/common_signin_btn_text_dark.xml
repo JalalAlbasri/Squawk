@@ -16,4 +16,4 @@
     <item
         android:color="@color/common_signin_btn_dark_text_default" />
 </selector>
-<!-- From: file:/C:/Users/Jalal/Workspace/Squawk/Squawk/build/exploded-bundles/ComGoogleAndroidGmsPlayServices3136.aar/res/color/common_signin_btn_text_dark.xml -->
+<!-- From: file:/C:/Users/Jalal/workspace/Squawk/Squawk/build/exploded-aar/com.google.android.gms/play-services/3.1.36/res/color/common_signin_btn_text_dark.xml -->

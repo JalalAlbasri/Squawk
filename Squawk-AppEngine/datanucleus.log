@@ -458,3 +458,13 @@
 13:46:23,677 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.squawk.DeviceInfo" is already enhanced.
 13:46:23,679 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.squawk.MessageData" is already enhanced.
 13:46:23,679 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer completed with success for 2 classes. Timings : input=216 ms, enhance=28 ms, total=244 ms. Consult the log for full details
+19:28:44,225 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer for API "JDO"
+19:28:44,424 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer (version 3.1.1) : Enhancement of classes
+19:28:44,697 (main) INFO  [DataNucleus.Enhancer] - Writing class file "C:\Users\Jalal\workspace\Squawk\Squawk-AppEngine\target\Squawk-AppEngine-1.0\WEB-INF\classes\com\jalbasri\squawk\DeviceInfo.class" with enhanced definition
+19:28:44,706 (main) INFO  [DataNucleus.Enhancer] - Writing class file "C:\Users\Jalal\workspace\Squawk\Squawk-AppEngine\target\Squawk-AppEngine-1.0\WEB-INF\classes\com\jalbasri\squawk\MessageData.class" with enhanced definition
+19:28:44,711 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer completed with success for 2 classes. Timings : input=217 ms, enhance=67 ms, total=284 ms. Consult the log for full details
+14:08:15,254 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer for API "JDO"
+14:08:15,444 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer (version 3.1.1) : Enhancement of classes
+14:08:15,696 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.squawk.DeviceInfo" is already enhanced.
+14:08:15,697 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.squawk.MessageData" is already enhanced.
+14:08:15,698 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer completed with success for 2 classes. Timings : input=225 ms, enhance=28 ms, total=253 ms. Consult the log for full details
