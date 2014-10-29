@@ -525,6 +525,7 @@ public class MainActivity extends Activity implements
 //        if (mLocationProvider != null) {
 //            mLocationProvider.unregisterLocationListeners();
 //        }
+        Log.d(TAG, "onPause()");
         super.onPause();
     }
 
