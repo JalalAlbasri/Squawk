@@ -1,4 +1,4 @@
-package com.jalbasri.squawk;
+package com.jalbasri.mapsfortwitter;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -19,7 +19,7 @@ public class TwitterStatusContentProvider extends ContentProvider{
     private static final String TAG = TwitterStatusContentProvider.class.getSimpleName();
 
     public static final Uri CONTENT_URI =
-            Uri.parse("content://com.jalbasri.squawk.twitterstatusprovider/twitteritems");
+            Uri.parse("content://com.jalbasri.mapsfortwitter.twitterstatusprovider/twitteritems");
     public static final String KEY_STATUS_ID = "_id";
     public static final String KEY_STATUS_TEXT = "_status_text";
     public static final String KEY_CREATED_AT = "_created_at";
