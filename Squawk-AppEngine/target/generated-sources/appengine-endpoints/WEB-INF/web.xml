@@ -2,7 +2,7 @@
 
     <servlet>
         <servlet-name>PushTweetServlet</servlet-name>
-        <servlet-class>com.jalbasri.squawk.PushTweetServlet</servlet-class>
+        <servlet-class>com.jalbasri.mapsfortwitter.PushTweetServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>PushTweetServlet</servlet-name>
@@ -14,7 +14,7 @@
   <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
   <init-param>
    <param-name>services</param-name>
-   <param-value>com.jalbasri.squawk.DeviceInfoEndpoint,com.jalbasri.squawk.MessageEndpoint</param-value>
+   <param-value>com.jalbasri.mapsfortwitter.DeviceInfoEndpoint,com.jmapsfortwitteri.squawk.MessageEndpoint</param-value>
   </init-param>
  </servlet>
  <servlet-mapping>

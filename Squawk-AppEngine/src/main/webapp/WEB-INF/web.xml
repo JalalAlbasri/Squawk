@@ -7,7 +7,7 @@
 
     <servlet>
         <servlet-name>PushTweetServlet</servlet-name>
-        <servlet-class>com.jalbasri.squawk.PushTweetServlet</servlet-class>
+        <servlet-class>com.jalbasri.mapsfortwitter.PushTweetServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>PushTweetServlet</servlet-name>

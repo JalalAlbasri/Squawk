@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Twitter Maps</string>
+    <string name="app_name">Maps for Twitter</string>
     <string name="action_settings">Settings</string>
     <string name="action_reload">Reload Twitter Feed</string>
     <string name="hello_world">Hello world!</string>

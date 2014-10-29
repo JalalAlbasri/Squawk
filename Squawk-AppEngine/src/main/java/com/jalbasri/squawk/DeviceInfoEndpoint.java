@@ -1,11 +1,11 @@
-package com.jalbasri.squawk;
+package com.jalbasri.mapsfortwitter;
 
 import com.google.appengine.api.memcache.ErrorHandlers;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.QueueStatistics;
-import com.jalbasri.squawk.EMF;
+import com.jalbasri.mapsfortwitter.EMF;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -16,9 +16,7 @@ import com.google.appengine.datanucleus.query.JPACursorHelper;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 
 import javax.annotation.Nullable;

@@ -57,6 +57,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/build/exploded-aar" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
@@ -82,17 +83,17 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="support-v4-13.0.0" level="project" />
     <orderEntry type="library" exported="" name="google-oauth-client-1.15.0-rc" level="project" />
+    <orderEntry type="library" exported="" name="jackson-core-asl-1.9.11" level="project" />
+    <orderEntry type="library" exported="" name="jcoord-1.0" level="project" />
+    <orderEntry type="library" exported="" name="urlimageviewhelper-1.0.4" level="project" />
+    <orderEntry type="library" exported="" name="gcm" level="project" />
     <orderEntry type="library" exported="" name="google-http-client-android-1.15.0-rc" level="project" />
     <orderEntry type="library" exported="" name="google-api-client-android-1.15.0-rc" level="project" />
-    <orderEntry type="library" exported="" name="jackson-core-asl-1.9.11" level="project" />
     <orderEntry type="library" exported="" name="jsr305-1.3.9" level="project" />
-    <orderEntry type="library" exported="" name="jcoord-1.0" level="project" />
     <orderEntry type="library" exported="" name="google-http-client-jackson-1.15.0-rc" level="project" />
     <orderEntry type="library" exported="" name="play-services-3.1.36" level="project" />
     <orderEntry type="library" exported="" name="google-api-client-1.15.0-rc" level="project" />
-    <orderEntry type="library" exported="" name="urlimageviewhelper-1.0.4" level="project" />
     <orderEntry type="library" exported="" name="google-http-client-1.15.0-rc" level="project" />
-    <orderEntry type="module" module-name="Squawk-endpoints" exported="" />
   </component>
 </module>
 

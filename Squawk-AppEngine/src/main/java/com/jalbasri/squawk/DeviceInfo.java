@@ -1,4 +1,4 @@
-package com.jalbasri.squawk;
+package com.jalbasri.mapsfortwitter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

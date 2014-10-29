@@ -1,4 +1,4 @@
-package com.jalbasri.squawk;
+package com.jalbasri.mapsfortwitter;
 
 import java.util.Arrays;
 

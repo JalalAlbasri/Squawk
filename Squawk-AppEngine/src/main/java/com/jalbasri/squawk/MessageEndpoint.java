@@ -1,4 +1,4 @@
-package com.jalbasri.squawk;
+package com.jalbasri.mapsfortwitter;
 
 import java.io.IOException;
 import java.util.List;

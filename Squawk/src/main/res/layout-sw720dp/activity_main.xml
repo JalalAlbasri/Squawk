@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
     <fragment
-        android:name="com.jalbasri.squawk.StatusListFragment"
+        android:name="com.jalbasri.mapsfortwitter.StatusListFragment"
         android:id="@+id/status_list_fragment"
         android:layout_width="360dp"
         android:layout_height="match_parent" />
@@ -16,7 +16,7 @@
         android:layout_width="match_parent" >
 
         <fragment
-            android:name="com.jalbasri.squawk.StatusMapFragment"
+            android:name="com.jalbasri.mapsfortwitter.StatusMapFragment"
             android:id="@+id/map_fragment"
             android:layout_width="fill_parent"
             android:layout_height="match_parent" />

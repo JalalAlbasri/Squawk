@@ -1,13 +1,10 @@
-package com.jalbasri.squawk;
+package com.jalbasri.mapsfortwitter;
 
 import com.google.android.gcm.server.MulticastResult;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -81,7 +78,11 @@ public class PushTweetServlet extends HttpServlet {
      */
     private static MulticastResult doSendTweetViaGcm(TweetBean tweet, Sender sender, List<String> devices) throws IOException {
 
-//        logger.info(devices.toString());
+        logger.info(String.valueOf(devices.size()));
+
+        for (int i = 0; i < devices.size(); i++) {
+            logger.info("device " + i + ": " + devices.get(i));
+        }
 
         Message msg = new Message.Builder()
                 .addData("tweet", "true")
@@ -98,7 +99,7 @@ public class PushTweetServlet extends HttpServlet {
                 .build();
         logger.info(msg.toString());
         MulticastResult result = sender.send(msg, devices, 5);
-//        logger.info("Result: " + result);
+        logger.info("MulticastResult: " + result);
 
         return result;
     }
