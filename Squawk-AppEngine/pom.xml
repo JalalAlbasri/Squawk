@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <packaging>war</packaging>
@@ -63,7 +63,7 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.2.4</version>
-                <scope>compile</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
@@ -87,6 +87,30 @@
             <groupId>org.twitter4j</groupId>
             <artifactId>twitter4j-stream</artifactId>
             <version>[3.0,)</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.igniterealtime.smack</groupId>
+            <artifactId>smack-core</artifactId>
+            <version>4.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.igniterealtime.smack</groupId>
+            <artifactId>smack-tcp</artifactId>
+            <version>4.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>xpp3</groupId>
+            <artifactId>xpp3</artifactId>
+            <version>1.1.4c</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1</version>
         </dependency>
 
         <!-- Test Dependencies -->

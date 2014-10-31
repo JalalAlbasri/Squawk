@@ -38,7 +38,7 @@ public class TwitterStatusContentProvider extends ContentProvider{
     private MySQLiteOpenHelper mySQLiteOpenHelper;
     private static final int ALL_ROWS = 1;
     private static final int SINGLE_ROW = 2;
-    private static final int ROW_LIMIT = 50;
+    //    private static final int ROW_LIMIT = 5;
     private static final UriMatcher uriMatcher;
 
     public static final String columns[] = new String[] {
@@ -56,8 +56,8 @@ public class TwitterStatusContentProvider extends ContentProvider{
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI("com.jalbasri.squawk.twitterstatusprovider", "twitteritems", ALL_ROWS);
-        uriMatcher.addURI("com.jalbasri.squawk.twitterstatusprovider", "twitteritems/#", SINGLE_ROW);
+        uriMatcher.addURI("com.jalbasri.mapsfortwitter.twitterstatusprovider", "twitteritems", ALL_ROWS);
+        uriMatcher.addURI("com.jalbasri.mapsfortwitter.twitterstatusprovider", "twitteritems/#", SINGLE_ROW);
     }
 
     @Override
@@ -118,32 +118,31 @@ public class TwitterStatusContentProvider extends ContentProvider{
 
         /*
         Check if DB has reached its limit and delete the oldest entry if it has
+
          */
-        String sortOrder = KEY_CREATED_AT + " ASC";
-
-        Cursor tweetCountCursor = db.rawQuery("select count(*) from twitterStatusTable", null);
-
-        if (tweetCountCursor.moveToNext()) {
-            int tweetCount = tweetCountCursor.getInt(0);
-            Log.d(TAG, "TWEETCOUNT: " + tweetCount);
-            if (tweetCount > ROW_LIMIT) {
-                Cursor oldestEntry =
-                        db.rawQuery("select * from " +
-                                "twitterStatusTable " +
-                                "order by _created_at asc " +
-                                "limit 1", null);
-                if (oldestEntry.moveToNext()) {
-                    Log.d(TAG, "Deleting " + oldestEntry.getString(oldestEntry
-                            .getColumnIndex(TwitterStatusContentProvider.KEY_USER_NAME)));
-                    long statusId =  oldestEntry.getLong(oldestEntry
-                            .getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
-                    String selection = KEY_STATUS_ID + "=" + statusId;
-                        db.delete(MySQLiteOpenHelper.DATABASE_TABLE, selection, null);
-                }
-            }
-        }
-
-
+//        String sortOrder = KEY_CREATED_AT + " ASC";
+//
+//        Cursor tweetCountCursor = db.rawQuery("select count(*) from twitterStatusTable", null);
+//
+//        if (tweetCountCursor.moveToNext()) {
+//            int tweetCount = tweetCountCursor.getInt(0);
+//            Log.d(TAG, "TWEETCOUNT: " + tweetCount);
+//            if (tweetCount > ROW_LIMIT) {
+//                Cursor oldestEntry =
+//                        db.rawQuery("select * from " +
+//                                "twitterStatusTable " +
+//                                "order by _created_at asc " +
+//                                "limit 1", null);
+//                if (oldestEntry.moveToNext()) {
+//                    Log.d(TAG, "Deleting " + oldestEntry.getString(oldestEntry
+//                            .getColumnIndex(TwitterStatusContentProvider.KEY_USER_NAME)));
+//                    long statusId =  oldestEntry.getLong(oldestEntry
+//                            .getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
+//                    String selection = KEY_STATUS_ID + "=" + statusId;
+//                    db.delete(MySQLiteOpenHelper.DATABASE_TABLE, selection, null);
+//                }
+//            }
+//        }
 
         long id = db.insert(MySQLiteOpenHelper.DATABASE_TABLE, nullColumnHack, values);
 
