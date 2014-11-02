@@ -42,8 +42,13 @@ public class SmackCcsClient {
 
     private static final Logger logger = Logger.getLogger("SmackCcsClient");
 
-    private static final String GCM_SERVER = "gcm.googleapis.com";
-    private static final int GCM_PORT = 5235;
+    /*RELEASE CCS SERVER*/
+//    private static final String GCM_SERVER = "gcm.googleapis.com";
+//    private static final int GCM_PORT = 5235;
+
+    /*DEBUG CCS SERVER*/
+    private static final String GCM_SERVER = "gcm-preprod.googleapis.com";
+    private static final int GCM_PORT = 5236;
 
     private static final String GCM_ELEMENT_NAME = "gcm";
     private static final String GCM_NAMESPACE = "google:mobile:data";
@@ -228,12 +233,12 @@ public class SmackCcsClient {
         config.setRosterLoadedAtLogin(false);
         config.setSendPresence(false);
         config.setSocketFactory(SSLSocketFactory.getDefault());
-
+        logger.info("0");
         connection = new XMPPTCPConnection(config);
         connection.connect();
 
         connection.addConnectionListener(new LoggingConnectionListener());
-
+        logger.info("1");
         // Handle incoming packets
         connection.addPacketListener(new PacketListener() {
 
@@ -284,7 +289,7 @@ public class SmackCcsClient {
                 }
             }
         }, new PacketTypeFilter(Message.class));
-
+        logger.info("2");
         // Log all outgoing packets
         connection.addPacketInterceptor(new PacketInterceptor() {
             @Override
@@ -294,6 +299,7 @@ public class SmackCcsClient {
         }, new PacketTypeFilter(Message.class));
 
         connection.login(senderId + "@gcm.googleapis.com", apiKey);
+        logger.info("3");
     }
 
     /**

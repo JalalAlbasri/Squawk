@@ -14,7 +14,7 @@
   <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
   <init-param>
    <param-name>services</param-name>
-   <param-value>com.jalbasri.mapsfortwitter.DeviceInfoEndpoint,com.jmapsfortwitteri.squawk.MessageEndpoint</param-value>
+   <param-value>com.jalbasri.mapsfortwitter.DeviceInfoEndpoint,com.jalbasri.mapsfortwitter.MessageEndpoint</param-value>
   </init-param>
  </servlet>
  <servlet-mapping>

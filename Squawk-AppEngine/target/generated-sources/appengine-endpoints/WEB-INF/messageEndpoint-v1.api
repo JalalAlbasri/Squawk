@@ -27,33 +27,13 @@
   "ownerName" : "jalbasri.com",
   "packagePath" : "squawk",
   "methods" : {
-    "messageEndpoint.sendMessage" : {
-      "path" : "sendMessage/{message}",
-      "httpMethod" : "POST",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.jalbasri.squawk.MessageEndpoint.sendMessage",
-      "request" : {
-        "parameters" : {
-          "message" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
-      }
-    },
     "messageEndpoint.listMessages" : {
       "path" : "messagedata",
       "httpMethod" : "GET",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.jalbasri.squawk.MessageEndpoint.listMessages",
+      "rosyMethod" : "com.jalbasri.mapsfortwitter.MessageEndpoint.listMessages",
       "request" : {
         "parameters" : {
           "cursor" : {
@@ -69,6 +49,26 @@
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "messageEndpoint.sendMessage" : {
+      "path" : "sendMessage/{message}",
+      "httpMethod" : "POST",
+      "scopes" : [ ],
+      "audiences" : [ ],
+      "clientIds" : [ ],
+      "rosyMethod" : "com.jalbasri.mapsfortwitter.MessageEndpoint.sendMessage",
+      "request" : {
+        "parameters" : {
+          "message" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
       }
     }
   },
@@ -135,12 +135,12 @@
       }
     },
     "methods" : {
-      "com.jalbasri.squawk.MessageEndpoint.sendMessage" : {
-      },
-      "com.jalbasri.squawk.MessageEndpoint.listMessages" : {
+      "com.jalbasri.mapsfortwitter.MessageEndpoint.listMessages" : {
         "response" : {
           "$ref" : "CollectionResponse_MessageData"
         }
+      },
+      "com.jalbasri.mapsfortwitter.MessageEndpoint.sendMessage" : {
       }
     }
   }
