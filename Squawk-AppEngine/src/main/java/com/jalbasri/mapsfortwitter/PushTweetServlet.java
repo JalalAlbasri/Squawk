@@ -39,10 +39,10 @@ public class PushTweetServlet extends HttpServlet {
     private static final Logger logger =
             Logger.getLogger(PushTweetServlet.class.getSimpleName());
 
-    private static final String API_KEY = "AIzaSyCvAjdKINk6Zc72_M5tIRRneTsUEbZFgm8";
+    private static final String API_KEY = "AIzaSyC774cWSJVFtthMFQidAh1KtuHo9cuY5kM";
     
     //SENDER_ID is just the project number (see GCMIntentService)
-    protected static final long SENDER_ID = 13758135543L;
+    protected static final long SENDER_ID = 698870560273L;
 
     private static final DeviceInfoEndpoint endpoint = new DeviceInfoEndpoint();
 

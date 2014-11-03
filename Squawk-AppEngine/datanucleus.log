@@ -558,3 +558,23 @@
 17:53:25,061 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.mapsfortwitter.DeviceInfo" is already enhanced.
 17:53:25,063 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.mapsfortwitter.MessageData" is already enhanced.
 17:53:25,063 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer completed with success for 2 classes. Timings : input=225 ms, enhance=30 ms, total=255 ms. Consult the log for full details
+02:36:05,176 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer for API "JDO"
+02:36:05,362 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer (version 3.1.1) : Enhancement of classes
+02:36:05,624 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.mapsfortwitter.DeviceInfo" is already enhanced.
+02:36:05,625 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.mapsfortwitter.MessageData" is already enhanced.
+02:36:05,625 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer completed with success for 2 classes. Timings : input=235 ms, enhance=27 ms, total=262 ms. Consult the log for full details
+02:41:31,441 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer for API "JDO"
+02:41:31,604 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer (version 3.1.1) : Enhancement of classes
+02:41:31,881 (main) INFO  [DataNucleus.Enhancer] - Writing class file "C:\Users\Jalal\workspace\Squawk\Squawk-AppEngine\target\Squawk-AppEngine-1.0\WEB-INF\classes\com\jalbasri\mapsfortwitter\DeviceInfo.class" with enhanced definition
+02:41:31,890 (main) INFO  [DataNucleus.Enhancer] - Writing class file "C:\Users\Jalal\workspace\Squawk\Squawk-AppEngine\target\Squawk-AppEngine-1.0\WEB-INF\classes\com\jalbasri\mapsfortwitter\MessageData.class" with enhanced definition
+02:41:31,895 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer completed with success for 2 classes. Timings : input=224 ms, enhance=66 ms, total=290 ms. Consult the log for full details
+03:00:09,361 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer for API "JDO"
+03:00:09,603 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer (version 3.1.1) : Enhancement of classes
+03:00:09,868 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.mapsfortwitter.DeviceInfo" is already enhanced.
+03:00:09,869 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.mapsfortwitter.MessageData" is already enhanced.
+03:00:09,869 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer completed with success for 2 classes. Timings : input=236 ms, enhance=28 ms, total=264 ms. Consult the log for full details
+03:04:56,692 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer for API "JDO"
+03:04:56,866 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer (version 3.1.1) : Enhancement of classes
+03:04:57,111 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.mapsfortwitter.DeviceInfo" is already enhanced.
+03:04:57,112 (main) INFO  [DataNucleus.Enhancer] - Class "com.jalbasri.mapsfortwitter.MessageData" is already enhanced.
+03:04:57,112 (main) INFO  [DataNucleus.Enhancer] - DataNucleus Enhancer completed with success for 2 classes. Timings : input=218 ms, enhance=27 ms, total=245 ms. Consult the log for full details

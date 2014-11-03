@@ -51,7 +51,7 @@ public class GCMIntentService extends GCMBaseIntentService {
      * http://developers.google.com/eclipse/docs/cloud_endpoint for more
      * information.
      */
-    protected static final String PROJECT_NUMBER = "13758135543";
+    protected static final String PROJECT_NUMBER = "698870560273";
 
     /**
      * Register the device for GCM.
@@ -102,7 +102,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         sendNotificationIntent(
                 context,
                 "Registration with Google Cloud Messaging...FAILED!\n\n"
-                        + "A Google Cloud Messaging registration error occured (errorid: "
+                        + "A Google Cloud Messaging registration error occurred (errorid: "
                         + errorId
                         + "). "
                         + "Do you have your project number ("

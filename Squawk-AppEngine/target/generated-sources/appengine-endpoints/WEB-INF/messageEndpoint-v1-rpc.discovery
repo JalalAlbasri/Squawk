@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"9mnLCPwbyZOHH18t8ExzO2gqgTk/7XIesBjjICLIn4R9nHtstu7erSw\"",
+ "etag": "\"9mnLCPwbyZOHH18t8ExzO2gqgTk/DVRgLO6D861PG15KflbavZAJ7bk\"",
  "discoveryVersion": "v1",
  "id": "messageEndpoint:v1",
  "name": "messageEndpoint",
@@ -14,8 +14,8 @@
   "x32": "http://www.google.com/images/icons/product/search-32.gif"
  },
  "protocol": "rpc",
- "rootUrl": "https://squawk-android.appspot.com/_ah/api/",
- "rpcUrl": "https://squawk-android.appspot.com/_ah/api/rpc",
+ "rootUrl": "https://leafy-racer-753.appspot.com/_ah/api/",
+ "rpcUrl": "https://leafy-racer-753.appspot.com/_ah/api/rpc",
  "rpcPath": "/_ah/api/rpc",
  "parameters": {
   "alt": {

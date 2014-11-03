@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"9mnLCPwbyZOHH18t8ExzO2gqgTk/V-AtBS4L-bYXQEqND7IOHgDholw\"",
+ "etag": "\"9mnLCPwbyZOHH18t8ExzO2gqgTk/WDQxycL1YFD7T96py3Cv2G2489s\"",
  "discoveryVersion": "v1",
  "id": "deviceinfoendpoint:v1",
  "name": "deviceinfoendpoint",
@@ -14,9 +14,9 @@
   "x32": "http://www.google.com/images/icons/product/search-32.gif"
  },
  "protocol": "rest",
- "baseUrl": "https://squawk-android.appspot.com/_ah/api/deviceinfoendpoint/v1/",
+ "baseUrl": "https://leafy-racer-753.appspot.com/_ah/api/deviceinfoendpoint/v1/",
  "basePath": "/_ah/api/deviceinfoendpoint/v1/",
- "rootUrl": "https://squawk-android.appspot.com/_ah/api/",
+ "rootUrl": "https://leafy-racer-753.appspot.com/_ah/api/",
  "servicePath": "deviceinfoendpoint/v1/",
  "batchPath": "batch",
  "parameters": {
