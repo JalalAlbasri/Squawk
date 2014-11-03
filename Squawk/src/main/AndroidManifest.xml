@@ -70,7 +70,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyC774cWSJVFtthMFQidAh1KtuHo9cuY5kM" />
+            android:value="AIzaSyCQQrSCoELdV7tOL0tQnK5nylvnWbo4nYI" />
 
         <activity
             android:name="com.jalbasri.mapsfortwitter.SettingsActivity"

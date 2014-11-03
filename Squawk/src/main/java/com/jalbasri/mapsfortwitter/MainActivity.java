@@ -139,6 +139,9 @@ public class MainActivity extends Activity implements
         //TODO Check Wifi or GPS and prompt user to turn on if off.
         //TODO Check that Google Play Services exists on device.
         // http://developer.android.com/google/gcm/client.html
+        /*
+
+         */
         //TODO Fix amazon update times
         //TODO Remove settings from actionbar
         //TODO Pull down list to reload tweets

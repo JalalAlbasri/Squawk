@@ -228,7 +228,7 @@ public class SmackCcsClient {
             throws XMPPException, IOException, SmackException {
         ConnectionConfiguration config =
                 new ConnectionConfiguration(GCM_SERVER, GCM_PORT);
-        config.setSecurityMode(SecurityMode.enabled);
+        config.setSecurityMode(SecurityMode.required);
         config.setReconnectionAllowed(true);
         config.setRosterLoadedAtLogin(false);
         config.setSendPresence(false);
@@ -236,9 +236,9 @@ public class SmackCcsClient {
         logger.info("0");
         connection = new XMPPTCPConnection(config);
         connection.connect();
+        logger.info("1");
 
         connection.addConnectionListener(new LoggingConnectionListener());
-        logger.info("1");
         // Handle incoming packets
         connection.addPacketListener(new PacketListener() {
 

@@ -57,7 +57,7 @@ public class MessageEndpoint extends com.google.api.client.googleapis.services.j
    *
    * @since 1.7
    */
-  public static final String DEFAULT_ROOT_URL = "https://squawk-android.appspot.com/_ah/api/";
+  public static final String DEFAULT_ROOT_URL = "https://leafy-racer-753.appspot.com/_ah/api/";
 
   /**
    * The default encoded service path of the service. This is determined when the library is

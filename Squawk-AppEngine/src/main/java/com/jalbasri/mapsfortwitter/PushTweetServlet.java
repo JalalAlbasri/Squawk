@@ -39,7 +39,7 @@ public class PushTweetServlet extends HttpServlet {
     private static final Logger logger =
             Logger.getLogger(PushTweetServlet.class.getSimpleName());
 
-    private static final String API_KEY = "AIzaSyC774cWSJVFtthMFQidAh1KtuHo9cuY5kM";
+    private static final String API_KEY = "AIzaSyD1blMd1Wuz19AtydoX20TQPWAozyD3cd8";
     
     //SENDER_ID is just the project number (see GCMIntentService)
     protected static final long SENDER_ID = 698870560273L;
@@ -122,6 +122,8 @@ public class PushTweetServlet extends HttpServlet {
         try {
             SmackCcsClient ccsClient = new SmackCcsClient();
 
+            logger.info("Connect with credentials, SENDER_ID: " + SENDER_ID + ", API_KEY: " + API_KEY);
+
             ccsClient.connect(SENDER_ID, API_KEY);
 
             logger.info("Connected!");
@@ -177,6 +179,7 @@ public class PushTweetServlet extends HttpServlet {
 
             if (!hostAddresses.isEmpty()) {
                 logger.info("HostAddress: " + hostAddresses.get(0));
+                logger.info("HostAddress, Exception: " + hostAddresses.get(0).getException());
                 logger.info("HostAddress, error message: " + hostAddresses.get(0).getErrorMessage());
 
             }
