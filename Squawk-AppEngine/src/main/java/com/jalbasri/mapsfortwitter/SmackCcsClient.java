@@ -18,7 +18,6 @@ import org.jivesoftware.smack.provider.PacketExtensionProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.util.StringUtils;
-
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 import org.xmlpull.v1.XmlPullParser;
@@ -42,13 +41,8 @@ public class SmackCcsClient {
 
     private static final Logger logger = Logger.getLogger("SmackCcsClient");
 
-    /*RELEASE CCS SERVER*/
-//    private static final String GCM_SERVER = "gcm.googleapis.com";
-//    private static final int GCM_PORT = 5235;
-
-    /*DEBUG CCS SERVER*/
-    private static final String GCM_SERVER = "gcm-preprod.googleapis.com";
-    private static final int GCM_PORT = 5236;
+    private static final String GCM_SERVER = "gcm.googleapis.com";
+    private static final int GCM_PORT = 5235;
 
     private static final String GCM_ELEMENT_NAME = "gcm";
     private static final String GCM_NAMESPACE = "google:mobile:data";
@@ -128,8 +122,7 @@ public class SmackCcsClient {
         try {
             sendDownstreamMessage(echo);
         } catch (NotConnectedException e) {
-            logger.log(Level.WARNING, "Not connected anymore, echo message is " +
-                    "not sent", e);
+            logger.log(Level.WARNING, "Not connected anymore, echo message is not sent", e);
         }
     }
 
@@ -142,8 +135,7 @@ public class SmackCcsClient {
     protected void handleAckReceipt(Map<String, Object> jsonObject) {
         String messageId = (String) jsonObject.get("message_id");
         String from = (String) jsonObject.get("from");
-        logger.log(Level.INFO, "handleAckReceipt() from: " + from + "," +
-                "messageId: " + messageId);
+        logger.log(Level.INFO, "handleAckReceipt() from: " + from + ", messageId: " + messageId);
     }
 
     /**
@@ -155,8 +147,7 @@ public class SmackCcsClient {
     protected void handleNackReceipt(Map<String, Object> jsonObject) {
         String messageId = (String) jsonObject.get("message_id");
         String from = (String) jsonObject.get("from");
-        logger.log(Level.INFO, "handleNackReceipt() from: " + from + "," +
-                "messageId: " + messageId);
+        logger.log(Level.INFO, "handleNackReceipt() from: " + from + ", messageId: " + messageId);
     }
 
     protected void handleControlMessage(Map<String, Object> jsonObject) {
@@ -165,9 +156,8 @@ public class SmackCcsClient {
         if ("CONNECTION_DRAINING".equals(controlType)) {
             connectionDraining = true;
         } else {
-            logger.log(Level.INFO, "Unrecognized control type: %s. This could " +
-                    "happen if new features are " + "added to the CCS protocol.",
-            controlType);
+            logger.log(Level.INFO, "Unrecognized control type: %s. This could happen if new features are " +
+                    "added to the CCS protocol.", controlType);
         }
     }
 
@@ -228,17 +218,17 @@ public class SmackCcsClient {
             throws XMPPException, IOException, SmackException {
         ConnectionConfiguration config =
                 new ConnectionConfiguration(GCM_SERVER, GCM_PORT);
-        config.setSecurityMode(SecurityMode.required);
+        config.setSecurityMode(SecurityMode.enabled);
         config.setReconnectionAllowed(true);
         config.setRosterLoadedAtLogin(false);
         config.setSendPresence(false);
         config.setSocketFactory(SSLSocketFactory.getDefault());
-        logger.info("0");
+
         connection = new XMPPTCPConnection(config);
         connection.connect();
-        logger.info("1");
 
         connection.addConnectionListener(new LoggingConnectionListener());
+
         // Handle incoming packets
         connection.addPacketListener(new PacketListener() {
 
@@ -289,7 +279,7 @@ public class SmackCcsClient {
                 }
             }
         }, new PacketTypeFilter(Message.class));
-        logger.info("2");
+
         // Log all outgoing packets
         connection.addPacketInterceptor(new PacketInterceptor() {
             @Override
@@ -299,7 +289,6 @@ public class SmackCcsClient {
         }, new PacketTypeFilter(Message.class));
 
         connection.login(senderId + "@gcm.googleapis.com", apiKey);
-        logger.info("3");
     }
 
     /**
