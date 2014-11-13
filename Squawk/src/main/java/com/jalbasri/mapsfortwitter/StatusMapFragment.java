@@ -28,11 +28,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
-import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
+import com.koushikdutta.ion.Ion;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
+//import org.apache.commons.validator.routines.UrlValidator;
 
 //import twitter4j.Twitter;
 
@@ -173,16 +181,26 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 Cursor cursor = contentResolver.query(uri, null, null, null, null);
 
                 if (cursor.getCount() > 0 && cursor.moveToNext()) {
+                    String userImageUrl = cursor.getString(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_USER_IMAGE));
+
+//                    UrlImageViewHelper.setUrlDrawable(userImageView, userImageUrl, R.drawable.user_image_placeholder);
+                    Ion.with(mActivity)
+                            .load(userImageUrl)
+                            .withBitmap()
+                            .placeholder(R.drawable.user_image_placeholder)
+                            .intoImageView(userImageView);
+
+//                    Ion.with(userImageView)
+//                            .placeholder(R.drawable.user_image_placeholder)
+//                            .load(userImageUrl);
+
                     String userName = cursor.getString(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_USER_NAME));
                     String statusText = cursor.getString(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_TEXT));
-                    String userImageUrl = cursor.getString(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_USER_IMAGE));
                     String screenName = cursor.getString(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_USER_SCREEN_NAME));
 
-                    UrlImageViewHelper.setUrlDrawable(userImageView, userImageUrl, R.drawable.user_image_placeholder);
                     userNameTextView.setText(userName);
                     screenNameTextView.setText("@"+screenName);
                     statusTextView.setText(statusText);
-
                 }
                 return infoWindowView;
             }
@@ -289,16 +307,36 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 Long statusId = mCursor.getLong(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_STATUS_ID));
 
                 if(!mMarkers.containsKey(statusId)) {
-                    Log.d(TAG, "Refresh Map Markers: Add new Marker");
+//                    Log.d(TAG, "Refresh Map Markers: Add new Marker");
                     mMarkers.put(statusId, drawMarker(latLng, title));
                 }
-
 
                 /*
                 Preload images for infowindow
                  */
-                String imageUrl = mCursor.getString(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_USER_IMAGE));
-                UrlImageViewHelper.loadUrlDrawable(mActivity, imageUrl);
+                String imageString = mCursor.getString(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_USER_IMAGE));
+                Ion.with(mActivity)
+                        .load(imageString)
+                        .withBitmap()
+                        .placeholder(R.drawable.user_image_placeholder)
+                        .asBitmap();
+
+//                try {
+//                    URL imageUrl = new URL(imageString);
+//                    URI imageUri = imageUrl.toURI();
+//                    String validImageString = imageUri.toString();
+//                    if(validImageString != null){
+////                        Log.d(TAG, validImageString);
+////                        UrlImageViewHelper.loadUrlDrawable(mActivity, validImageString);
+//                        Ion.with(mActivity).load(validImageString)
+//                                .withBitmap()
+//                                .placeholder(R.drawable.user_image_placeholder);
+//                    }
+//                } catch (MalformedURLException e) {
+//                    Log.d(TAG, "User Image URL Malformed");
+//                } catch (URISyntaxException e) {
+//                    Log.d(TAG, "URI Syntax Exception");
+//                }
 
                 if (statusId == lastMarkerId) {
                     lastMarkerGone = false;

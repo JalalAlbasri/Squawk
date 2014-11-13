@@ -20,7 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.bitmap.Transform;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -89,8 +90,12 @@ public class StatusListCursorAdapter extends CursorAdapter {
         userNameTextView.setText(userName);
         screenNameTextView.setText("@"+screenName);
         statusTextView.setText(statusText);
-        UrlImageViewHelper.setUrlDrawable(userImageView, userImageUrl, R.drawable.user_image_placeholder);
+//        UrlImageViewHelper.setUrlDrawable(userImageView, userImageUrl, R.drawable.user_image_placeholder);
+        Ion.with(userImageView)
+                .placeholder(R.drawable.user_image_placeholder)
+                .load(userImageUrl);
         createdAtTextView.setText(createdAtString);
+
 
         /*
         Linkify status text urls, @mentions and #hastags.

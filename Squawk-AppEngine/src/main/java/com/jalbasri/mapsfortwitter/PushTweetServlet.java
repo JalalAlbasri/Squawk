@@ -39,7 +39,7 @@ public class PushTweetServlet extends HttpServlet {
     private static final Logger logger =
             Logger.getLogger(PushTweetServlet.class.getSimpleName());
 
-    private static final String API_KEY = "AIzaSyC774cWSJVFtthMFQidAh1KtuHo9cuY5kM";
+    private static final String API_KEY = "AIzaSyDE3VoQLQFBnJ_Nxhv0alIxi4ICzW17Jbg";
     
     //SENDER_ID is just the project number (see GCMIntentService)
     protected static final long SENDER_ID = 698870560273L;
@@ -134,21 +134,17 @@ public class PushTweetServlet extends HttpServlet {
             String messageId = ccsClient.nextMessageId();
             Map<String, String> payload = new HashMap<String, String>();
 
-            payload.put("Hello", "World");
-            payload.put("CCS", "Dummy Message");
-            payload.put("EmbeddedMessageId", messageId);
-
-//            payload.put("tweet", "true");
-//            payload.put("id", tweet.getId());
-//            payload.put("text", URLEncoder.encode(tweet.getText(), "UTF-8"));
-//            payload.put("created_at", tweet.getCreated_at());
-//            payload.put("user_id", tweet.getUser_id());
-//            payload.put("user_name", URLEncoder.encode(tweet.getUser_name(), "UTF-8"));
-//            payload.put("user_url", tweet.getUser_url());
-//            payload.put("screen_name", tweet.getScreen_name());
-//            payload.put("user_image", tweet.getUser_image());
-//            payload.put("latitude", tweet.getLatitude());
-//            payload.put("longitude", tweet.getLongitude());
+            payload.put("tweet", "true");
+            payload.put("id", tweet.getId());
+            payload.put("text", URLEncoder.encode(tweet.getText(), "UTF-8"));
+            payload.put("created_at", tweet.getCreated_at());
+            payload.put("user_id", tweet.getUser_id());
+            payload.put("user_name", URLEncoder.encode(tweet.getUser_name(), "UTF-8"));
+            payload.put("user_url", tweet.getUser_url());
+            payload.put("screen_name", tweet.getScreen_name());
+            payload.put("user_image", tweet.getUser_image());
+            payload.put("latitude", tweet.getLatitude());
+            payload.put("longitude", tweet.getLongitude());
 
 
             String collapseKey = "sample";
@@ -180,7 +176,13 @@ public class PushTweetServlet extends HttpServlet {
             if (!hostAddresses.isEmpty()) {
                 logger.info("HostAddress: " + hostAddresses.get(0));
                 logger.info("HostAddress, Exception: " + hostAddresses.get(0).getException());
+
+                logger.info("HostAddress, Exception: " + hostAddresses.get(0).getException().getStackTrace());
+
                 logger.info("HostAddress, error message: " + hostAddresses.get(0).getErrorMessage());
+                logger.info("HostAddress, error message: " + hostAddresses.get(0).getFQDN());
+                logger.info("HostAddress, error message: " + hostAddresses.get(0).getPort());
+
 
             }
 

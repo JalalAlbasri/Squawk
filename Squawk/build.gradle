@@ -15,13 +15,14 @@ repositories {
 dependencies {
     compile 'com.android.support:support-v4:13.0.+'
     compile 'com.google.android.gms:play-services:3.1.36'
-    compile files('libs/jcoord-1.0.jar', 'libs/urlimageviewhelper-1.0.4.jar')
+    compile files('libs/jcoord-1.0.jar')
 
     compile files('libs/gcm.jar')
     compile ('com.google.api-client:google-api-client-android:1.15.0-rc') {
         exclude group: 'com.google.android.google-play-services'
     }
     compile 'com.google.http-client:google-http-client-jackson:1.15.0-rc'
+    compile 'com.koushikdutta.ion:ion:2.+'
 }
 
 android {

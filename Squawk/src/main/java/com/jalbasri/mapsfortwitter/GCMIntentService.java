@@ -330,15 +330,20 @@ public class GCMIntentService extends GCMBaseIntentService {
     private void addNewTwitterStatus(Intent intent) {
         long id = Long.parseLong(intent.getStringExtra("id"));
         try {
-            String text = URLDecoder.decode(intent.getStringExtra("text"), "UTF-8");
+//            String text = URLDecoder.decode(intent.getStringExtra("text"), "UTF-8");
+            String text = intent.getStringExtra("text");
 
-            Log.d(TAG, "Intent Status Text: " + text);
+//            Log.d(TAG, "Intent Status Text: " + text);
             String createdAtString = intent.getStringExtra("created_at");
             long userId = Long.parseLong(intent.getStringExtra("user_id"));
-            String userName = URLDecoder.decode(intent.getStringExtra("user_name"), "UTF-8");
+
+//            String userName = URLDecoder.decode(intent.getStringExtra("user_name"), "UTF-8");
+            String userName = intent.getStringExtra("user_name");
+
             String userUrl = intent.getStringExtra("user_url");
             String screenName = intent.getStringExtra("screen_name");
             String userImage = intent.getStringExtra("user_image");
+
             double latitude = Double.parseDouble(intent.getStringExtra("latitude"));
             double longitude = Double.parseDouble(intent.getStringExtra("longitude"));
             long createdAtLong = 0;
@@ -349,16 +354,16 @@ public class GCMIntentService extends GCMBaseIntentService {
                 Log.e(TAG, "Error parsing Twitter Date, " + e);
             }
 
-            Log.d(TAG, "Tweet Received");
-            Log.d(TAG, "id: " + id);
-            Log.d(TAG, "text: " + text);
-            Log.d(TAG, "userId: " + userId);
-            Log.d(TAG, "created at: " + createdAtString + " long: " + createdAtLong);
-            Log.d(TAG, "user name: " + userName);
-            Log.d(TAG, "screen name: " + screenName);
-            Log.d(TAG, "user image: " + userImage);
-            Log.d(TAG, "latitude: " + latitude);
-            Log.d(TAG, "longitude: " + longitude);
+//            Log.d(TAG, "Tweet Received");
+//            Log.d(TAG, "id: " + id);
+//            Log.d(TAG, "text: " + text);
+//            Log.d(TAG, "userId: " + userId);
+//            Log.d(TAG, "created at: " + createdAtString + " long: " + createdAtLong);
+//            Log.d(TAG, "user name: " + userName);
+//            Log.d(TAG, "screen name: " + screenName);
+//            Log.d(TAG, "user image: " + userImage);
+//            Log.d(TAG, "latitude: " + latitude);
+//            Log.d(TAG, "longitude: " + longitude);
 
 
             ContentResolver resolver = getContentResolver();
@@ -383,7 +388,12 @@ public class GCMIntentService extends GCMBaseIntentService {
                 resolver.insert(twitterStatusProviderUri, values);
             }
             query.close();
-        } catch (UnsupportedEncodingException e) {
+            //UnsupportedEncodingException necessary if using URL decoder decode above.
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
