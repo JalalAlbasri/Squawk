@@ -91,9 +91,16 @@ public class StatusListCursorAdapter extends CursorAdapter {
         screenNameTextView.setText("@"+screenName);
         statusTextView.setText(statusText);
 //        UrlImageViewHelper.setUrlDrawable(userImageView, userImageUrl, R.drawable.user_image_placeholder);
-        Ion.with(userImageView)
+//        Ion.with(userImageView)
+//                .placeholder(R.drawable.user_image_placeholder)
+//                .load(userImageUrl);
+
+        Ion.with(mContext)
+                .load(userImageUrl)
+                .withBitmap()
                 .placeholder(R.drawable.user_image_placeholder)
-                .load(userImageUrl);
+                .intoImageView(userImageView);
+
         createdAtTextView.setText(createdAtString);
 
 

@@ -184,6 +184,7 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                     String userImageUrl = cursor.getString(cursor.getColumnIndex(TwitterStatusContentProvider.KEY_USER_IMAGE));
 
 //                    UrlImageViewHelper.setUrlDrawable(userImageView, userImageUrl, R.drawable.user_image_placeholder);
+                    Log.d(TAG, "[IMAGE LOAD] " + userImageUrl);
                     Ion.with(mActivity)
                             .load(userImageUrl)
                             .withBitmap()
@@ -315,10 +316,10 @@ public class StatusMapFragment extends MapFragment implements LoaderManager.Load
                 Preload images for infowindow
                  */
                 String imageString = mCursor.getString(mCursor.getColumnIndex(TwitterStatusContentProvider.KEY_USER_IMAGE));
-                Ion.with(mActivity)
+                Log.d(TAG, "[IMAGE PRE-LOAD] " + imageString);
+                Ion.with(mActivity.getApplicationContext())
                         .load(imageString)
                         .withBitmap()
-                        .placeholder(R.drawable.user_image_placeholder)
                         .asBitmap();
 
 //                try {
